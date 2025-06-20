@@ -49,11 +49,12 @@
       const username = document.getElementById('mcid').value.trim();
       if (!username) return alert("Please enter a username");
 
-      const url = 'https://raw.githubusercontent.com/Minecraft2613/tax/main/transaction-log.txt';
-      const res = await fetch(url);
-      const log = await res.text();
-      parseLog(log, username);
-    }
+     fetch('transaction-log.txt')
+  .then(response => response.text())
+  .then(data => {
+    parseLog(data); // or however you want to process it
+  });
+
 
     function parseLog(content, mcid) {
       const lines = content.split(/\r?\n/);
