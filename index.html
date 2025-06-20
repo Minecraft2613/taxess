@@ -83,8 +83,8 @@
     function parseLog(content) {
       const lines = content.split(/\r?\n/);
       const data = {};
-      const sellRegex = /\[(.*?)\]\s*-?\s*([\w.]+)\s+sold\s+.*?\s+for\s+\$([\d,]+\.\d{2})/;
-      const buyRegex = /\[(.*?)\]\s*-?\s*([\w.]+)\s+bought\s+.*?\s+for\s+\$([\d,]+\.\d{2})/;
+      const sellRegex = /\[(.*?)\]\s*-\s*(\w+)\s+sold\s+.*?\s+for\s+\$([\d,]+\.\d{2})\s+with/;
+      const buyRegex = /\[(.*?)\]\s*-\s*(\w+)\s+bought\s+.*?\s+for\s+\$([\d,]+\.\d{2})\s+with/;
 
       lines.forEach(line => {
         let match;
