@@ -56,7 +56,6 @@
 
   <script>
     const TAX_FILE = "https://raw.githubusercontent.com/Minecraft2613/tax/main/transaction-log.txt";
-
     let playerData = {}, currentPlayer = "";
 
     async function nextStep() {
@@ -70,8 +69,8 @@
     async function loadTax() {
       try {
         const res = await fetch(TAX_FILE);
-        const log = await res.text();
-        parseLog(log);
+        const text = await res.text();
+        parseLog(text);
       } catch (err) {
         alert("❌ Failed to load transaction log.");
         console.error(err);
@@ -81,18 +80,18 @@
     function parseLog(content) {
       const lines = content.split(/\r?\n/);
       const data = {};
-      const buyRegex = /\[(.*?)\] - (\w+)\s+bought\s+.*?for\s+\$([\d,]+\.\d{2})\s+with/i;
-      const sellRegex = /\[(.*?)\] - (\w+)\s+sold\s+.*?for\s+\$([\d,]+\.\d{2})\s+with/i;
+      const buyPattern = /\[(.*?)\]\s*-\s*(\w+)\s+bought\s+.+?\s+for\s+\$([\d,]+\.\d{2})\s+with/i;
+      const sellPattern = /\[(.*?)\]\s*-\s*(\w+)\s+sold\s+.+?\s+for\s+\$([\d,]+\.\d{2})\s+with/i;
 
       lines.forEach(line => {
         let match;
-        if ((match = line.match(buyRegex))) {
+        if ((match = line.match(buyPattern))) {
           const [_, datetime, player, amountStr] = match;
           const amount = parseFloat(amountStr.replace(/,/g, ""));
           const tax = +(amount * 0.04).toFixed(2);
           const date = datetime.split(" ")[0];
           addTax(data, player.toLowerCase(), 0, tax, date);
-        } else if ((match = line.match(sellRegex))) {
+        } else if ((match = line.match(sellPattern))) {
           const [_, datetime, player, amountStr] = match;
           const amount = parseFloat(amountStr.replace(/,/g, ""));
           const tax = +(amount * 0.10).toFixed(2);
