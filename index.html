@@ -51,53 +51,32 @@
 
   <div class="box">
     <input type="text" id="username" placeholder="Enter Minecraft Username" />
-    <input type="file" id="logfile" accept=".txt" />
     <button onclick="processTax()">Check Tax</button>
 
     <div id="result"></div>
   </div>
 
   <script>
-    const ONLINE_URL = 'https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt';
-
-    function processTax() {
-      const fileInput = document.getElementById('logfile');
-      const username = document.getElementById('username').value.trim();
+    async function processTax() {
+      const usernameInput = document.getElementById('username').value.trim();
       const resultBox = document.getElementById('result');
       resultBox.innerHTML = '';
 
-      if (!username) {
-        alert('Enter a Minecraft username.');
+      if (!usernameInput) {
+        alert('Please enter a Minecraft username.');
         return;
       }
 
-      // Try local file first
-      if (fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          parseLog(e.target.result, username);
-        };
-        reader.onerror = function () {
-          fetchOnlineLog(username);
-        };
-        reader.readAsText(fileInput.files[0]);
-      } else {
-        // Fallback to online URL
-        fetchOnlineLog(username);
+      try {
+        // Fetch from same directory
+        const res = await fetch('transaction-log.txt');
+        if (!res.ok) throw new Error('File not found or not accessible');
+        const log = await res.text();
+        parseLog(log, usernameInput);
+      } catch (err) {
+        resultBox.innerHTML = `<p style="color:red;">❌ Error loading <code>transaction-log.txt</code>. Make sure it's in the same folder as this HTML file.</p>`;
+        console.error(err);
       }
-    }
-
-    function fetchOnlineLog(username) {
-      fetch(ONLINE_URL)
-        .then(res => {
-          if (!res.ok) throw new Error("Network response was not ok.");
-          return res.text();
-        })
-        .then(log => parseLog(log, username))
-        .catch(err => {
-          document.getElementById('result').innerHTML = `<p style="color:red;">❌ Failed to load transaction log from file or online.</p>`;
-          console.error("Fetch error:", err);
-        });
     }
 
     function parseLog(logText, usernameInput) {
@@ -122,16 +101,14 @@
         }
       });
 
-      const resultBox = document.getElementById('result');
+      const totalTax = totalBuy + totalSell;
 
       if (!matchedName) {
-        resultBox.innerHTML = `<p style="color:red;">❌ No tax found for <b>${usernameInput}</b>.</p>`;
+        document.getElementById('result').innerHTML = `<p style="color:red;">❌ No tax found for <b>${usernameInput}</b>.</p>`;
         return;
       }
 
-      const totalTax = totalBuy + totalSell;
-
-      resultBox.innerHTML = `
+      document.getElementById('result').innerHTML = `
         <h2>🧾 Tax Report for <b>${matchedName}</b></h2>
         <p>🛒 Purchase Tax (4%): <b>$${totalBuy.toFixed(2)}</b></p>
         <p>📦 Selling Tax (10%): <b>$${totalSell.toFixed(2)}</b></p>
