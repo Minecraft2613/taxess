@@ -69,31 +69,37 @@
 
     async function loadTax() {
       const url = "https://raw.githubusercontent.com/Minecraft2613/tax/main/transaction-log.txt";
-      const res = await fetch(url);
-      const log = await res.text();
-      parseLog(log);
+      try {
+        const res = await fetch(url);
+        const log = await res.text();
+        parseLog(log);
+      } catch (err) {
+        alert("Failed to load tax log.");
+      }
     }
 
     function parseLog(content) {
       const lines = content.split(/\r?\n/);
       const data = {};
+      const sellRegex = /\[(.*?)\]\s*-?\s*([\w.]+)\s+sold\s+.*?\s+for\s+\$([\d,]+\.\d{2})/;
+      const buyRegex = /\[(.*?)\]\s*-?\s*([\w.]+)\s+bought\s+.*?\s+for\s+\$([\d,]+\.\d{2})/;
 
-      lines.forEach(line => {
-        const sellMatch = line.match(/\[(.*?)\]\s*-?\s*([\w.]+)\s+sold\s+.*?\s+for\s+\$([\d,]+\.\d{2})/);
-        const buyMatch = line.match(/\[(.*?)\]\s*-?\s*([\w.]+)\s+bought\s+.*?\s+for\s+\$([\d,]+\.\d{2})/);
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        let match;
 
-        if (sellMatch) {
-          const [_, datetime, name, amount] = sellMatch;
+        if ((match = line.match(sellRegex))) {
+          const [_, datetime, name, amount] = match;
           const tax = +(parseFloat(amount.replace(/,/g, "")) * 0.10).toFixed(2);
           const date = datetime.split(" ")[0];
           addTax(data, name.toLowerCase(), tax, 0, date);
-        } else if (buyMatch) {
-          const [_, datetime, name, amount] = buyMatch;
+        } else if ((match = line.match(buyRegex))) {
+          const [_, datetime, name, amount] = match;
           const tax = +(parseFloat(amount.replace(/,/g, "")) * 0.04).toFixed(2);
           const date = datetime.split(" ")[0];
           addTax(data, name.toLowerCase(), 0, tax, date);
         }
-      });
+      }
 
       playerData = data;
       renderProfile(currentPlayer);
@@ -107,7 +113,18 @@
     }
 
     function renderProfile(name) {
-      const record = playerData[name] || { sell: 0, buy: 0, days: {} };
+      const record = playerData[name];
+
+      if (!record) {
+        document.getElementById("profileBox").innerHTML = `
+          <h2>${name}</h2>
+          <p>❌ Tax not found for this player.</p>
+          <button onclick="logout()">Try Another</button>
+        `;
+        document.getElementById("profileBox").classList.remove("hidden");
+        return;
+      }
+
       const paid = paidPlayers[name] || 0;
       const totalTax = +(record.sell + record.buy).toFixed(2);
       const due = Math.max(0, totalTax - paid);
