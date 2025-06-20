@@ -1,154 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>💸 Player Tax Portal</title>
+  <meta charset="UTF-8">
+  <title>🧾 Player Tax Portal</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #0e0e0e, #1a1a1a);
-      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #fff;
       padding: 20px;
-      text-align: center;
     }
-    .hidden { display: none; }
-    .box {
-      max-width: 600px;
+    .container {
+      max-width: 800px;
       margin: auto;
-      background: #1f1f1f;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px #444;
     }
     input, button {
       padding: 10px;
+      font-size: 16px;
       width: 100%;
       margin: 10px 0;
-      font-size: 16px;
-      border-radius: 5px;
-      border: none;
-    }
-    input {
-      background: #333;
-      color: white;
     }
     button {
-      background: #ffaa00;
-      color: black;
-      font-weight: bold;
+      background: orange;
+      border: none;
       cursor: pointer;
+      font-weight: bold;
     }
-    ul {
-      list-style: none;
-      padding: 0;
+    .hidden { display: none; }
+    .profile-box {
+      background: #1c1c1c;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>💸 Player Tax Portal</h1>
+  <div class="container">
+    <h1>🧾 Player Tax Portal</h1>
+    <input type="text" id="mcid" placeholder="Enter Minecraft Username">
+    <button onclick="loadTax()">Check Tax</button>
 
-  <div class="box" id="loginBox">
-    <input id="mcid" placeholder="Enter your Minecraft Username" />
-    <button onclick="nextStep()">Next</button>
+    <div id="profile" class="profile-box hidden"></div>
   </div>
 
-  <div class="box hidden" id="profileBox"></div>
-
   <script>
-    const TAX_FILE = "https://raw.githubusercontent.com/Minecraft2613/tax/main/transaction-log.txt";
-    let playerData = {}, currentPlayer = "";
-
-    async function nextStep() {
-      const input = document.getElementById("mcid").value.trim();
-      if (!input) return alert("Please enter your username");
-      currentPlayer = input; // preserve original case
-      document.getElementById("loginBox").classList.add("hidden");
-      await loadTax();
-    }
-
     async function loadTax() {
-      try {
-        const res = await fetch(TAX_FILE);
-        const log = await res.text();
-        parseLog(log);
-      } catch (err) {
-        alert("❌ Failed to load transaction log.");
-        console.error(err);
-      }
+      const username = document.getElementById('mcid').value.trim();
+      if (!username) return alert("Please enter a username");
+
+      const url = 'https://raw.githubusercontent.com/Minecraft2613/tax/main/transaction-log.txt';
+      const res = await fetch(url);
+      const log = await res.text();
+      parseLog(log, username);
     }
 
-    function parseLog(content) {
+    function parseLog(content, mcid) {
       const lines = content.split(/\r?\n/);
-      const data = {};
+      const namePattern = new RegExp(`\\[(.*?)\\] - (${mcid}) (bought|sold) .*? for \\$([\\d,]+\\.\\d{2})`, 'i');
+
+      let sellTax = 0;
+      let buyTax = 0;
+      let daily = {};
 
       lines.forEach(line => {
-        if (!line.includes("bought") && !line.includes("sold")) return;
+        const match = line.match(/\[(.*?)\] - ([\w.]+) (bought|sold) .*? for \$([\d,]+\.\d{2})/);
+        if (!match) return;
 
-        const timeMatch = line.match(/^\[(.*?)\]/);
-        const datetime = timeMatch ? timeMatch[1] : null;
-        const date = datetime ? datetime.split(" ")[0] : null;
+        const [ , datetime, name, type, amountStr ] = match;
+        if (name.toLowerCase() !== mcid.toLowerCase()) return;
 
-        const playerMatch = line.match(/\] - ([^ ]+) (bought|sold)/);
-        if (!playerMatch) return;
-        const [_, player, type] = playerMatch;
+        const amount = parseFloat(amountStr.replace(/,/g, ''));
+        const date = datetime.split(' ')[0];
+        const tax = +(type === 'sold' ? amount * 0.10 : amount * 0.04).toFixed(2);
 
-        const amountMatch = line.match(/for\s+\$([\d,]+\.\d{2})\s+with/i);
-        if (!amountMatch) return;
-        const amount = parseFloat(amountMatch[1].replace(/,/g, ""));
-
-        const isBuy = type === "bought";
-        const tax = +(amount * (isBuy ? 0.04 : 0.10)).toFixed(2);
-
-        if (!data[player]) data[player] = { buy: 0, sell: 0, days: {} };
-        if (isBuy) data[player].buy += tax;
-        else data[player].sell += tax;
-
-        if (date) {
-          if (!data[player].days[date]) data[player].days[date] = 0;
-          data[player].days[date] += tax;
+        if (!daily[date]) daily[date] = { buy: 0, sell: 0 };
+        if (type === 'sold') {
+          sellTax += tax;
+          daily[date].sell += tax;
+        } else {
+          buyTax += tax;
+          daily[date].buy += tax;
         }
       });
 
-      playerData = data;
-      renderProfile(currentPlayer);
-    }
+      const totalTax = buyTax + sellTax;
 
-    function renderProfile(player) {
-      const record = playerData[player];
-      if (!record) {
-        document.getElementById("profileBox").innerHTML = `
-          <h2>${player}</h2>
-          <p>❌ Tax not found for this player.</p>
-          <button onclick="logout()">Try Another</button>
+      if (totalTax === 0) {
+        document.getElementById('profile').innerHTML = `<strong>No tax found for player <em>${mcid}</em>.</strong>`;
+      } else {
+        let dailyHTML = '';
+        for (const date in daily) {
+          dailyHTML += `<li>${date} — Buy: $${daily[date].buy.toFixed(2)}, Sell: $${daily[date].sell.toFixed(2)}</li>`;
+        }
+
+        document.getElementById('profile').innerHTML = `
+          <h2>Welcome, ${mcid}</h2>
+          <p>🛒 Buying Tax (4%): <strong>$${buyTax.toFixed(2)}</strong></p>
+          <p>📦 Selling Tax (10%): <strong>$${sellTax.toFixed(2)}</strong></p>
+          <p>💰 Total Tax Due: <strong>$${totalTax.toFixed(2)}</strong></p>
+          <h3>📅 Daily Tax Log</h3>
+          <ul>${dailyHTML}</ul>
         `;
-        document.getElementById("profileBox").classList.remove("hidden");
-        return;
       }
 
-      const buyTax = record.buy.toFixed(2);
-      const sellTax = record.sell.toFixed(2);
-      const total = (record.buy + record.sell).toFixed(2);
-
-      let daily = "";
-      for (const date in record.days) {
-        daily += `<li>${date}: $${record.days[date].toFixed(2)}</li>`;
-      }
-
-      document.getElementById("profileBox").innerHTML = `
-        <h2>Welcome, ${player}</h2>
-        <p><strong>🛒 Buying Tax (4%):</strong> $${buyTax}</p>
-        <p><strong>📦 Selling Tax (10%):</strong> $${sellTax}</p>
-        <p><strong>💰 Total Tax:</strong> $${total}</p>
-        ${daily ? `<h3>📅 Daily Breakdown</h3><ul>${daily}</ul>` : ""}
-        <button onclick="logout()">Logout</button>
-      `;
-      document.getElementById("profileBox").classList.remove("hidden");
-    }
-
-    function logout() {
-      document.getElementById("profileBox").classList.add("hidden");
-      document.getElementById("loginBox").classList.remove("hidden");
-      document.getElementById("mcid").value = "";
+      document.getElementById('profile').classList.remove('hidden');
     }
   </script>
 </body>
