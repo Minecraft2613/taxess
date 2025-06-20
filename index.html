@@ -1,61 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Local Player Tax</title>
+  <meta charset="UTF-8">
+  <title>💰 Player Tax Calculator</title>
   <style>
-    body { background: #111; color: white; font-family: sans-serif; padding: 20px; }
-    .box { max-width: 600px; margin: auto; background: #222; padding: 20px; border-radius: 10px; }
-    input, button { width: 100%; padding: 10px; margin: 10px 0; font-size: 16px; }
-    button { background: #ffaa00; color: #000; font-weight: bold; cursor: pointer; }
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    .box {
+      background: #222;
+      padding: 20px;
+      margin: auto;
+      max-width: 600px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #444;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+    }
+    input {
+      background: #333;
+      color: white;
+    }
+    button {
+      background: #ffaa00;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 20px;
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
+
+  <h1>💸 Player Tax Portal</h1>
+
   <div class="box">
-    <h1>Check Player Tax (Offline)</h1>
-    <input id="mcid" placeholder="Enter Minecraft Username" />
-    <button onclick="checkTax()">Check Tax</button>
-    <div id="result" style="margin-top: 20px;"></div>
+    <input type="text" id="username" placeholder="Enter Minecraft Username" />
+    <input type="file" id="logfile" accept=".txt" />
+    <button onclick="processLog()">Check Tax</button>
+
+    <div id="result"></div>
   </div>
 
   <script>
-    async function checkTax() {
-      const username = document.getElementById("mcid").value.trim();
-      if (!username) return alert("Please enter a username");
+    function processLog() {
+      const fileInput = document.getElementById('logfile');
+      const username = document.getElementById('username').value.trim();
+      const resultBox = document.getElementById('result');
+      resultBox.innerHTML = '';
 
-      try {
-        const url = 'https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt'; // online
-        const res = await fetch(url);
-        const text = await res.text();
-console.log("Fetched transaction file:", text.substring(0, 100)); // preview
-        
-        const lines = text.split(/\r?\n/);
-        let buyTax = 0, sellTax = 0;
+      if (!username) {
+        alert('Enter a username');
+        return;
+      }
+
+      if (!fileInput.files[0]) {
+        alert('Select a transaction-log.txt file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const content = e.target.result;
+        const lines = content.split(/\r?\n/);
+        let totalBuy = 0, totalSell = 0;
+        let nameMatched = '';
 
         lines.forEach(line => {
-          if (line.includes(username)) {
-            const buyMatch = line.match(/\$([\d,]+\.\d+).*bought/);
-            const sellMatch = line.match(/\$([\d,]+\.\d+).*sold/);
-            if (buyMatch) buyTax += parseFloat(buyMatch[1].replace(/,/g, '')) * 0.04;
-            if (sellMatch) sellTax += parseFloat(sellMatch[1].replace(/,/g, '')) * 0.10;
+          const buyMatch = line.match(/- ([\w.]+) bought .*? for \$([\d,]+\.\d+)/);
+          const sellMatch = line.match(/- ([\w.]+) sold .*? for \$([\d,]+\.\d+)/);
+
+          if (buyMatch && buyMatch[1].toLowerCase() === username.toLowerCase()) {
+            const name = buyMatch[1]; nameMatched = name;
+            const amount = parseFloat(buyMatch[2].replace(/,/g, ''));
+            totalBuy += amount * 0.04;
+          }
+
+          if (sellMatch && sellMatch[1].toLowerCase() === username.toLowerCase()) {
+            const name = sellMatch[1]; nameMatched = name;
+            const amount = parseFloat(sellMatch[2].replace(/,/g, ''));
+            totalSell += amount * 0.10;
           }
         });
 
-        const totalTax = buyTax + sellTax;
+        if (!nameMatched) {
+          resultBox.innerHTML = `<p style="color:red;">❌ No tax data found for <b>${username}</b>.</p>`;
+          return;
+        }
 
-        document.getElementById("result").innerHTML =
-          totalTax === 0
-            ? `<p>No tax found for player <strong>${username}</strong>.</p>`
-            : `<p><strong>${username}</strong>'s Tax Summary:<br>
-               Buying Tax: $${buyTax.toFixed(2)}<br>
-               Selling Tax: $${sellTax.toFixed(2)}<br>
-               <b>Total Tax:</b> $${totalTax.toFixed(2)}</p>`;
+        const totalTax = totalBuy + totalSell;
 
-      } catch (e) {
-        document.getElementById("result").innerHTML = "❌ Error loading file.";
-        console.error(e);
-      }
+        resultBox.innerHTML = `
+          <h2>🧾 Tax Report for <b>${nameMatched}</b></h2>
+          <p>🛒 Purchase Tax (4%): $${totalBuy.toFixed(2)}</p>
+          <p>📦 Selling Tax (10%): $${totalSell.toFixed(2)}</p>
+          <hr>
+          <p><b>Total Tax Due: $${totalTax.toFixed(2)}</b></p>
+        `;
+      };
+
+      reader.readAsText(fileInput.files[0]);
     }
   </script>
+
 </body>
 </html>
