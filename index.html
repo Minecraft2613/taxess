@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>💼 Player Tax Portal</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -18,7 +17,10 @@
       margin: auto;
       padding: 20px;
     }
-    h1 { text-align: center; color: #ffcc00; }
+    h1 {
+      text-align: center;
+      color: #ffcc00;
+    }
     input, select, button {
       display: block;
       width: 100%;
@@ -45,8 +47,16 @@
       border-radius: 10px;
       margin-top: 20px;
     }
-    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
-    canvas { width: 100% !important; max-width: 100%; height: auto !important; }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    canvas {
+      width: 100% !important;
+      max-width: 100%;
+      height: auto !important;
+    }
     @media (max-width: 600px) {
       h1 { font-size: 22px; }
       input, select, button { font-size: 14px; padding: 10px; }
@@ -54,217 +64,208 @@
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>📃 Player Tax Portal</h1>
-  <div id="step1">
-    <select id="job"></select>
-    <select id="method">
-      <option value="Discord">Discord</option>
-      <option value="Instagram">Instagram</option>
-    </select>
-    <input id="contact" placeholder="Enter your contact username" />
-    <input id="mcid" placeholder="Enter your Minecraft Username" />
-    <button onclick="nextStep()">Check Tax</button>
-  </div>
-
-  <div id="profile" class="profile-box" style="display:none;"></div>
-  <div class="history-box" id="historyBox" style="display:none;"></div>
-  <canvas id="taxChart" style="display:none;"></canvas>
-</div>
-
-<script>
-const webhookURL = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
-let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
-
-async function fetchBackup() {
-  // This should point to your Discord-hosted backup file in a paste or webhook-compatible format.
-  // Example: using a CDN like GitHub raw or any JSON pastebin
-  try {
-    const r = await fetch('https://raw.githubusercontent.com/Minecraft2613/taxess/main/paymentBackup.json');
-    const json = await r.json();
-    paymentHistory = json.paymentHistory || {};
-    paidPlayers = json.paidPlayers || {};
-  } catch (e) { console.warn('No remote backup loaded.'); }
-}
-
-async function nextStep() {
-  const job = document.getElementById('job').value;
-  const method = document.getElementById('method').value;
-  const contact = document.getElementById('contact').value.trim();
-  const mcid = document.getElementById('mcid').value.trim();
-  if (!mcid || !contact) return alert("Please fill all fields");
-  currentPlayer = mcid;
-
-  await fetch(webhookURL, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ content: `📥 New Entry\nJob: ${job}\nMethod: ${method}\nUser: ${contact}\nMC: ${mcid}` })
-  });
-
-  document.getElementById("step1").style.display = "none";
-  loadTax();
-}
-
-async function loadTax() {
-  try {
-    const res = await fetch("transaction-log.txt");
-    const text = await res.text();
-    parseTransactions(text);
-  } catch {
-    alert("Failed to load transaction log.");
-  }
-}
-
-function parseTransactions(log) {
-  const lines = log.split(/\r?\n/);
-  let buy = 0, sell = 0;
-  dailyData = {};
-
-  lines.forEach(line => {
-    if (!line.toLowerCase().includes(currentPlayer.toLowerCase())) return;
-
-    const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
-    const day = date ? date[1].slice(5).replace('-', '/') : "";
-    const buyMatch = line.match(/for \$(\d{1,3}(?:,\d{3})*(?:\.\d{2})?).*bought/i);
-    const sellMatch = line.match(/for \$(\d{1,3}(?:,\d{3})*(?:\.\d{2})?).*sold/i);
-
-    if (buyMatch) {
-      const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
-      const tax = +(amt * 0.04).toFixed(2);
-      buy += tax;
-      dailyData[day] = (dailyData[day] || 0) + tax;
-    }
-
-    if (sellMatch) {
-      const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
-      const tax = +(amt * 0.10).toFixed(2);
-      sell += tax;
-      dailyData[day] = (dailyData[day] || 0) + tax;
-    }
-  });
-
-  const total = buy + sell;
-  const paid = paidPlayers[currentPlayer] || 0;
-  const due = Math.max(0, total - paid);
-  const advanced = paid > total;
-  showProfile(buy, sell, total, paid, due, advanced);
-  renderChart();
-  syncBackup();
-}
-
-function showProfile(buy, sell, total, paid, due, advanced) {
-  const box = document.getElementById("profile");
-  let html = `<h3>Welcome, ${currentPlayer}</h3>`;
-  html += `<p>Total Tax: $${total.toFixed(2)}</p>`;
-  html += `<p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>`;
-  html += `<p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>`;
-
-  html += `
-    <input type="number" id="payAmt" placeholder="Enter amount to pay">
-    <div class="btn-row">
-      ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : ``}
-      ${due === 0 ? `<button onclick="advancePay()">Advance Pay</button>` : ``}
-      <button onclick="exit()">Exit</button>
+  <div class="container">
+    <h1>📃 Player Tax Portal</h1>
+    <div id="step1">
+      <select id="job"></select>
+      <select id="method">
+        <option value="Discord">Discord</option>
+        <option value="Instagram">Instagram</option>
+      </select>
+      <input id="contact" placeholder="Enter your Discord/Instagram username" />
+      <input id="mcid" placeholder="Enter your Minecraft Username" />
+      <button onclick="nextStep()">Check Tax</button>
     </div>
-  `;
-  box.innerHTML = html;
-  box.style.display = "block";
+    <div id="profile" class="profile-box" style="display:none;"></div>
+    <div class="history-box" id="historyBox" style="display:none;"></div>
+    <canvas id="taxChart" style="display:none;"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const webhookURL = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
+      const backupURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/paymentBackup.json"; // must be updated manually
+      let paidPlayers = {}, paymentHistory = {};
+      let playerData = {}, currentPlayer = '', dailyData = {}, chart;
 
-  const history = paymentHistory[currentPlayer] || [];
-  const histBox = document.getElementById("historyBox");
-  histBox.innerHTML = `<h3>Payment History</h3><ul>${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
-  histBox.style.display = "block";
-}
+      window.onload = async () => {
+        document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
+        try {
+          const res = await fetch(backupURL);
+          const json = await res.json();
+          paidPlayers = json.paidPlayers || {};
+          paymentHistory = json.paymentHistory || {};
+        } catch (e) {
+          console.warn("Failed to load online backup", e);
+        }
+      };
 
-function submitTax() {
-  const amt = parseFloat(document.getElementById("payAmt").value);
-  if (!amt || amt <= 0) return alert("Invalid amount");
-  paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
-  recordPayment(amt, "paid");
-  loadTax();
-}
+      async function nextStep() {
+        const job = document.getElementById('job').value;
+        const method = document.getElementById('method').value;
+        const contact = document.getElementById('contact').value.trim();
+        const mcid = document.getElementById('mcid').value.trim();
+        if (!mcid || !contact) return alert("Please fill all fields");
+        currentPlayer = mcid;
 
-function advancePay() {
-  const amt = parseFloat(document.getElementById("payAmt").value);
-  if (!amt || amt <= 0) return alert("Invalid amount");
-  paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
-  recordPayment(amt, "advance");
-  loadTax();
-}
+        await fetch(webhookURL, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ content: `📅 New Entry\nJob: ${job}\nMethod: ${method}\nUser: ${contact}\nMC: ${mcid}` })
+        });
 
-function recordPayment(amt, type) {
-  const entry = { amount: amt, date: new Date().toLocaleString(), type };
-  if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
-  paymentHistory[currentPlayer].push(entry);
-
-  fetch(webhookURL, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ content: `💰 ${currentPlayer} ${type} paid $${amt}` })
-  });
-}
-
-function exit() {
-  document.getElementById("step1").style.display = "block";
-  document.getElementById("profile").style.display = "none";
-  document.getElementById("historyBox").style.display = "none";
-  document.getElementById("taxChart").style.display = "none";
-  document.getElementById("contact").value = "";
-  document.getElementById("mcid").value = "";
-}
-
-function renderChart() {
-  const ctx = document.getElementById("taxChart").getContext("2d");
-  const labels = Object.keys(dailyData);
-  const values = Object.values(dailyData);
-  if (chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: "Daily Tax",
-        data: values,
-        borderColor: '#ffcc00',
-        fill: false,
-        tension: 0.3,
-        pointRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { title: { display: true, text: "Date" } },
-        y: { title: { display: true, text: "Tax ($)" } }
+        document.getElementById("step1").style.display = "none";
+        loadTax();
       }
-    }
-  });
-  document.getElementById("taxChart").style.display = "block";
-}
 
-function syncBackup() {
-  const backup = {
-    paidPlayers,
-    paymentHistory
-  };
-  fetch(webhookURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      content: "Automated tax data backup:",
-      embeds: [{
-        title: `Backup for ${currentPlayer}`,
-        description: "```json\n" + JSON.stringify(backup).slice(0, 1900) + "\n```"
-      }]
-    })
-  });
-}
+      async function loadTax() {
+        try {
+          const res = await fetch("transaction-log.txt");
+          const text = await res.text();
+          parseTransactions(text);
+        } catch {
+          alert("Failed to load transaction log.");
+        }
+      }
 
-window.onload = () => {
-  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
-  fetchBackup();
-};
-</script>
+      function parseTransactions(log) {
+        const lines = log.split(/\r?\n/);
+        let buy = 0, sell = 0;
+        dailyData = {};
+
+        lines.forEach(line => {
+          if (!line.includes(currentPlayer)) return;
+          const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
+          const day = date ? date[1].slice(5).replace('-', '/') : "";
+          const buyMatch = line.match(/bought .*? \$([\d,.]+)/);
+          const sellMatch = line.match(/sold .*? \$([\d,.]+)/);
+
+          if (buyMatch) {
+            const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
+            const tax = +(amt * 0.04).toFixed(2);
+            buy += tax;
+            dailyData[day] = (dailyData[day] || 0) + tax;
+          }
+          if (sellMatch) {
+            const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
+            const tax = +(amt * 0.10).toFixed(2);
+            sell += tax;
+            dailyData[day] = (dailyData[day] || 0) + tax;
+          }
+        });
+
+        const total = buy + sell;
+        const paid = paidPlayers[currentPlayer] || 0;
+        const due = Math.max(0, total - paid);
+        const advanced = paid > total;
+
+        showProfile(buy, sell, total, paid, due, advanced);
+        renderChart();
+        backupToDiscord();
+      }
+
+      function showProfile(buy, sell, total, paid, due, advanced) {
+        const box = document.getElementById("profile");
+        let html = `<h3>Welcome, ${currentPlayer}</h3>`;
+        html += `<p>Total Tax: $${total.toFixed(2)}</p>`;
+        html += `<p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>`;
+        html += `<p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>`;
+        html += `<input type="number" id="payAmt" placeholder="Enter amount to pay">
+          <div class="btn-row">
+            ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : ``}
+            ${due === 0 ? `<button onclick="advancePay()">Advance Pay</button>` : ``}
+            <button onclick="exit()">Exit</button>
+          </div>`;
+        box.innerHTML = html;
+        box.style.display = "block";
+
+        const history = paymentHistory[currentPlayer] || [];
+        const histBox = document.getElementById("historyBox");
+        histBox.innerHTML = `<h3>Payment History</h3><ul>${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+        histBox.style.display = "block";
+      }
+
+      function submitTax() {
+        const amt = parseFloat(document.getElementById("payAmt").value);
+        if (!amt || amt <= 0) return alert("Invalid amount");
+        paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
+        recordPayment(amt);
+        fetch(webhookURL, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ content: `💰 ${currentPlayer} paid $${amt} in Tax` })
+        });
+        loadTax();
+      }
+
+      function advancePay() {
+        const amt = parseFloat(document.getElementById("payAmt").value);
+        if (!amt || amt <= 0) return alert("Invalid amount");
+        paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
+        recordPayment(amt);
+        fetch(webhookURL, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ content: `💰 ${currentPlayer} paid $${amt} in Advance` })
+        });
+        loadTax();
+      }
+
+      function recordPayment(amt) {
+        const entry = { amount: amt, date: new Date().toLocaleString() };
+        if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
+        paymentHistory[currentPlayer].push(entry);
+      }
+
+      function renderChart() {
+        const ctx = document.getElementById("taxChart").getContext("2d");
+        const labels = Object.keys(dailyData);
+        const values = Object.values(dailyData);
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{ label: "Daily Tax", data: values, borderColor: '#ffcc00', fill: false, tension: 0.3, pointRadius: 3 }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: ctx => `$${ctx.raw.toFixed(2)}`
+                }
+              }
+            },
+            scales: {
+              x: { title: { display: true, text: "Date" } },
+              y: { title: { display: true, text: "Tax ($)" } }
+            }
+          }
+        });
+        document.getElementById("taxChart").style.display = "block";
+      }
+
+      function backupToDiscord() {
+        const backup = {
+          paidPlayers,
+          paymentHistory
+        };
+        fetch(webhookURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: "`paymentBackup.json`", embeds: [{ title: `Backup JSON`, description: "```json\n" + JSON.stringify(backup, null, 2).slice(0, 1900) + "\n```" }] })
+        });
+      }
+
+      function exit() {
+        document.getElementById("step1").style.display = "block";
+        document.getElementById("profile").style.display = "none";
+        document.getElementById("historyBox").style.display = "none";
+        document.getElementById("taxChart").style.display = "none";
+        document.getElementById("contact").value = "";
+        document.getElementById("mcid").value = "";
+      }
+    </script>
+  </div>
 </body>
 </html>
