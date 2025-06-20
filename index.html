@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>💰 Player Tax Calculator</title>
+  <title>💸 Player Tax Portal</title>
   <style>
     body {
       background: #111;
@@ -47,74 +47,97 @@
 </head>
 <body>
 
-  <h1>💸 Player Tax Portal</h1>
+  <h1>💰 Minecraft Player Tax Portal</h1>
 
   <div class="box">
     <input type="text" id="username" placeholder="Enter Minecraft Username" />
     <input type="file" id="logfile" accept=".txt" />
-    <button onclick="processLog()">Check Tax</button>
+    <button onclick="processTax()">Check Tax</button>
 
     <div id="result"></div>
   </div>
 
   <script>
-    function processLog() {
+    const ONLINE_URL = 'https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt';
+
+    function processTax() {
       const fileInput = document.getElementById('logfile');
       const username = document.getElementById('username').value.trim();
       const resultBox = document.getElementById('result');
       resultBox.innerHTML = '';
 
       if (!username) {
-        alert('Enter a username');
+        alert('Enter a Minecraft username.');
         return;
       }
 
-      if (!fileInput.files[0]) {
-        alert('Select a transaction-log.txt file');
-        return;
+      // Try local file first
+      if (fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          parseLog(e.target.result, username);
+        };
+        reader.onerror = function () {
+          fetchOnlineLog(username);
+        };
+        reader.readAsText(fileInput.files[0]);
+      } else {
+        // Fallback to online URL
+        fetchOnlineLog(username);
       }
+    }
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const content = e.target.result;
-        const lines = content.split(/\r?\n/);
-        let totalBuy = 0, totalSell = 0;
-        let nameMatched = '';
-
-        lines.forEach(line => {
-          const buyMatch = line.match(/- ([\w.]+) bought .*? for \$([\d,]+\.\d+)/);
-          const sellMatch = line.match(/- ([\w.]+) sold .*? for \$([\d,]+\.\d+)/);
-
-          if (buyMatch && buyMatch[1].toLowerCase() === username.toLowerCase()) {
-            const name = buyMatch[1]; nameMatched = name;
-            const amount = parseFloat(buyMatch[2].replace(/,/g, ''));
-            totalBuy += amount * 0.04;
-          }
-
-          if (sellMatch && sellMatch[1].toLowerCase() === username.toLowerCase()) {
-            const name = sellMatch[1]; nameMatched = name;
-            const amount = parseFloat(sellMatch[2].replace(/,/g, ''));
-            totalSell += amount * 0.10;
-          }
+    function fetchOnlineLog(username) {
+      fetch(ONLINE_URL)
+        .then(res => {
+          if (!res.ok) throw new Error("Network response was not ok.");
+          return res.text();
+        })
+        .then(log => parseLog(log, username))
+        .catch(err => {
+          document.getElementById('result').innerHTML = `<p style="color:red;">❌ Failed to load transaction log from file or online.</p>`;
+          console.error("Fetch error:", err);
         });
+    }
 
-        if (!nameMatched) {
-          resultBox.innerHTML = `<p style="color:red;">❌ No tax data found for <b>${username}</b>.</p>`;
-          return;
+    function parseLog(logText, usernameInput) {
+      const lines = logText.split(/\r?\n/);
+      let totalBuy = 0, totalSell = 0;
+      let matchedName = '';
+
+      lines.forEach(line => {
+        const buyMatch = line.match(/- ([\w.]+) bought .*? for \$([\d,]+\.\d+)/);
+        const sellMatch = line.match(/- ([\w.]+) sold .*? for \$([\d,]+\.\d+)/);
+
+        if (buyMatch && buyMatch[1].toLowerCase() === usernameInput.toLowerCase()) {
+          matchedName = buyMatch[1];
+          const amount = parseFloat(buyMatch[2].replace(/,/g, ''));
+          totalBuy += amount * 0.04;
         }
 
-        const totalTax = totalBuy + totalSell;
+        if (sellMatch && sellMatch[1].toLowerCase() === usernameInput.toLowerCase()) {
+          matchedName = sellMatch[1];
+          const amount = parseFloat(sellMatch[2].replace(/,/g, ''));
+          totalSell += amount * 0.10;
+        }
+      });
 
-        resultBox.innerHTML = `
-          <h2>🧾 Tax Report for <b>${nameMatched}</b></h2>
-          <p>🛒 Purchase Tax (4%): $${totalBuy.toFixed(2)}</p>
-          <p>📦 Selling Tax (10%): $${totalSell.toFixed(2)}</p>
-          <hr>
-          <p><b>Total Tax Due: $${totalTax.toFixed(2)}</b></p>
-        `;
-      };
+      const resultBox = document.getElementById('result');
 
-      reader.readAsText(fileInput.files[0]);
+      if (!matchedName) {
+        resultBox.innerHTML = `<p style="color:red;">❌ No tax found for <b>${usernameInput}</b>.</p>`;
+        return;
+      }
+
+      const totalTax = totalBuy + totalSell;
+
+      resultBox.innerHTML = `
+        <h2>🧾 Tax Report for <b>${matchedName}</b></h2>
+        <p>🛒 Purchase Tax (4%): <b>$${totalBuy.toFixed(2)}</b></p>
+        <p>📦 Selling Tax (10%): <b>$${totalSell.toFixed(2)}</b></p>
+        <hr>
+        <p><b>Total Tax Due: $${totalTax.toFixed(2)}</b></p>
+      `;
     }
   </script>
 
