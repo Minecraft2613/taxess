@@ -262,24 +262,24 @@
         document.getElementById("taxChart").style.display = "block";
       }
 
-      function backupToDiscord() {
-        const backup = {
-          paidPlayers: paidPlayers,
-          paymentHistory: paymentHistory
-        };
+     function backupToDiscord() {
+  const backup = {
+    paidPlayers,
+    paymentHistory
+  };
 
-        fetch(webhookURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            content: `Backup for ${currentPlayer}`,
-            embeds: [{
-              title: `Backup`,
-              description: `\`\n${JSON.stringify(backup).slice(0, 1800)}\n\``
-            }]
-          })
-        });
-      }
+  // Send backup JSON to your Cloudflare Worker
+  fetch("https://your-worker-name.your-subdomain.workers.dev/update-tax", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(backup)
+  })
+  .then(res => res.ok ? console.log("✅ Synced to GitHub") : console.error("❌ Failed to sync JSON"))
+  .catch(err => console.error("Sync error:", err));
+}
+
 
       window.onload = () => {
         document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
