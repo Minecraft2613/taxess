@@ -85,6 +85,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
       const webhookURL = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
+      const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
       let paidPlayers = {};
       let paymentHistory = {};
       let playerData = {}, currentPlayer = '', dailyData = {}, chart;
@@ -106,19 +107,18 @@
         });
 
         document.getElementById("step1").style.display = "none";
-        await loadBackupData();
+        await loadOnlineData();
         loadTax();
       }
 
-      async function loadBackupData() {
+      async function loadOnlineData() {
         try {
-          const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/paymentBackup.json");
-          const json = await res.json();
-          paidPlayers = json.paidPlayers || {};
-          paymentHistory = json.paymentHistory || {};
-        } catch {
-          paidPlayers = JSON.parse(localStorage.getItem('paidPlayers') || '{}');
-          paymentHistory = JSON.parse(localStorage.getItem('paymentHistory') || '{}');
+          const res = await fetch(jsonDataURL);
+          const data = await res.json();
+          paidPlayers = data.paidPlayers || {};
+          paymentHistory = data.paymentHistory || {};
+        } catch (e) {
+          console.warn("Failed to load JSON backup", e);
         }
       }
 
@@ -143,8 +143,8 @@
           const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
           const day = date ? date[1].slice(5).replace('-', '/') : "";
 
-          const buyMatch = line.match(/\$([\d,]+\.\d+).*bought/);
-          const sellMatch = line.match(/\$([\d,]+\.\d+).*sold/);
+          const buyMatch = line.match(/bought.*?\$([\d,]+\.\d{2})/);
+          const sellMatch = line.match(/sold.*?\$([\d,]+\.\d{2})/);
 
           if (buyMatch) {
             const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
@@ -200,22 +200,18 @@
         if (!amt || amt <= 0) return alert("Invalid amount");
         paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
         recordPayment(amt);
+        backupToDiscord();
         loadTax();
       }
 
       function advancePay() {
-        const amt = parseFloat(document.getElementById("payAmt").value);
-        if (!amt || amt <= 0) return alert("Invalid amount");
-        paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
-        recordPayment(amt);
-        loadTax();
+        submitTax();
       }
 
       function recordPayment(amt) {
-        const entry = { amount: amt, date: new Date().toLocaleDateString() };
+        const entry = { amount: amt, date: new Date().toLocaleString() };
         if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
         paymentHistory[currentPlayer].push(entry);
-        backupToDiscord();
       }
 
       function exit() {
@@ -267,15 +263,20 @@
       }
 
       function backupToDiscord() {
-        const json = {
-          paidPlayers,
-          paymentHistory
+        const backup = {
+          paidPlayers: paidPlayers,
+          paymentHistory: paymentHistory
         };
+
         fetch(webhookURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            content: `\n\n\`\`\`json\n${JSON.stringify(json).slice(0, 1900)}\n\`\`\``
+            content: `Backup for ${currentPlayer}`,
+            embeds: [{
+              title: `Backup`,
+              description: `\`\n${JSON.stringify(backup).slice(0, 1800)}\n\``
+            }]
           })
         });
       }
