@@ -1,122 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>💸 Player Tax Portal</title>
+  <meta charset="UTF-8" />
+  <title>🧾 Player Tax Portal</title>
   <style>
     body {
-      background: #111;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
       color: #fff;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      text-align: center;
+      margin: 0;
+      padding: 0;
     }
-    .box {
-      background: #222;
-      padding: 20px;
+    .container {
+      max-width: 800px;
       margin: auto;
-      max-width: 600px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px #444;
+      padding: 20px;
     }
-    input, button {
+    h1 {
+      text-align: center;
+      color: #ffcc00;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { color: #ffcc00; }
+      50% { color: #ffaa00; }
+    }
+    label, input, button {
+      display: block;
       width: 100%;
       padding: 10px;
       margin: 10px 0;
       font-size: 16px;
       border-radius: 5px;
-      border: none;
     }
     input {
-      background: #333;
+      background: #222;
       color: white;
+      border: 1px solid #444;
     }
     button {
       background: #ffaa00;
       color: black;
       font-weight: bold;
+      border: none;
       cursor: pointer;
     }
-    #result {
-      margin-top: 20px;
-      background: #1a1a1a;
-      padding: 15px;
+    .box, .profile-box, .chart-box {
+      background: #1b1b1b;
+      padding: 20px;
       border-radius: 10px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px #ffaa00aa;
     }
+    .hidden { display: none; }
+    canvas { background: #111; padding: 10px; border-radius: 10px; }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>🧾 Player Tax Portal</h1>
 
-  <h1>💰 Minecraft Player Tax Portal</h1>
+    <div class="box" id="loginBox">
+      <input type="text" id="mcid" placeholder="Enter your Minecraft Username" />
+      <button onclick="nextStep()">Check Tax</button>
+    </div>
 
-  <div class="box">
-    <input type="text" id="username" placeholder="Enter Minecraft Username" />
-    <button onclick="processTax()">Check Tax</button>
-
-    <div id="result"></div>
+    <div class="profile-box hidden" id="profileBox"></div>
+    <div class="chart-box hidden">
+      <canvas id="taxChart" width="400" height="200"></canvas>
+    </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    async function processTax() {
-      const usernameInput = document.getElementById('username').value.trim();
-      const resultBox = document.getElementById('result');
-      resultBox.innerHTML = '';
+    let currentPlayer = "";
+    const paidPlayers = JSON.parse(localStorage.getItem('paidPlayers') || '{}');
+    const paymentHistory = JSON.parse(localStorage.getItem('paymentHistory') || '{}');
 
-      if (!usernameInput) {
-        alert('Please enter a Minecraft username.');
-        return;
-      }
+    async function nextStep() {
+      const name = document.getElementById('mcid').value.trim();
+      if (!name) return alert("Please enter your username");
+      currentPlayer = name;
+      document.getElementById("loginBox").classList.add("hidden");
+      await loadTax();
+    }
 
+    async function loadTax() {
       try {
-        // Fetch from same directory
-        const res = await fetch('transaction-log.txt');
-        if (!res.ok) throw new Error('File not found or not accessible');
+        const res = await fetch("transaction-log.txt");
         const log = await res.text();
-        parseLog(log, usernameInput);
-      } catch (err) {
-        resultBox.innerHTML = `<p style="color:red;">❌ Error loading <code>transaction-log.txt</code>. Make sure it's in the same folder as this HTML file.</p>`;
-        console.error(err);
+        parseLog(log);
+      } catch (e) {
+        alert("Transaction log not found in same folder.");
+        location.reload();
       }
     }
 
-    function parseLog(logText, usernameInput) {
-      const lines = logText.split(/\r?\n/);
-      let totalBuy = 0, totalSell = 0;
-      let matchedName = '';
+    function parseLog(content) {
+      const lines = content.split(/\r?\n/);
+      let buyTax = 0, sellTax = 0;
 
       lines.forEach(line => {
-        const buyMatch = line.match(/- ([\w.]+) bought .*? for \$([\d,]+\.\d+)/);
-        const sellMatch = line.match(/- ([\w.]+) sold .*? for \$([\d,]+\.\d+)/);
+        if (!line.includes(currentPlayer)) return;
+        const amountMatch = line.match(/\$(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)/);
+        if (!amountMatch) return;
 
-        if (buyMatch && buyMatch[1].toLowerCase() === usernameInput.toLowerCase()) {
-          matchedName = buyMatch[1];
-          const amount = parseFloat(buyMatch[2].replace(/,/g, ''));
-          totalBuy += amount * 0.04;
-        }
-
-        if (sellMatch && sellMatch[1].toLowerCase() === usernameInput.toLowerCase()) {
-          matchedName = sellMatch[1];
-          const amount = parseFloat(sellMatch[2].replace(/,/g, ''));
-          totalSell += amount * 0.10;
-        }
+        const amount = parseFloat(amountMatch[1].replace(/,/g, ''));
+        if (line.includes("bought")) buyTax += amount * 0.04;
+        else if (line.includes("sold")) sellTax += amount * 0.10;
       });
 
-      const totalTax = totalBuy + totalSell;
+      const totalTax = +(buyTax + sellTax).toFixed(2);
+      const paid = paidPlayers[currentPlayer] || 0;
+      const due = Math.max(0, totalTax - paid);
+      const advance = paid > totalTax;
+      const history = (paymentHistory[currentPlayer] || []).map(e => `<li>$${e.amount} on ${e.date}</li>`).join('');
 
-      if (!matchedName) {
-        document.getElementById('result').innerHTML = `<p style="color:red;">❌ No tax found for <b>${usernameInput}</b>.</p>`;
+      if (buyTax + sellTax === 0) {
+        document.getElementById('profileBox').innerHTML = `<p>No tax found for player <b>${currentPlayer}</b>.</p><button onclick="logout()">Back</button>`;
+        document.getElementById("profileBox").classList.remove("hidden");
         return;
       }
 
-      document.getElementById('result').innerHTML = `
-        <h2>🧾 Tax Report for <b>${matchedName}</b></h2>
-        <p>🛒 Purchase Tax (4%): <b>$${totalBuy.toFixed(2)}</b></p>
-        <p>📦 Selling Tax (10%): <b>$${totalSell.toFixed(2)}</b></p>
-        <hr>
-        <p><b>Total Tax Due: $${totalTax.toFixed(2)}</b></p>
+      renderChart(buyTax, sellTax);
+
+      document.getElementById("profileBox").innerHTML = `
+        <h2>Welcome, ${currentPlayer}</h2>
+        <p><b>Buy Tax:</b> $${buyTax.toFixed(2)}</p>
+        <p><b>Sell Tax:</b> $${sellTax.toFixed(2)}</p>
+        <p><b>Total Tax:</b> $${totalTax.toFixed(2)}</p>
+        <p><b>Paid:</b> $${paid.toFixed(2)}</p>
+        <p><b>Status:</b> <strong>${due === 0 ? (advance ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
+
+        <input type="number" id="payAmt" placeholder="Enter amount to pay" />
+        <button onclick="submitTax()">Pay Tax</button>
+        <button onclick="advancePay()">Advance Pay</button>
+        <button onclick="logout()">Logout</button>
+        ${history ? `<h3>Payment History</h3><ul>${history}</ul>` : ""}
       `;
+      document.getElementById("profileBox").classList.remove("hidden");
+      document.querySelector(".chart-box").classList.remove("hidden");
+    }
+
+    function renderChart(buy, sell) {
+      const ctx = document.getElementById('taxChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Buy Tax', 'Sell Tax'],
+          datasets: [{
+            label: 'Tax Split',
+            data: [buy.toFixed(2), sell.toFixed(2)],
+            backgroundColor: ['#4fc3f7', '#ff8a65']
+          }]
+        }
+      });
+    }
+
+    function recordHistory(amt) {
+      const entry = { amount: amt, date: new Date().toLocaleString() };
+      if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
+      paymentHistory[currentPlayer].push(entry);
+      localStorage.setItem("paymentHistory", JSON.stringify(paymentHistory));
+    }
+
+    function submitTax() {
+      const amt = parseFloat(document.getElementById("payAmt").value);
+      if (!amt || amt <= 0) return alert("Enter a valid amount");
+      paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
+      recordHistory(amt);
+      localStorage.setItem("paidPlayers", JSON.stringify(paidPlayers));
+      sendWebhook(`${currentPlayer} paid $${amt} in tax.`);
+      loadTax();
+    }
+
+    function advancePay() {
+      const amt = parseFloat(document.getElementById("payAmt").value);
+      if (!amt || amt <= 0) return alert("Enter a valid amount");
+      paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
+      recordHistory(amt);
+      localStorage.setItem("paidPlayers", JSON.stringify(paidPlayers));
+      sendWebhook(`${currentPlayer} made advance payment of $${amt}.`);
+      loadTax();
+    }
+
+    function logout() {
+      document.getElementById("profileBox").classList.add("hidden");
+      document.getElementById("loginBox").classList.remove("hidden");
+      document.getElementById("mcid").value = "";
+      document.querySelector(".chart-box").classList.add("hidden");
+    }
+
+    function sendWebhook(msg) {
+      fetch("https://discordapp.com/api/webhooks/YOUR_WEBHOOK_URL", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: `📢 ${msg}` })
+      }).catch(console.warn);
     }
   </script>
-
 </body>
 </html>
