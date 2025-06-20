@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>🧾 Player Tax Portal</title>
+  <title>📟 Player Tax Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -12,7 +13,10 @@
       padding: 20px;
     }
     h1, h2 { text-align: center; color: #ffcc00; }
-    .container { max-width: 800px; margin: auto; }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
     select, input, button {
       width: 100%; margin: 10px 0; padding: 10px;
       font-size: 16px; border-radius: 5px;
@@ -25,13 +29,30 @@
       cursor: pointer;
     }
     .hidden { display: none; }
-    .box { background: #111; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ffaa00aa; }
-    .history-box { margin-top: 20px; background: #222; padding: 10px; border-radius: 8px; }
+    .box {
+      background: #111; padding: 20px; border-radius: 10px;
+      box-shadow: 0 0 10px #ffaa00aa;
+    }
+    .history-box {
+      margin-top: 20px;
+      background: #222;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    canvas {
+      background: #fff;
+      margin-top: 15px;
+      border-radius: 10px;
+      max-width: 100%;
+    }
+    @media (max-width: 600px) {
+      select, input, button { font-size: 14px; padding: 8px; }
+    }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>🧾 Player Tax Portal</h1>
+  <h1>📟 Player Tax Portal</h1>
 
   <div id="loginBox" class="box">
     <label>Select Job:</label>
@@ -49,19 +70,18 @@
     </select>
 
     <input id="contactUsername" placeholder="Enter your Discord or Instagram username">
-
     <input id="mcid" placeholder="Enter your Minecraft Username">
-
     <button onclick="submitLogin()">Check Tax</button>
   </div>
 
   <div id="profileBox" class="box hidden"></div>
+  <canvas id="taxChart" width="600" height="300" class="hidden"></canvas>
 
   <script>
     const webhook = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
     const paidPlayers = JSON.parse(localStorage.getItem('paidPlayers') || '{}');
     const paymentHistory = JSON.parse(localStorage.getItem('paymentHistory') || '{}');
-    let currentPlayer = "", playerCaseName = "", taxData = {};
+    let currentPlayer = '', playerCaseName = '', taxData = {};
 
     async function submitLogin() {
       const job = document.getElementById("job").value;
@@ -70,14 +90,13 @@
       const mcid = document.getElementById("mcid").value.trim();
 
       if (!mcid || !contactUser) return alert("Fill all fields!");
-
       currentPlayer = mcid;
       playerCaseName = mcid;
 
       fetch(webhook, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: `📥 Login Info:\n👤 Minecraft ID: ${mcid}\n💼 Job: ${job}\n📬 ${contactType}: ${contactUser}` })
+        body: JSON.stringify({ content: `📅 Login Info:\n👤 Minecraft ID: ${mcid}\n💼 Job: ${job}\n📬 ${contactType}: ${contactUser}` })
       });
 
       loadTransactionLog();
@@ -101,7 +120,6 @@
 
       lines.forEach(line => {
         if (!line.includes(player)) return;
-
         const buyMatch = line.match(/\[(.*?)\] - (\w+) bought .*? for \$([\d,]+\.\d+)/);
         const sellMatch = line.match(/\[(.*?)\] - (\w+) sold .*? for \$([\d,]+\.\d+)/);
 
@@ -122,12 +140,7 @@
         }
       });
 
-      taxData = {
-        totalBuy, totalSell,
-        total: +(totalBuy + totalSell).toFixed(2),
-        perDay
-      };
-
+      taxData = { totalBuy, totalSell, total: +(totalBuy + totalSell).toFixed(2), perDay };
       renderProfile();
     }
 
@@ -137,13 +150,7 @@
       const due = Math.max(0, total - paid);
       const advance = paid > total;
 
-      const history = (paymentHistory[currentPlayer] || []).map(e =>
-        `<li>$${e.amount} on ${e.date}</li>`).join('');
-
-      let chart = "";
-      for (const date in perDay) {
-        chart += `<li>${date}: $${perDay[date].toFixed(2)}</li>`;
-      }
+      const history = (paymentHistory[currentPlayer] || []).map(e => `<li>$${e.amount} on ${e.date}</li>`).join('');
 
       document.getElementById("profileBox").innerHTML = `
         <h2>Welcome, ${playerCaseName}</h2>
@@ -151,24 +158,36 @@
         <p><strong>Buying Tax:</strong> $${totalBuy.toFixed(2)}</p>
         <p><strong>Selling Tax:</strong> $${totalSell.toFixed(2)}</p>
         <p><strong>Status:</strong> ${due === 0 ? (advance ? 'Advance Paid' : 'No Tax Due') : '$' + due.toFixed(2) + ' Due'}</p>
-
-        ${due > 0 ? `<input type="number" id="payAmt" placeholder="Enter amount to pay">
-        <button onclick="payTax()">Pay Tax</button>` : `<input type="number" id="payAmt" placeholder="Enter advance payment">
-        <button onclick="advancePay()">Advance Pay</button>`}
-
-        <button onclick="showChart()">📊 Show Tax Chart</button>
+        ${due > 0 ? `<input type="number" id="payAmt" placeholder="Enter amount to pay"><button onclick="payTax()">Pay Tax</button>` : `<input type="number" id="payAmt" placeholder="Enter advance payment"><button onclick="advancePay()">Advance Pay</button>`}
+        <button onclick="drawChart()">📊 Show Tax Chart</button>
         <button onclick="reset()">Exit</button>
-
-        ${history ? `<div class="history-box"><h3>Payment History</h3><ul>${history}</ul></div>` : ""}
-        <div class="history-box hidden" id="chartBox"><h3>Daily Tax Chart</h3><ul>${chart}</ul></div>
-      `;
+        ${history ? `<div class="history-box"><h3>Payment History</h3><ul>${history}</ul></div>` : ""}`;
 
       document.getElementById("loginBox").classList.add("hidden");
       document.getElementById("profileBox").classList.remove("hidden");
     }
 
-    function showChart() {
-      document.getElementById("chartBox").classList.toggle("hidden");
+    function drawChart() {
+      const canvas = document.getElementById("taxChart");
+      const ctx = canvas.getContext("2d");
+      canvas.classList.remove("hidden");
+
+      const labels = Object.keys(taxData.perDay);
+      const values = Object.values(taxData.perDay);
+      const maxVal = Math.max(...values) * 1.2;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      values.forEach((v, i) => {
+        const x = 60 + i * 50;
+        const h = (v / maxVal) * 200;
+        ctx.fillStyle = '#ffaa00';
+        ctx.fillRect(x, 280 - h, 40, h);
+        ctx.fillStyle = '#fff';
+        ctx.fillText(labels[i], x, 295);
+      });
     }
 
     function payTax() {
@@ -199,12 +218,19 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: `💸 ${type} by ${currentPlayer} - $${amt}` })
       });
+
+      // Backup JSON to Discord
+      fetch(webhook, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: 'Backup: ```json\n' + JSON.stringify(paymentHistory[currentPlayer], null, 2) + '\n```' })
+      });
     }
 
     function reset() {
       document.getElementById("profileBox").classList.add("hidden");
       document.getElementById("loginBox").classList.remove("hidden");
-      document.getElementById("payAmt").value = "";
+      document.getElementById("taxChart").classList.add("hidden");
     }
   </script>
 </div>
