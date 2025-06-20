@@ -24,9 +24,11 @@
       if (!username) return alert("Please enter a username");
 
       try {
-        const res = await fetch("transaction-log.txt");
+        const url = 'https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt'; // online
+        const res = await fetch(url);
         const text = await res.text();
-
+console.log("Fetched transaction file:", text.substring(0, 100)); // preview
+        
         const lines = text.split(/\r?\n/);
         let buyTax = 0, sellTax = 0;
 
