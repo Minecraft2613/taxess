@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Player Tax System</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      animation: fadeIn 1s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1 {
+      text-align: center;
+      color: #ffcc00;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { color: #ffcc00; }
+      50% { color: #ff8800; }
+    }
+    label, select, input, button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+    input, select {
+      background: #222;
+      color: #fff;
+      border: 1px solid #444;
+    }
+    button {
+      background: #ff8800;
+      color: #000;
+      cursor: pointer;
+      border: none;
+    }
+    .profile-box {
+      margin-top: 20px;
+      padding: 20px;
+      background: #111;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ff8800aa;
+    }
+    .hidden { display: none; }
+    .history-box { margin-top: 20px; background: #222; padding: 10px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧾 Player Tax Portal</h1>
+
+    <div id="step1">
+      <label for="version">Minecraft Version:</label>
+      <select id="version">
+        <option value="Java">Java</option>
+        <option value="Bedrock">Bedrock</option>
+      </select>
+
+      <label for="contact">Contact Method:</label>
+      <select id="contact">
+        <option value="Discord">Discord</option>
+        <option value="Instagram">Instagram</option>
+      </select>
+
+      <label for="mcid">Minecraft Username (ID):</label>
+      <input type="text" id="mcid" placeholder="e.g. Steve or .Atharva">
+
+      <button onclick="nextStep()">Next</button>
+    </div>
+
+    <div id="profile" class="hidden"></div>
+  </div>
+
+  <script>
+    const paidPlayers = JSON.parse(localStorage.getItem('paidPlayers') || '{}');
+    const paymentHistory = JSON.parse(localStorage.getItem('paymentHistory') || '{}');
+    const taxLog = JSON.parse(localStorage.getItem('taxLog') || '{}');
+    let playerData = {};
+    let currentPlayer = '';
+
+    async function nextStep() {
+      const version = document.getElementById('version').value;
+      const contact = document.getElementById('contact').value;
+      const mcid = document.getElementById('mcid').value.trim();
+      if (!mcid) return alert('Please enter a Minecraft ID');
+
+      currentPlayer = mcid.toLowerCase();
+      document.getElementById('step1').classList.add('hidden');
+
+      await fetch('https://discordapp.com/api/webhooks/YOUR_WEBHOOK_URL', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: `📥 New Entry:\nVersion: ${version}\nContact: ${contact}\nMinecraft ID: ${mcid}`
+        })
+      });
+
+      loadTax();
+    }
+
+    async function loadTax() {
+      const url = 'https://raw.githubusercontent.com/Minecraft2613/tax/main/transaction-log.txt';
+      try {
+        const res = await fetch(url);
+        const log = await res.text();
+        parseLog(log);
+      } catch (err) {
+        alert('Failed to load transaction log');
+      }
+    }
+
+    function parseLog(content) {
+      const lines = content.split(/\r?\n/);
+      const taxRecords = {};
+      const dailyTax = {};
+
+      lines.forEach(line => {
+        if (!line.includes("sold")) return;
+        const match = line.match(/\[(.*?)\]\s*-?\s*([\w.]+)\s+sold\s+.+?\s+for\s+\$(\d+(?:,\d+)?(?:\.\d+)?)/);
+        if (match) {
+          const date = match[1].split(' ')[0];
+          const name = match[2].toLowerCase();
+          const amount = parseFloat(match[3].replace(/,/g, ''));
+          const tax = Math.round(amount * 0.10 * 100) / 100;
+
+          if (!taxRecords[name]) taxRecords[name] = { tax: 0 };
+          if (!dailyTax[date]) dailyTax[date] = {};
+          if (!dailyTax[date][name]) dailyTax[date][name] = 0;
+
+          taxRecords[name].tax += tax;
+          dailyTax[date][name] += tax;
+        }
+      });
+
+      localStorage.setItem('taxLog', JSON.stringify(dailyTax));
+      playerData = taxRecords;
+      renderProfile(currentPlayer);
+    }
+
+    function renderProfile(name) {
+      const p = playerData[name] || { tax: 0 };
+      const paid = paidPlayers[name] || 0;
+      const due = Math.max(0, p.tax - paid);
+      const advanced = paid > p.tax;
+
+      let history = '';
+      if (paymentHistory[name]) {
+        history = '<div class="history-box"><h3>Payment History</h3><ul>' +
+          paymentHistory[name].map(entry => `<li>$${entry.amount} on ${entry.date}</li>`).join('') + '</ul></div>';
+      }
+
+      const html = `
+        <div class="profile-box">
+          <h2>Welcome, ${name}</h2>
+          <p>Status: <strong>${due === 0 ? (advanced ? 'Advance Paid' : 'No Tax Due') : '$' + due.toFixed(2) + ' Tax Due'}</strong></p>
+
+          <input type="number" id="payAmt" placeholder="Amount to Pay">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button onclick="submitTax('${name}')">Pay Tax</button>
+            <button onclick="advancePay('${name}')">Advance Pay</button>
+            <button onclick="exitProfile()">Exit</button>
+          </div>
+          ${history}
+        </div>`;
+
+      const profile = document.getElementById('profile');
+      profile.classList.remove('hidden');
+      profile.innerHTML = html;
+    }
+
+    function recordHistory(name, amt) {
+      const entry = { amount: amt, date: new Date().toLocaleString() };
+      if (!paymentHistory[name]) paymentHistory[name] = [];
+      paymentHistory[name].push(entry);
+      localStorage.setItem('paymentHistory', JSON.stringify(paymentHistory));
+    }
+
+    function submitTax(name) {
+      const amt = parseFloat(document.getElementById('payAmt').value);
+      if (!amt || amt <= 0) return alert('Enter a valid amount');
+      paidPlayers[name] = (paidPlayers[name] || 0) + amt;
+      recordHistory(name, amt);
+      localStorage.setItem('paidPlayers', JSON.stringify(paidPlayers));
+      fetch('https://discordapp.com/api/webhooks/YOUR_WEBHOOK_URL', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: `💰 Tax Payment: ${name} paid $${amt}` })
+      });
+      renderProfile(name);
+    }
+
+    function advancePay(name) {
+      const amt = parseFloat(document.getElementById('payAmt').value);
+      if (!amt || amt <= 0) return alert('Enter a valid amount');
+      paidPlayers[name] = (paidPlayers[name] || 0) + amt;
+      recordHistory(name, amt);
+      localStorage.setItem('paidPlayers', JSON.stringify(paidPlayers));
+      fetch('https://discordapp.com/api/webhooks/YOUR_WEBHOOK_URL', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: `💰 Advance Payment: ${name} paid $${amt}` })
+      });
+      renderProfile(name);
+    }
+
+    function exitProfile() {
+      document.getElementById('profile').classList.add('hidden');
+      document.getElementById('step1').classList.remove('hidden');
+      document.getElementById('mcid').value = '';
+    }
+  </script>
+</body>
+</html>
