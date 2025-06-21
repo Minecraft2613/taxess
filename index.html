@@ -2,108 +2,138 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Pay Minecraft Tax</title>
+  <title>Minecraft Tax Payment</title>
   <style>
     body {
       background: #111;
-      color: white;
-      font-family: sans-serif;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 30px;
       text-align: center;
-      padding: 40px;
     }
+
+    h1 {
+      color: #f0ad4e;
+    }
+
     input, button {
       padding: 10px;
-      font-size: 16px;
       margin: 10px;
+      border: none;
       border-radius: 6px;
+      font-size: 16px;
     }
+
+    input {
+      width: 250px;
+    }
+
+    button {
+      background-color: #f0ad4e;
+      color: #111;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #e69500;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
     .error {
-      color: red;
+      color: #ff4c4c;
     }
   </style>
 </head>
 <body>
+  <h1>💰 Minecraft Tax Portal</h1>
 
-  <h1>Pay Your Minecraft Tax</h1>
-  <input type="text" id="player" placeholder="Enter Minecraft Username" />
-  <input type="number" id="amount" placeholder="Enter Amount to Pay" />
-  <br>
+  <input type="text" id="username" placeholder="Minecraft Username" /><br>
+  <input type="number" id="amount" placeholder="Amount to Pay ($)" /><br>
   <button onclick="payTax()">Pay Tax</button>
+
   <p id="result"></p>
 
   <script>
+    // GitHub Repo Info
     const repo = "Minecraft2613/taxess";
-    const filename = "tax-data.json";
-    const tokenPart1 = "ghp_";
-    const tokenPart2 = "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"; // 🔒 Paste your token after "ghp_"
+    const filePath = "tax-data.json";
 
-    const token = tokenPart1 + tokenPart2;
+    // 🔐 GitHub Token – split for light obfuscation
+    const token = "ghp_" + "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"; // Replace only the right part!
 
     async function payTax() {
-      const username = document.getElementById("player").value.trim();
+      const username = document.getElementById("username").value.trim();
       const amount = parseFloat(document.getElementById("amount").value);
       const result = document.getElementById("result");
 
-      if (!username || !amount || amount <= 0) {
-        result.textContent = "Please enter valid username and amount.";
+      if (!username || isNaN(amount) || amount <= 0) {
+        result.textContent = "❌ Please enter a valid username and amount.";
         result.className = "error";
         return;
       }
 
-      result.textContent = "Paying tax...";
+      result.textContent = "⏳ Saving payment...";
+      result.className = "";
 
       try {
-        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${filename}`, {
+        // Get existing file from GitHub
+        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
           headers: {
             Authorization: `token ${token}`,
-            "Content-Type": "application/json"
+            Accept: "application/vnd.github+json"
           }
         });
 
-        const data = await res.json();
+        let jsonData = {};
+        let sha = null;
 
-        let content = {};
-        if (res.ok && data.content) {
-          const decoded = atob(data.content);
-          content = JSON.parse(decoded);
+        if (res.ok) {
+          const data = await res.json();
+          sha = data.sha;
+          const content = atob(data.content);
+          jsonData = JSON.parse(content);
         }
 
-        if (!content[username]) content[username] = [];
-        content[username].push({
-          amount,
+        if (!jsonData[username]) jsonData[username] = [];
+
+        jsonData[username].push({
+          amount: amount,
           timestamp: new Date().toISOString()
         });
 
-        const updatedContent = btoa(JSON.stringify(content, null, 2));
+        const encodedContent = btoa(JSON.stringify(jsonData, null, 2));
 
-        const updateRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filename}`, {
+        // Save updated file to GitHub
+        const saveRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
           method: "PUT",
           headers: {
             Authorization: `token ${token}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            message: `Tax payment by ${username}`,
-            content: updatedContent,
-            sha: data.sha
+            message: `Tax paid by ${username} - $${amount}`,
+            content: encodedContent,
+            sha: sha
           })
         });
 
-        if (updateRes.ok) {
-          result.textContent = "✅ Payment saved!";
+        if (saveRes.ok) {
+          result.textContent = "✅ Payment saved successfully!";
           result.className = "";
         } else {
-          const err = await updateRes.json();
-          result.textContent = `❌ Failed to save: ${err.message}`;
+          const err = await saveRes.json();
+          result.textContent = `❌ Save failed: ${err.message}`;
           result.className = "error";
         }
-
-      } catch (e) {
-        result.textContent = "❌ Error: " + e.message;
+      } catch (err) {
+        result.textContent = "❌ Error: " + err.message;
         result.className = "error";
       }
     }
   </script>
-
 </body>
 </html>
