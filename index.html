@@ -117,7 +117,6 @@ function parseTransactions(log) {
 
   showProfile(buy, sell, total, paid, due, advanced);
   renderChart();
-  syncToCloudflare(currentPlayer, paid, paymentHistory);
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
@@ -139,26 +138,32 @@ function showProfile(buy, sell, total, paid, due, advanced) {
   histBox.style.display = "block";
 }
 
-function generateId(amount, history) {
-  const same = history.filter(e => e.amount === amount).length;
-  return `${amount}-${same + 1}`;
-}
-
-function submitTax() {
+async function submitTax() {
   const amt = parseFloat(document.getElementById("payAmt").value);
   if (!amt || amt <= 0) return alert("Invalid amount");
 
-  const history = paymentHistory[currentPlayer] || [];
   const entry = {
     amount: amt,
     date: new Date().toLocaleString(),
-    id: generateId(amt, history)
+    id: `${amt}-${Date.now()}`
   };
 
-  if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
-  paymentHistory[currentPlayer].push(entry);
+  // Fetch current tax-data.json to merge
+  const res = await fetch(jsonDataURL);
+  const data = await res.json();
+  const fullPaid = data.paidPlayers || {};
+  const fullHistory = data.paymentHistory || {};
 
-  syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory);
+  if (!fullHistory[currentPlayer]) fullHistory[currentPlayer] = [];
+  fullHistory[currentPlayer].push(entry);
+  fullPaid[currentPlayer] = (fullPaid[currentPlayer] || 0) + amt;
+
+  // Sync full merged data
+  await syncToCloudflare(fullPaid, fullHistory);
+
+  // Local update
+  paidPlayers = fullPaid;
+  paymentHistory = fullHistory;
   loadTax();
 }
 
@@ -194,16 +199,17 @@ function renderChart() {
   document.getElementById("taxChart").style.display = "block";
 }
 
-function syncToCloudflare(player, paid, history) {
-  fetch(syncURL, {
+function syncToCloudflare(paid, history) {
+  return fetch(syncURL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      paidPlayers: { [player]: paid },
-      paymentHistory: { [player]: history[player] || [] }
+      paidPlayers: paid,
+      paymentHistory: history
     })
-  }).then(res => res.ok ? console.log("☁️ Sync: ✅") : res.text().then(txt => console.warn("☁️ Sync failed:", txt)))
-    .catch(err => console.warn("☁️ Sync Error:", err));
+  }).then(res =>
+    res.ok ? console.log("✅ Synced") : res.text().then(t => console.warn("❌ Sync failed", t))
+  ).catch(err => console.warn("❌ Sync error", err));
 }
 
 window.onload = () => {
