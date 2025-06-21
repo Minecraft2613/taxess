@@ -44,7 +44,7 @@
 </div>
 
 <script>
-const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
+const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/data/tax-data.json"; // ✅ updated path
 const syncURL = "https://sync.1987sakshamsingh.workers.dev/";
 let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
 
@@ -160,9 +160,7 @@ async function submitTax() {
   if (!fullHistory[player]) fullHistory[player] = [];
   if (!fullPaid[player]) fullPaid[player] = 0;
 
-  // ✅ Fix: Accumulate amount instead of replacing
   fullPaid[player] += amt;
-
   fullHistory[player].push(entry);
 
   await syncToCloudflare(fullPaid, fullHistory);
