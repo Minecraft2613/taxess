@@ -86,9 +86,7 @@
     <script>
       const webhookURL = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
       const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
-      let paidPlayers = {};
-      let paymentHistory = {};
-      let playerData = {}, currentPlayer = '', dailyData = {}, chart;
+      let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
 
       async function nextStep() {
         const job = document.getElementById('job').value;
@@ -100,9 +98,9 @@
 
         await fetch(webhookURL, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            content: `📅 New Entry\nJob: ${job}\nMethod: ${method}\nUser: ${contact}\nMC: ${mcid}`
+            content: `📅 New Entry\n**Job:** ${job}\n**Method:** ${method}\n**User:** ${contact}\n**MC ID:** ${mcid}`
           })
         });
 
@@ -117,8 +115,16 @@
           const data = await res.json();
           paidPlayers = data.paidPlayers || {};
           paymentHistory = data.paymentHistory || {};
+          localStorage.setItem("taxBackup", JSON.stringify(data));
         } catch (e) {
-          console.warn("Failed to load JSON backup", e);
+          const backup = localStorage.getItem("taxBackup");
+          if (backup) {
+            const data = JSON.parse(backup);
+            paidPlayers = data.paidPlayers || {};
+            paymentHistory = data.paymentHistory || {};
+          } else {
+            alert("⚠️ Failed to load tax data online and offline.");
+          }
         }
       }
 
@@ -177,7 +183,6 @@
         html += `<p>Total Tax: $${total.toFixed(2)}</p>`;
         html += `<p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>`;
         html += `<p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>`;
-
         html += `
           <input type="number" id="payAmt" placeholder="Enter amount to pay">
           <div class="btn-row">
@@ -200,13 +205,11 @@
         if (!amt || amt <= 0) return alert("Invalid amount");
         paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
         recordPayment(amt);
-        backupToDiscord();
+        backupToDiscord(true);
         loadTax();
       }
 
-      function advancePay() {
-        submitTax();
-      }
+      function advancePay() { submitTax(); }
 
       function recordPayment(amt) {
         const entry = { amount: amt, date: new Date().toLocaleString() };
@@ -227,12 +230,11 @@
         const ctx = document.getElementById("taxChart").getContext("2d");
         const labels = Object.keys(dailyData);
         const values = Object.values(dailyData);
-
         if (chart) chart.destroy();
         chart = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: labels,
+            labels,
             datasets: [{
               label: "Daily Tax",
               data: values,
@@ -262,24 +264,31 @@
         document.getElementById("taxChart").style.display = "block";
       }
 
-     function backupToDiscord() {
-  const backup = {
-    paidPlayers,
-    paymentHistory
-  };
+      function backupToDiscord(reloadAfter = false) {
+        const backup = { paidPlayers, paymentHistory };
 
-  // Send backup JSON to your Cloudflare Worker
-  fetch("https://your-worker-name.your-subdomain.workers.dev/update-tax", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(backup)
-  })
-  .then(res => res.ok ? console.log("✅ Synced to GitHub") : console.error("❌ Failed to sync JSON"))
-  .catch(err => console.error("Sync error:", err));
-}
+        fetch("https://tax.1987sakshamsingh.workers.dev", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(backup)
+        })
+        .then(res => res.ok
+          ? console.log("✅ Synced to GitHub")
+          : console.error("❌ Failed to sync JSON")
+        )
+        .then(() => {
+          if (reloadAfter) setTimeout(() => location.reload(), 1000);
+        })
+        .catch(err => console.error("Sync error:", err));
 
+        fetch(webhookURL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: `🔄 Backup updated for **${currentPlayer}** at ${new Date().toLocaleTimeString()}`
+          })
+        });
+      }
 
       window.onload = () => {
         document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
