@@ -1,4 +1,8 @@
 {
-  "paidPlayers": {},
-  "paymentHistory": {}
+  "paidPlayers": {
+    "ansh": 0
+  },
+  "paymentHistory": {
+    "ansh": []
+  }
 }
