@@ -44,7 +44,7 @@
 </div>
 
 <script>
-const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/data/tax-data.json"; // ✅ updated path
+const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/data/tax-data.json"; // ✅ Correct path
 const syncURL = "https://sync.1987sakshamsingh.workers.dev/";
 let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
 
@@ -54,10 +54,8 @@ function sumPayments(player) {
 }
 
 async function checkTax() {
-  const job = document.getElementById('job').value;
-  const method = document.getElementById('method').value;
-  const contact = document.getElementById('contact').value.trim();
   const mcid = document.getElementById('mcid').value.trim().toLowerCase();
+  const contact = document.getElementById('contact').value.trim();
   if (!mcid || !contact) return alert("Please fill all fields");
 
   currentPlayer = mcid;
@@ -136,7 +134,7 @@ function showProfile(buy, sell, total, paid, due, advanced) {
 
   document.getElementById("historyBox").innerHTML =
     `<h3>Payment History</h3><ul>${history.map(e => `<li>$${e.amount} on ${e.date} (ID: ${e.id})</li>`).join('')}</ul>`;
-  
+
   box.style.display = "block";
   document.getElementById("historyBox").style.display = "block";
 }
