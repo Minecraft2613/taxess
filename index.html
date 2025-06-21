@@ -135,18 +135,31 @@ function showProfile(buy, sell, total, paid, due, advanced) {
 
   const history = paymentHistory[currentPlayer] || [];
   const histBox = document.getElementById("historyBox");
-  histBox.innerHTML = `<h3>Payment History</h3><ul>${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+  histBox.innerHTML = `<h3>Payment History</h3><ul>${history.map(e => `<li>$${e.amount} on ${e.date} (${e.id})</li>`).join('')}</ul>`;
   histBox.style.display = "block";
+}
+
+function generateId(amount, history) {
+  const same = history.filter(e => e.amount === amount).length;
+  return `${amount}-${same + 1}`;
 }
 
 function submitTax() {
   const amt = parseFloat(document.getElementById("payAmt").value);
   if (!amt || amt <= 0) return alert("Invalid amount");
-  const entry = { amount: amt, date: new Date().toLocaleString() };
+
+  const history = paymentHistory[currentPlayer] || [];
+  const entry = {
+    amount: amt,
+    date: new Date().toLocaleString(),
+    id: generateId(amt, history)
+  };
+
   if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
   paymentHistory[currentPlayer].push(entry);
+
   syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory);
-  loadTax(); // reloads everything to show updated status
+  loadTax();
 }
 
 function exit() {
