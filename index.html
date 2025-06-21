@@ -157,7 +157,7 @@
 
       showProfile(buy, sell, total, paid, due, advanced);
       renderChart();
-      syncToCloudflare(currentPlayer, due);
+      syncToCloudflare(currentPlayer, paid, paymentHistory);
     }
 
     function showProfile(buy, sell, total, paid, due, advanced) {
@@ -183,21 +183,15 @@
     function submitTax() {
       const amt = parseFloat(document.getElementById("payAmt").value);
       if (!amt || amt <= 0) return alert("Invalid amount");
+
       paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
       recordPayment(amt);
-      syncToCloudflare(currentPlayer, Math.max(0, calculateDue()));
+      syncToCloudflare(currentPlayer, paidPlayers[currentPlayer], paymentHistory);
       loadTax();
     }
 
     function advancePay() {
       submitTax();
-    }
-
-    function calculateDue() {
-      const lines = document.querySelector('#taxChart').getContext ? dailyData : {};
-      const totalTax = Object.values(dailyData).reduce((a, b) => a + b, 0);
-      const paid = paidPlayers[currentPlayer] || 0;
-      return totalTax - paid;
     }
 
     function recordPayment(amt) {
@@ -254,11 +248,14 @@
       document.getElementById("taxChart").style.display = "block";
     }
 
-    function syncToCloudflare(player, due) {
+    function syncToCloudflare(player, paid, history) {
       fetch(syncURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ player, due })
+        body: JSON.stringify({
+          paidPlayers: { [player]: paid },
+          paymentHistory: { [player]: history[player] || [] }
+        })
       })
       .then(res => res.ok ? console.log("☁️ Sync: ✅ Synced successfully") : res.text().then(txt => console.log("☁️ Sync: ❌", txt)))
       .catch(err => console.log("☁️ Sync: ❌", err));
