@@ -2,138 +2,190 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Minecraft Tax Payment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Tax Portal</title>
   <style>
     body {
-      background: #111;
+      background: #121212;
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
-      padding: 30px;
-      text-align: center;
+      padding: 20px;
     }
-
-    h1 {
-      color: #f0ad4e;
+    h1, h2 {
+      color: gold;
     }
-
-    input, button {
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+    }
+    input, select, button {
+      width: 100%;
       padding: 10px;
-      margin: 10px;
+      margin: 10px 0;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 8px;
     }
-
-    input {
-      width: 250px;
-    }
-
     button {
-      background-color: #f0ad4e;
-      color: #111;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #e69500;
-    }
-
-    #result {
-      margin-top: 15px;
+      background: orange;
+      color: black;
       font-weight: bold;
     }
-
-    .error {
-      color: #ff4c4c;
+    .chart-container {
+      background: #202020;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>💰 Minecraft Tax Portal</h1>
+  <div class="container">
+    <h1>Welcome, <span id="playerName"></span></h1>
+    <h2>Total Tax: <span id="totalTax">Loading...</span></h2>
+    <h2>Buying Tax: <span id="buyTax">Loading...</span></h2>
+    <h2>Status: <span id="dueTax">Loading...</span></h2>
 
-  <input type="text" id="username" placeholder="Minecraft Username" /><br>
-  <input type="number" id="amount" placeholder="Amount to Pay ($)" /><br>
-  <button onclick="payTax()">Pay Tax</button>
+    <input type="number" id="taxAmount" placeholder="Enter amount to pay">
+    <button onclick="payTax()">Pay Tax</button>
+    <button onclick="exitPortal()">Exit</button>
 
-  <p id="result"></p>
+    <div>
+      <h2>Advanced Pay</h2>
+      <input type="number" id="advanceAmount" placeholder="Advance pay">
+      <button onclick="advancePay()">Submit Advance</button>
+    </div>
 
+    <div class="chart-container">
+      <canvas id="taxChart" height="150"></canvas>
+    </div>
+
+    <h2>Payment History</h2>
+    <ul id="paymentHistory"></ul>
+
+    <h2>Contact</h2>
+    <select id="contactMethod">
+      <option value="Discord">Discord</option>
+      <option value="Instagram">Instagram</option>
+    </select>
+    <input type="text" id="contactName" placeholder="Enter contact username">
+
+    <h2>Job</h2>
+    <select id="jobSelect">
+      <option value="Farmer">Farmer</option>
+      <option value="Miner">Miner</option>
+      <option value="Builder">Builder</option>
+      <option value="Hunter">Hunter</option>
+    </select>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    // GitHub Repo Info
-    const repo = "Minecraft2613/taxess";
-    const filePath = "tax-data.json";
+    const player = localStorage.getItem("mc_username") || prompt("Enter your Minecraft username:");
+    localStorage.setItem("mc_username", player);
+    document.getElementById("playerName").innerText = player;
 
-    // 🔐 GitHub Token – split for light obfuscation
-    const token = "ghp_" + "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"; // Replace only the right part!
+    const taxUrl = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
+    const githubToken = "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"; // Put your real token here (not recommended!)
+
+    async function fetchTax() {
+      const res = await fetch(taxUrl);
+      const data = await res.json();
+      const playerData = data[player] || { totalTax: 0, buyTax: 0, history: [] };
+
+      document.getElementById("totalTax").innerText = `$${playerData.totalTax.toFixed(2)}`;
+      document.getElementById("buyTax").innerText = `$${playerData.buyTax.toFixed(2)}`;
+      document.getElementById("dueTax").innerText = `$${(playerData.totalTax - (playerData.paid || 0)).toFixed(2)} Due`;
+
+      updateHistory(playerData.history);
+      drawChart(playerData.history);
+    }
+
+    function updateHistory(history) {
+      const list = document.getElementById("paymentHistory");
+      list.innerHTML = "";
+      history.forEach(entry => {
+        const li = document.createElement("li");
+        li.textContent = `$${entry.amount} on ${entry.date}`;
+        list.appendChild(li);
+      });
+    }
+
+    function drawChart(history) {
+      const ctx = document.getElementById("taxChart").getContext("2d");
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: history.map(e => e.date),
+          datasets: [{
+            label: 'Tax Paid',
+            data: history.map(e => e.amount),
+            borderColor: 'orange',
+            fill: false
+          }]
+        }
+      });
+    }
 
     async function payTax() {
-      const username = document.getElementById("username").value.trim();
-      const amount = parseFloat(document.getElementById("amount").value);
-      const result = document.getElementById("result");
+      const amount = parseFloat(document.getElementById("taxAmount").value);
+      if (!amount || amount <= 0) return alert("Enter valid amount");
+      await saveTax(amount);
+    }
 
-      if (!username || isNaN(amount) || amount <= 0) {
-        result.textContent = "❌ Please enter a valid username and amount.";
-        result.className = "error";
-        return;
-      }
+    async function advancePay() {
+      const amount = parseFloat(document.getElementById("advanceAmount").value);
+      if (!amount || amount <= 0) return alert("Enter valid amount");
+      await saveTax(amount, true);
+    }
 
-      result.textContent = "⏳ Saving payment...";
-      result.className = "";
+    async function saveTax(amount, isAdvance = false) {
+      const res = await fetch(taxUrl);
+      const json = await res.json();
+      const playerData = json[player] || { totalTax: 0, buyTax: 0, paid: 0, history: [] };
 
-      try {
-        // Get existing file from GitHub
-        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
-          headers: {
-            Authorization: `token ${token}`,
-            Accept: "application/vnd.github+json"
-          }
-        });
+      playerData.paid = (playerData.paid || 0) + amount;
+      playerData.history.push({ amount, date: new Date().toLocaleString(), advance: isAdvance });
+      json[player] = playerData;
 
-        let jsonData = {};
-        let sha = null;
+      const content = JSON.stringify(json, null, 2);
 
-        if (res.ok) {
-          const data = await res.json();
-          sha = data.sha;
-          const content = atob(data.content);
-          jsonData = JSON.parse(content);
-        }
+      const result = await fetch("https://api.github.com/repos/Minecraft2613/taxess/contents/tax-data.json", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${githubToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: `Update tax-data.json for ${player}`,
+          content: btoa(unescape(encodeURIComponent(content))),
+          sha: await getCurrentSha(),
+        })
+      });
 
-        if (!jsonData[username]) jsonData[username] = [];
-
-        jsonData[username].push({
-          amount: amount,
-          timestamp: new Date().toISOString()
-        });
-
-        const encodedContent = btoa(JSON.stringify(jsonData, null, 2));
-
-        // Save updated file to GitHub
-        const saveRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
-          method: "PUT",
-          headers: {
-            Authorization: `token ${token}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: `Tax paid by ${username} - $${amount}`,
-            content: encodedContent,
-            sha: sha
-          })
-        });
-
-        if (saveRes.ok) {
-          result.textContent = "✅ Payment saved successfully!";
-          result.className = "";
-        } else {
-          const err = await saveRes.json();
-          result.textContent = `❌ Save failed: ${err.message}`;
-          result.className = "error";
-        }
-      } catch (err) {
-        result.textContent = "❌ Error: " + err.message;
-        result.className = "error";
+      if (!result.ok) {
+        alert("Save failed: " + (await result.text()));
+      } else {
+        alert("Tax Paid and Saved!");
+        fetchTax();
       }
     }
+
+    async function getCurrentSha() {
+      const res = await fetch("https://api.github.com/repos/Minecraft2613/taxess/contents/tax-data.json");
+      const json = await res.json();
+      return json.sha;
+    }
+
+    function exitPortal() {
+      localStorage.removeItem("mc_username");
+      location.reload();
+    }
+
+    fetchTax();
   </script>
 </body>
 </html>
