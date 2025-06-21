@@ -45,15 +45,8 @@
 
 <script>
 const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
-const syncURL = "https://sync.1987sakshamsingh.workers.dev/";
+const syncURL = "https://tax.1987sakshamsingh.workers.dev/";
 let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
-
-function generateID() {
-  const letters = "abcdefghijklmnopqrstuvwxyz";
-  const rand = () => Array.from({ length: 5 }, () => letters[Math.floor(Math.random() * 26)]).join('');
-  const num = Math.floor(Math.random() * 90 + 10);
-  return rand() + num;
-}
 
 function sumPayments(player) {
   const history = paymentHistory[player] || [];
@@ -61,11 +54,8 @@ function sumPayments(player) {
 }
 
 async function checkTax() {
-  const job = document.getElementById('job').value;
-  const method = document.getElementById('method').value;
-  const contact = document.getElementById('contact').value.trim();
   const mcid = document.getElementById('mcid').value.trim();
-  if (!mcid || !contact) return alert("Please fill all fields");
+  if (!mcid) return alert("Please fill all fields");
   currentPlayer = mcid;
   document.getElementById("step1").style.display = "none";
   await loadOnlineData();
@@ -124,7 +114,6 @@ function parseTransactions(log) {
 
   showProfile(buy, sell, total, paid, due, advanced);
   renderChart();
-  syncToCloudflare(currentPlayer, paid, paymentHistory);
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
@@ -150,14 +139,27 @@ function showProfile(buy, sell, total, paid, due, advanced) {
 function submitTax() {
   const amt = parseFloat(document.getElementById("payAmt").value);
   if (!amt || amt <= 0) return alert("Invalid amount");
+
   const entry = {
     amount: amt,
     date: new Date().toLocaleString(),
     id: generateID()
   };
+
   if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
   paymentHistory[currentPlayer].push(entry);
-  syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory);
+
+  const updateData = {
+    paidPlayers: { [currentPlayer]: amt },
+    paymentHistory: { [currentPlayer]: [entry] }
+  };
+
+  fetch(syncURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updateData)
+  }).then(r => r.text()).then(txt => console.log(txt));
+
   loadTax();
 }
 
@@ -197,22 +199,16 @@ function renderChart() {
   document.getElementById("taxChart").style.display = "block";
 }
 
-function syncToCloudflare(player, paid, history) {
-  fetch(syncURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      paidPlayers: { [player]: paid },
-      paymentHistory: { [player]: history[player] || [] }
-    })
-  }).then(res => res.ok ? console.log("☁️ Sync: ✅ Success") : res.text().then(txt => console.warn("☁️ Sync: ❌", txt)))
-    .catch(err => console.warn("☁️ Sync: ❌", err));
+function generateID() {
+  const letters = "abcdefghijklmnopqrstuvwxyz";
+  const randomLetters = () => Array.from({ length: 5 }, () => letters[Math.floor(Math.random() * 26)]).join('');
+  const number = Math.floor(Math.random() * 90 + 10);
+  return randomLetters() + number;
 }
 
 window.onload = () => {
   document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
 };
 </script>
-
 </body>
 </html>
