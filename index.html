@@ -57,10 +57,6 @@
       max-width: 100%;
       height: auto !important;
     }
-    @media (max-width: 600px) {
-      h1 { font-size: 22px; }
-      input, select, button { font-size: 14px; padding: 10px; }
-    }
   </style>
 </head>
 <body>
@@ -84,9 +80,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-      const workerSyncURL = "https://tax-sync.1987sakshamsingh.workers.dev";
       const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
-      const transactionLogURL = "transaction-log.txt";
+      const workerSyncURL = "https://tax-sync.1987sakshamsingh.workers.dev";
+      const webhookURL = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
 
       let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
 
@@ -97,6 +93,12 @@
         const mcid = document.getElementById('mcid').value.trim();
         if (!mcid || !contact) return alert("Please fill all fields");
         currentPlayer = mcid;
+
+        await fetch(webhookURL, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ content: `🗓 New Entry\nJob: ${job}\nMethod: ${method}\nUser: ${contact}\nMC: ${mcid}` })
+        });
 
         document.getElementById("step1").style.display = "none";
         await loadOnlineData();
@@ -110,13 +112,13 @@
           paidPlayers = data.paidPlayers || {};
           paymentHistory = data.paymentHistory || {};
         } catch {
-          console.warn("Failed to load tax-data.json");
+          console.warn("Fallback to local cache");
         }
       }
 
       async function loadTax() {
         try {
-          const res = await fetch(transactionLogURL);
+          const res = await fetch("transaction-log.txt");
           const text = await res.text();
           parseTransactions(text);
         } catch {
@@ -158,7 +160,7 @@
 
         showProfile(buy, sell, total, paid, due, advanced);
         renderChart();
-        backupToCloudflare();
+        backupToGitHub();
       }
 
       function showProfile(buy, sell, total, paid, due, advanced) {
@@ -186,13 +188,11 @@
         if (!amt || amt <= 0) return alert("Invalid amount");
         paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
         recordPayment(amt);
-        backupToCloudflare();
+        backupToGitHub();
         loadTax();
       }
 
-      function advancePay() {
-        submitTax();
-      }
+      function advancePay() { submitTax(); }
 
       function recordPayment(amt) {
         const entry = { amount: amt, date: new Date().toLocaleString() };
@@ -248,18 +248,15 @@
         document.getElementById("taxChart").style.display = "block";
       }
 
-      function backupToCloudflare() {
-        const backup = {
-          paidPlayers,
-          paymentHistory
-        };
+      function backupToGitHub() {
+        const backup = { paidPlayers, paymentHistory };
 
         fetch(workerSyncURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(backup)
         })
-        .then(res => res.ok ? console.log("✅ Synced to Cloudflare Worker") : console.error("❌ Sync failed"))
+        .then(res => res.ok ? console.log("\u2705 Synced to GitHub") : console.error("\u274C Failed to sync JSON"))
         .catch(err => console.error("Sync error:", err));
       }
 
