@@ -1,3 +1,4 @@
+<!-- ✅ Final Fixed Version of Tax Portal Script with Full History Preservation -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,7 +46,7 @@
 
 <script>
 const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
-const syncURL = "https://tax.1987sakshamsingh.workers.dev/";
+const syncURL = "https://sync.1987sakshamsingh.workers.dev/";
 let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
 
 function sumPayments(player) {
@@ -54,8 +55,11 @@ function sumPayments(player) {
 }
 
 async function checkTax() {
+  const job = document.getElementById('job').value;
+  const method = document.getElementById('method').value;
+  const contact = document.getElementById('contact').value.trim();
   const mcid = document.getElementById('mcid').value.trim();
-  if (!mcid) return alert("Please fill all fields");
+  if (!mcid || !contact) return alert("Please fill all fields");
   currentPlayer = mcid;
   document.getElementById("step1").style.display = "none";
   await loadOnlineData();
@@ -114,6 +118,7 @@ function parseTransactions(log) {
 
   showProfile(buy, sell, total, paid, due, advanced);
   renderChart();
+  syncToCloudflare(currentPlayer, paid, paymentHistory);
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
@@ -139,32 +144,19 @@ function showProfile(buy, sell, total, paid, due, advanced) {
 function submitTax() {
   const amt = parseFloat(document.getElementById("payAmt").value);
   if (!amt || amt <= 0) return alert("Invalid amount");
-
-  const entry = {
-    amount: amt,
-    date: new Date().toLocaleString(),
-    id: generateID()
-  };
-
-  if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
-  paymentHistory[currentPlayer].push(entry);
-
-  const updateData = {
-    paidPlayers: { [currentPlayer]: amt },
-    paymentHistory: { [currentPlayer]: [entry] }
-  };
-
-  fetch(syncURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(updateData)
-  }).then(r => r.text()).then(txt => console.log(txt));
-
+  recordPayment(amt);
+  syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory);
   loadTax();
 }
 
 function advancePay() {
   submitTax();
+}
+
+function recordPayment(amt) {
+  const entry = { amount: amt, date: new Date().toLocaleString() };
+  if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
+  paymentHistory[currentPlayer].push(entry);
 }
 
 function exit() {
@@ -199,11 +191,16 @@ function renderChart() {
   document.getElementById("taxChart").style.display = "block";
 }
 
-function generateID() {
-  const letters = "abcdefghijklmnopqrstuvwxyz";
-  const randomLetters = () => Array.from({ length: 5 }, () => letters[Math.floor(Math.random() * 26)]).join('');
-  const number = Math.floor(Math.random() * 90 + 10);
-  return randomLetters() + number;
+function syncToCloudflare(player, paid, history) {
+  fetch(syncURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      paidPlayers: { [player]: paid },
+      paymentHistory: { [player]: history[player] || [] }
+    })
+  }).then(res => res.ok ? console.log("☁️ Sync: ✅ Success") : res.text().then(txt => console.warn("☁️ Sync: ❌", txt)))
+    .catch(err => console.warn("☁️ Sync: ❌", err));
 }
 
 window.onload = () => {
