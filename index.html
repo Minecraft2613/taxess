@@ -151,24 +151,21 @@ async function submitTax() {
     id: `${amt}-${Date.now()}`
   };
 
-  // Load latest tax-data.json to merge
   const res = await fetch(jsonDataURL);
   const data = await res.json();
   const fullPaid = data.paidPlayers || {};
   const fullHistory = data.paymentHistory || {};
-
   const player = currentPlayer;
 
   if (!fullHistory[player]) fullHistory[player] = [];
   if (!fullPaid[player]) fullPaid[player] = 0;
 
-  fullHistory[player].push(entry);
+  // ✅ Fix: Accumulate amount instead of replacing
   fullPaid[player] += amt;
 
-  // Sync full data
-  await syncToCloudflare(fullPaid, fullHistory);
+  fullHistory[player].push(entry);
 
-  // Update locally and reload
+  await syncToCloudflare(fullPaid, fullHistory);
   paidPlayers = fullPaid;
   paymentHistory = fullHistory;
   loadTax();
