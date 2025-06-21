@@ -1,226 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>📊 Player Tax Portal</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>💼 Player Tax Portal</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #121212;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
       color: #fff;
-      padding: 20px;
       margin: 0;
+      padding: 0;
     }
-    h1 { text-align: center; color: gold; }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: #1e1e1e;
-      border-radius: 10px;
-      padding: 20px;
-    }
+    .container { max-width: 800px; margin: auto; padding: 20px; }
+    h1 { text-align: center; color: #ffcc00; }
     input, select, button {
-      width: 100%;
-      margin: 10px 0;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      background: #2a2a2a;
-      color: white;
+      width: 100%; padding: 12px; margin: 10px 0;
+      font-size: 16px; border-radius: 6px; border: none;
+    }
+    input, select {
+      background: #222; color: #fff; border: 1px solid #444;
     }
     button {
-      background: orange;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
+      background: #ff8800; color: black; font-weight: bold; cursor: pointer;
     }
-    .row { margin: 20px 0; }
-    .graph { margin-top: 30px; }
-    canvas { width: 100% !important; }
+    .profile-box, .history-box {
+      background: #111; padding: 15px; border-radius: 10px; margin-top: 20px;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    canvas { width: 100% !important; max-width: 100%; height: auto !important; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📋 Player Tax Portal</h1>
+    <h1>📃 Player Tax Portal</h1>
 
-    <div id="form">
+    <div id="step1">
       <select id="job">
-        <option>Miner</option><option>Farmer</option><option>Trader</option><option>Builder</option>
+        <option>Farmer</option><option>Miner</option><option>Trader</option><option>Builder</option>
       </select>
       <select id="method">
         <option value="Discord">Discord</option>
         <option value="Instagram">Instagram</option>
       </select>
-      <input id="contact" placeholder="Your Discord/Instagram username">
-      <input id="mcid" placeholder="Your Minecraft Username (case-sensitive)">
+      <input id="contact" placeholder="Your Discord/Instagram username" />
+      <input id="mcid" placeholder="Your Minecraft Username" />
       <button onclick="checkTax()">Check Tax</button>
     </div>
 
-    <div id="result" style="display:none;">
-      <h2 id="welcome"></h2>
-      <p id="taxInfo"></p>
-      <input id="payAmt" type="number" placeholder="Enter amount to pay">
-      <div class="row">
-        <button onclick="submitTax()">💰 Pay Tax</button>
-        <button onclick="advancePay()">↗️ Advance Pay</button>
-        <button onclick="reset()">🔄 Reset</button>
-      </div>
-      <div class="graph">
-        <canvas id="chart"></canvas>
-      </div>
-    </div>
-  </div>
+    <div id="profile" class="profile-box" style="display:none;"></div>
+    <div class="history-box" id="historyBox" style="display:none;"></div>
+    <canvas id="taxChart" style="display:none;"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    const syncURL = "https://sync.1987sakshamsingh.workers.dev/";
-    const dataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
-    let paidPlayers = {}, paymentHistory = {}, currentPlayer = "", chart, dailyData = {}, totalTax = 0;
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const TAX_URL = "transaction-log.txt";
+      const DATA_URL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
+      const SYNC_URL = "https://sync.1987sakshamsingh.workers.dev/";
 
-    async function checkTax() {
-      const mcid = document.getElementById("mcid").value.trim();
-      const contact = document.getElementById("contact").value.trim();
-      const method = document.getElementById("method").value;
-      const job = document.getElementById("job").value;
+      let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
 
-      if (!mcid || !contact) return alert("Please fill all fields");
-      currentPlayer = mcid;
+      async function checkTax() {
+        const mcid = document.getElementById("mcid").value.trim();
+        const contact = document.getElementById("contact").value.trim();
+        if (!mcid || !contact) return alert("Please fill all fields");
 
-      try {
-        const res = await fetch(dataURL);
-        const json = await res.json();
-        paidPlayers = json.paidPlayers || {};
-        paymentHistory = json.paymentHistory || {};
-      } catch {
-        alert("❌ Failed to load tax database");
-        return;
+        currentPlayer = mcid;
+
+        document.getElementById("step1").style.display = "none";
+        await loadData();
+        await loadTransactions();
       }
 
-      try {
-        const logRes = await fetch("transaction-log.txt");
-        const log = await logRes.text();
-        parseTransactions(log);
-      } catch {
-        alert("❌ Failed to load transaction log");
-      }
-    }
-
-    function parseTransactions(log) {
-      const lines = log.split("\n");
-      let buy = 0, sell = 0;
-      dailyData = {};
-
-      for (let line of lines) {
-        if (!line.includes(currentPlayer)) continue;
-        const dateMatch = line.match(/\[(\d{4}-\d{2}-\d{2})/);
-        const date = dateMatch ? dateMatch[1].slice(5) : "Unknown";
-        const buyMatch = line.match(/bought.*?\$([\d,]+\.\d{2})/);
-        const sellMatch = line.match(/sold.*?\$([\d,]+\.\d{2})/);
-
-        if (buyMatch) {
-          const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
-          const tax = +(amt * 0.04).toFixed(2);
-          buy += tax;
-          dailyData[date] = (dailyData[date] || 0) + tax;
-        }
-        if (sellMatch) {
-          const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
-          const tax = +(amt * 0.10).toFixed(2);
-          sell += tax;
-          dailyData[date] = (dailyData[date] || 0) + tax;
+      async function loadData() {
+        try {
+          const res = await fetch(DATA_URL);
+          const json = await res.json();
+          paidPlayers = json.paidPlayers || {};
+          paymentHistory = json.paymentHistory || {};
+        } catch {
+          alert("❌ Failed to load tax data");
         }
       }
 
-      totalTax = +(buy + sell).toFixed(2);
-      const paid = paidPlayers[currentPlayer] || 0;
-      const due = Math.max(0, totalTax - paid);
-      const advanced = paid > totalTax;
+      async function loadTransactions() {
+        try {
+          const res = await fetch(TAX_URL);
+          const text = await res.text();
+          parseTransactions(text);
+        } catch {
+          alert("❌ Failed to load transaction log");
+        }
+      }
 
-      document.getElementById("form").style.display = "none";
-      document.getElementById("result").style.display = "block";
-      document.getElementById("welcome").innerText = `Welcome, ${currentPlayer}`;
-      document.getElementById("taxInfo").innerHTML =
-        `🧾 Total Tax: $${totalTax}<br>
-         💵 Paid: $${paid.toFixed(2)}<br>
-         💸 Due: $${due.toFixed(2)}<br>
-         ${advanced ? "✅ Advance paid" : due === 0 ? "✅ No tax due" : "❗ Pending payment"}`;
+      function parseTransactions(log) {
+        let buy = 0, sell = 0;
+        dailyData = {};
+        const lines = log.split("\n");
 
-      renderChart();
-    }
+        for (const line of lines) {
+          if (!line.includes(currentPlayer)) continue;
 
-    function renderChart() {
-      const ctx = document.getElementById("chart").getContext("2d");
-      if (chart) chart.destroy();
-      chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: Object.keys(dailyData),
-          datasets: [{
-            label: "Daily Tax",
-            data: Object.values(dailyData),
-            borderColor: "gold",
-            borderWidth: 2,
-            fill: false,
-            pointRadius: 3
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true },
-            x: { title: { display: true, text: "Date" } }
+          const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
+          const day = date ? date[1].slice(5).replace("-", "/") : "";
+
+          const buyMatch = line.match(/bought.*?\$([\d,]+\.\d{2})/);
+          const sellMatch = line.match(/sold.*?\$([\d,]+\.\d{2})/);
+
+          if (buyMatch) {
+            const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
+            const tax = +(amt * 0.04).toFixed(2);
+            buy += tax;
+            dailyData[day] = (dailyData[day] || 0) + tax;
+          }
+
+          if (sellMatch) {
+            const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
+            const tax = +(amt * 0.10).toFixed(2);
+            sell += tax;
+            dailyData[day] = (dailyData[day] || 0) + tax;
           }
         }
-      });
-    }
 
-    async function submitTax() {
-      const amt = parseFloat(document.getElementById("payAmt").value);
-      if (!amt || amt <= 0) return alert("Invalid amount");
+        const total = buy + sell;
+        const paid = paidPlayers[currentPlayer] || 0;
+        const due = Math.max(0, total - paid);
+        const advanced = paid > total;
 
-      paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
-      paymentHistory[currentPlayer] = paymentHistory[currentPlayer] || [];
-      paymentHistory[currentPlayer].push({ amount: amt, date: new Date().toLocaleString() });
-
-      const payload = [{
-        player: currentPlayer,
-        amount: amt,
-        contact: document.getElementById("contact").value,
-        method: document.getElementById("method").value,
-        job: document.getElementById("job").value,
-        timestamp: new Date().toISOString()
-      }];
-
-      try {
-        const res = await fetch(syncURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`❌ Sync failed: ${text}`);
-        }
-        console.log("☁️ Sync: ✅ Synced successfully");
-      } catch (err) {
-        console.warn("☁️ Sync: ❌ Failed to sync:", err.message);
+        showProfile(buy, sell, total, paid, due, advanced);
+        renderChart();
       }
 
-      checkTax();
-    }
+      function showProfile(buy, sell, total, paid, due, advanced) {
+        const box = document.getElementById("profile");
+        box.innerHTML = `<h3>Hello, ${currentPlayer}</h3>
+          <p>Total Tax: $${total.toFixed(2)}</p>
+          <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
+          <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
+          <input type="number" id="payAmt" placeholder="Amount to pay">
+          <div class="btn-row">
+            ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : `<button onclick="submitTax()">Advance Pay</button>`}
+            <button onclick="exit()">Exit</button>
+          </div>`;
+        box.style.display = "block";
 
-    function advancePay() {
-      submitTax();
-    }
+        const hist = paymentHistory[currentPlayer] || [];
+        const histBox = document.getElementById("historyBox");
+        histBox.innerHTML = `<h3>Payment History</h3><ul>${hist.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+        histBox.style.display = "block";
+      }
 
-    function reset() {
-      document.getElementById("form").style.display = "block";
-      document.getElementById("result").style.display = "none";
-      document.getElementById("payAmt").value = "";
-    }
-  </script>
+      function renderChart() {
+        const ctx = document.getElementById("taxChart").getContext("2d");
+        const labels = Object.keys(dailyData);
+        const values = Object.values(dailyData);
+
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: "Daily Tax",
+              data: values,
+              borderColor: '#ffcc00',
+              tension: 0.3,
+              fill: false
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: ctx => `$${ctx.raw.toFixed(2)}`
+                }
+              }
+            }
+          }
+        });
+        document.getElementById("taxChart").style.display = "block";
+      }
+
+      async function submitTax() {
+        const amt = parseFloat(document.getElementById("payAmt").value);
+        if (!amt || amt <= 0) return alert("Enter valid amount");
+
+        paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
+        paymentHistory[currentPlayer] = paymentHistory[currentPlayer] || [];
+        paymentHistory[currentPlayer].push({ amount: amt, date: new Date().toLocaleString() });
+
+        try {
+          const response = await fetch(SYNC_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify([
+              { player: currentPlayer, amount: amt }
+            ])
+          });
+          if (!response.ok) throw new Error(await response.text());
+          console.log("☁️ Sync: ✅ Synced successfully");
+        } catch (err) {
+          console.error("☁️ Sync: ❌ Failed to sync:", err);
+        }
+
+        await loadTransactions(); // Refresh view
+      }
+
+      function exit() {
+        location.reload();
+      }
+    </script>
+  </div>
 </body>
 </html>
