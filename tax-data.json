@@ -1,6 +1,15 @@
 {
-  "paidPlayers": {},
+  "paidPlayers": {
+    "ansh": 1
+  },
   "paymentHistory": {
-    "ansh": []
+    "ansh": [
+      {
+        "amount": 1,
+        "date": "6/21/2025, 8:12:11 PM",
+        "due": 45770.16000000004,
+        "syncedAt": "2025-06-21T14:42:11.889Z"
+      }
+    ]
   }
 }
