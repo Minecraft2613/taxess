@@ -57,10 +57,6 @@
       max-width: 100%;
       height: auto !important;
     }
-    @media (max-width: 600px) {
-      h1 { font-size: 22px; }
-      input, select, button { font-size: 14px; padding: 10px; }
-    }
   </style>
 </head>
 <body>
@@ -86,10 +82,9 @@
     <script>
       const webhookURL = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
       const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
-      const cloudflareEndpoint = "https://tax.1987sakshamsingh.workers.dev/update-tax";
-      let paidPlayers = {};
-      let paymentHistory = {};
-      let playerData = {}, currentPlayer = '', dailyData = {}, chart;
+      const workerSyncURL = "https://tax.1987sakshamsingh.workers.dev";
+
+      let paidPlayers = {}, paymentHistory = {}, dailyData = {}, currentPlayer = '', chart;
 
       async function nextStep() {
         const job = document.getElementById('job').value;
@@ -103,7 +98,7 @@
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
-            content: `🗓️ New Entry\nJob: ${job}\nMethod: ${method}\nUser: ${contact}\nMC: ${mcid}`
+            content: `📅 New Entry\nJob: ${job}\nMethod: ${method}\nUser: ${contact}\nMC: ${mcid}`
           })
         });
 
@@ -118,10 +113,8 @@
           const data = await res.json();
           paidPlayers = data.paidPlayers || {};
           paymentHistory = data.paymentHistory || {};
-          localStorage.setItem("paidPlayers", JSON.stringify(paidPlayers));
-          localStorage.setItem("paymentHistory", JSON.stringify(paymentHistory));
         } catch (e) {
-          console.warn("Failed to load JSON backup, using localStorage fallback.");
+          console.warn("Failed to load JSON, using localStorage fallback");
           paidPlayers = JSON.parse(localStorage.getItem("paidPlayers") || '{}');
           paymentHistory = JSON.parse(localStorage.getItem("paymentHistory") || '{}');
         }
@@ -144,7 +137,6 @@
 
         lines.forEach(line => {
           if (!line.includes(currentPlayer)) return;
-
           const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
           const day = date ? date[1].slice(5).replace('-', '/') : "";
 
@@ -157,7 +149,6 @@
             buy += tax;
             dailyData[day] = (dailyData[day] || 0) + tax;
           }
-
           if (sellMatch) {
             const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
             const tax = +(amt * 0.10).toFixed(2);
@@ -173,6 +164,7 @@
 
         showProfile(buy, sell, total, paid, due, advanced);
         renderChart();
+        backupToCloud();
       }
 
       function showProfile(buy, sell, total, paid, due, advanced) {
@@ -204,7 +196,7 @@
         if (!amt || amt <= 0) return alert("Invalid amount");
         paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
         recordPayment(amt);
-        backupToDiscord();
+        backupToCloud();
         loadTax();
       }
 
@@ -218,31 +210,59 @@
         paymentHistory[currentPlayer].push(entry);
       }
 
-      function backupToDiscord() {
-        const backup = { paidPlayers, paymentHistory };
+      function backupToCloud() {
+        const backup = {
+          paidPlayers,
+          paymentHistory
+        };
 
-        // Sync to GitHub via Worker
-        fetch(cloudflareEndpoint, {
+        localStorage.setItem("paidPlayers", JSON.stringify(paidPlayers));
+        localStorage.setItem("paymentHistory", JSON.stringify(paymentHistory));
+
+        fetch(workerSyncURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(backup)
-        })
-        .then(res => res.ok ? location.reload() : alert("Failed to sync to GitHub"))
-        .catch(() => alert("Sync error"));
+        }).then(res => res.ok ? console.log("✅ Synced to GitHub") : console.warn("❌ Sync failed"));
+      }
 
-        // Also send summary to Discord
-        fetch(webhookURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            content: `Backup for ${currentPlayer}`,
-            embeds: [{
-              title: "Backup",
-              description: `\n\`
-${JSON.stringify(backup).slice(0, 1800)}\n\``
+      function exit() {
+        document.getElementById("step1").style.display = "block";
+        document.getElementById("profile").style.display = "none";
+        document.getElementById("historyBox").style.display = "none";
+        document.getElementById("taxChart").style.display = "none";
+        document.getElementById("contact").value = "";
+        document.getElementById("mcid").value = "";
+      }
+
+      function renderChart() {
+        const ctx = document.getElementById("taxChart").getContext("2d");
+        const labels = Object.keys(dailyData);
+        const values = Object.values(dailyData);
+
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: "Daily Tax",
+              data: values,
+              borderColor: '#ffcc00',
+              fill: false,
+              tension: 0.3
             }]
-          })
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { title: { display: true, text: "Date" } },
+              y: { title: { display: true, text: "Tax ($)" } }
+            }
+          }
         });
+        document.getElementById("taxChart").style.display = "block";
       }
 
       window.onload = () => {
