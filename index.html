@@ -57,8 +57,9 @@ async function checkTax() {
   const job = document.getElementById('job').value;
   const method = document.getElementById('method').value;
   const contact = document.getElementById('contact').value.trim();
-  const mcid = document.getElementById('mcid').value.trim();
+  const mcid = document.getElementById('mcid').value.trim().toLowerCase();
   if (!mcid || !contact) return alert("Please fill all fields");
+
   currentPlayer = mcid;
   document.getElementById("step1").style.display = "none";
   await loadOnlineData();
@@ -91,7 +92,7 @@ function parseTransactions(log) {
   let buy = 0, sell = 0;
   dailyData = {};
   lines.forEach(line => {
-    if (!line.includes(currentPlayer)) return;
+    if (!line.toLowerCase().includes(currentPlayer)) return;
     const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
     const day = date ? date[1].slice(5).replace('-', '/') : "";
     const buyMatch = line.match(/bought.*?\$([\d,]+\.\d{2})/);
@@ -121,6 +122,8 @@ function parseTransactions(log) {
 
 function showProfile(buy, sell, total, paid, due, advanced) {
   const box = document.getElementById("profile");
+  const history = paymentHistory[currentPlayer] || [];
+
   box.innerHTML = `<h3>Welcome, ${currentPlayer}</h3>
     <p>Total Tax: $${total.toFixed(2)}</p>
     <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
@@ -130,12 +133,12 @@ function showProfile(buy, sell, total, paid, due, advanced) {
       <button onclick="submitTax()">Pay</button>
       <button onclick="exit()">Exit</button>
     </div>`;
-  box.style.display = "block";
 
-  const history = paymentHistory[currentPlayer] || [];
-  const histBox = document.getElementById("historyBox");
-  histBox.innerHTML = `<h3>Payment History</h3><ul>${history.map(e => `<li>$${e.amount} on ${e.date} (${e.id})</li>`).join('')}</ul>`;
-  histBox.style.display = "block";
+  document.getElementById("historyBox").innerHTML =
+    `<h3>Payment History</h3><ul>${history.map(e => `<li>$${e.amount} on ${e.date} (ID: ${e.id})</li>`).join('')}</ul>`;
+  
+  box.style.display = "block";
+  document.getElementById("historyBox").style.display = "block";
 }
 
 async function submitTax() {
@@ -148,20 +151,24 @@ async function submitTax() {
     id: `${amt}-${Date.now()}`
   };
 
-  // Fetch current tax-data.json to merge
+  // Load latest tax-data.json to merge
   const res = await fetch(jsonDataURL);
   const data = await res.json();
   const fullPaid = data.paidPlayers || {};
   const fullHistory = data.paymentHistory || {};
 
-  if (!fullHistory[currentPlayer]) fullHistory[currentPlayer] = [];
-  fullHistory[currentPlayer].push(entry);
-  fullPaid[currentPlayer] = (fullPaid[currentPlayer] || 0) + amt;
+  const player = currentPlayer;
 
-  // Sync full merged data
+  if (!fullHistory[player]) fullHistory[player] = [];
+  if (!fullPaid[player]) fullPaid[player] = 0;
+
+  fullHistory[player].push(entry);
+  fullPaid[player] += amt;
+
+  // Sync full data
   await syncToCloudflare(fullPaid, fullHistory);
 
-  // Local update
+  // Update locally and reload
   paidPlayers = fullPaid;
   paymentHistory = fullHistory;
   loadTax();
