@@ -1,11 +1,4 @@
 {
-  "paidPlayers": {
-    "player1": 100.0
-  },
-  "paymentHistory": {
-    "player1": [
-      {"amount": 100, "date": "2025-06-20 18:00"}
-    ]
-  }
+  "paidPlayers": {},
+  "paymentHistory": {}
 }
-
