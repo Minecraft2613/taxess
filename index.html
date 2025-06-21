@@ -76,15 +76,16 @@
     <input id="mcid" placeholder="Enter your Minecraft Username" />
     <button onclick="nextStep()">Check Tax</button>
   </div>
-
   <div id="profile" class="profile-box" style="display:none;"></div>
   <div class="history-box" id="historyBox" style="display:none;"></div>
   <canvas id="taxChart" style="display:none;"></canvas>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    const webhookURL = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
     const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
-    const workerSyncURL = "https://tax-sync.1987sakshamsingh.workers.dev/";
+    const syncURL = "https://tax-sync.1987sakshamsingh.workers.dev";
+
     let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
 
     async function nextStep() {
@@ -94,6 +95,12 @@
       const mcid = document.getElementById('mcid').value.trim();
       if (!mcid || !contact) return alert("Please fill all fields");
       currentPlayer = mcid;
+
+      await fetch(webhookURL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ content: `🗓 New Entry\nJob: ${job}\nMethod: ${method}\nUser: ${contact}\nMC: ${mcid}` })
+      });
 
       document.getElementById("step1").style.display = "none";
       await loadOnlineData();
@@ -107,7 +114,7 @@
         paidPlayers = data.paidPlayers || {};
         paymentHistory = data.paymentHistory || {};
       } catch {
-        alert("⚠️ Could not load data from GitHub. Tax history will be local only.");
+        console.warn("Fallback to local cache");
       }
     }
 
@@ -155,6 +162,7 @@
 
       showProfile(buy, sell, total, paid, due, advanced);
       renderChart();
+      syncToGitHub();
     }
 
     function showProfile(buy, sell, total, paid, due, advanced) {
@@ -182,13 +190,11 @@
       if (!amt || amt <= 0) return alert("Invalid amount");
       paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
       recordPayment(amt);
-      saveToCloudflare();
+      syncToGitHub();
       loadTax();
     }
 
-    function advancePay() {
-      submitTax();
-    }
+    function advancePay() { submitTax(); }
 
     function recordPayment(amt) {
       const entry = { amount: amt, date: new Date().toLocaleString() };
@@ -196,17 +202,15 @@
       paymentHistory[currentPlayer].push(entry);
     }
 
-    function saveToCloudflare() {
-      fetch(workerSyncURL, {
+    function syncToGitHub() {
+      const backup = { paidPlayers, paymentHistory };
+      fetch(syncURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paidPlayers, paymentHistory })
+        body: JSON.stringify(backup)
       })
-      .then(res => {
-        if (res.ok) alert("✅ Synced to GitHub!");
-        else alert("❌ Save failed! Check Cloudflare token or repo permissions.");
-      })
-      .catch(() => alert("❌ Error saving to Cloudflare Worker"));
+      .then(res => res.ok ? console.log("\u2705 Synced to GitHub") : console.error("\u274C Failed to sync JSON"))
+      .catch(err => console.error("Sync error:", err));
     }
 
     function exit() {
@@ -222,6 +226,7 @@
       const ctx = document.getElementById("taxChart").getContext("2d");
       const labels = Object.keys(dailyData);
       const values = Object.values(dailyData);
+
       if (chart) chart.destroy();
       chart = new Chart(ctx, {
         type: 'line',
