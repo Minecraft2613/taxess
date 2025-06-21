@@ -2,269 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💼 Player Tax Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minecraft Tax Portal</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
-      color: #fff;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      text-align: center;
       padding: 20px;
     }
-    h1 {
-      text-align: center;
-      color: #ffcc00;
-    }
-    input, select, button {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-      border-radius: 6px;
-      border: none;
-    }
-    input, select {
+    .box {
+      max-width: 600px;
+      margin: auto;
       background: #222;
-      color: #fff;
-      border: 1px solid #444;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+    input {
+      width: 80%;
     }
     button {
-      background: #ff8800;
-      color: black;
-      font-weight: bold;
+      background: orange;
       cursor: pointer;
     }
-    .profile-box, .history-box {
-      background: #111;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
-    }
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    canvas {
-      width: 100% !important;
-      max-width: 100%;
-      height: auto !important;
-    }
-    @media (max-width: 600px) {
-      h1 { font-size: 22px; }
-      input, select, button { font-size: 14px; padding: 10px; }
+    button:hover {
+      background: darkorange;
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>📃 Player Tax Portal</h1>
-  <div id="step1">
-    <select id="job"></select>
-    <select id="method">
-      <option value="Discord">Discord</option>
-      <option value="Instagram">Instagram</option>
-    </select>
-    <input id="contact" placeholder="Enter your Discord/Instagram username" />
-    <input id="mcid" placeholder="Enter your Minecraft Username" />
-    <button onclick="nextStep()">Check Tax</button>
+  <div class="box">
+    <h1>Welcome, <span id="playerName">Player</span></h1>
+    <p>Total Tax: $<span id="totalTax">0</span></p>
+    <p>Status: <strong id="taxStatus">Loading...</strong></p>
+
+    <input id="amount" type="number" placeholder="Enter amount to pay" />
+    <br />
+    <button onclick="payTax()">Pay Tax</button>
+    <button onclick="logout()">Exit</button>
+
+    <h3>Payment History</h3>
+    <ul id="history"></ul>
   </div>
-  <div id="profile" class="profile-box" style="display:none;"></div>
-  <div class="history-box" id="historyBox" style="display:none;"></div>
-  <canvas id="taxChart" style="display:none;"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const webhookURL = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
-    const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
-    const syncURL = "https://tax-sync.1987sakshamsingh.workers.dev";
+    const DATA_URL = 'https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json';
+    const SYNC_ENDPOINT = 'https://tax-sync.1987sakshamsingh.workers.dev/';
 
-    let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
-
-    async function nextStep() {
-      const job = document.getElementById('job').value;
-      const method = document.getElementById('method').value;
-      const contact = document.getElementById('contact').value.trim();
-      const mcid = document.getElementById('mcid').value.trim();
-      if (!mcid || !contact) return alert("Please fill all fields");
-      currentPlayer = mcid;
-
-      await fetch(webhookURL, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ content: `🗓 New Entry\nJob: ${job}\nMethod: ${method}\nUser: ${contact}\nMC: ${mcid}` })
-      });
-
-      document.getElementById("step1").style.display = "none";
-      await loadOnlineData();
-      loadTax();
+    let taxData = {};
+    let player = localStorage.getItem('mcname');
+    if (!player) {
+      player = prompt('Enter your Minecraft Username');
+      localStorage.setItem('mcname', player);
     }
+    document.getElementById('playerName').textContent = player;
 
-    async function loadOnlineData() {
+    async function fetchData() {
       try {
-        const res = await fetch(jsonDataURL);
-        const data = await res.json();
-        paidPlayers = data.paidPlayers || {};
-        paymentHistory = data.paymentHistory || {};
-      } catch {
-        console.warn("Fallback to local cache");
+        const res = await fetch(DATA_URL);
+        const json = await res.json();
+        taxData = json;
+        const record = taxData[player] || { paid: 0, due: 0, history: [] };
+        document.getElementById('totalTax').textContent = record.paid + record.due;
+        document.getElementById('taxStatus').textContent = `$${record.due} Due`;
+        renderHistory(record.history);
+      } catch (err) {
+        document.getElementById('taxStatus').textContent = 'Error loading data';
       }
     }
 
-    async function loadTax() {
+    function renderHistory(history) {
+      const list = document.getElementById('history');
+      list.innerHTML = '';
+      history.forEach(entry => {
+        const li = document.createElement('li');
+        li.textContent = `$${entry.amount} on ${entry.date}`;
+        list.appendChild(li);
+      });
+    }
+
+    async function payTax() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      if (!amount || amount <= 0) return alert('Enter a valid amount');
+
+      const now = new Date().toLocaleString();
+      const newEntry = { amount, date: now };
+      if (!taxData[player]) taxData[player] = { paid: 0, due: 0, history: [] };
+      taxData[player].paid += amount;
+      taxData[player].due -= amount;
+      if (taxData[player].due < 0) taxData[player].due = 0;
+      taxData[player].history.push(newEntry);
+
       try {
-        const res = await fetch("transaction-log.txt");
-        const text = await res.text();
-        parseTransactions(text);
-      } catch {
-        alert("Failed to load transaction log.");
+        const res = await fetch(SYNC_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(taxData)
+        });
+
+        if (!res.ok) throw new Error('Failed to sync');
+        alert('Payment saved!');
+        fetchData();
+      } catch (err) {
+        alert('❌ Failed to save: ' + err.message);
       }
     }
 
-    function parseTransactions(log) {
-      const lines = log.split(/\r?\n/);
-      let buy = 0, sell = 0;
-      dailyData = {};
-
-      lines.forEach(line => {
-        if (!line.includes(currentPlayer)) return;
-        const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
-        const day = date ? date[1].slice(5).replace('-', '/') : "";
-
-        const buyMatch = line.match(/bought.*?\$([\d,]+\.\d{2})/);
-        const sellMatch = line.match(/sold.*?\$([\d,]+\.\d{2})/);
-
-        if (buyMatch) {
-          const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
-          const tax = +(amt * 0.04).toFixed(2);
-          buy += tax;
-          dailyData[day] = (dailyData[day] || 0) + tax;
-        }
-        if (sellMatch) {
-          const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
-          const tax = +(amt * 0.10).toFixed(2);
-          sell += tax;
-          dailyData[day] = (dailyData[day] || 0) + tax;
-        }
-      });
-
-      const total = buy + sell;
-      const paid = paidPlayers[currentPlayer] || 0;
-      const due = Math.max(0, total - paid);
-      const advanced = paid > total;
-
-      showProfile(buy, sell, total, paid, due, advanced);
-      renderChart();
-      syncToGitHub();
+    function logout() {
+      localStorage.removeItem('mcname');
+      location.reload();
     }
 
-    function showProfile(buy, sell, total, paid, due, advanced) {
-      const box = document.getElementById("profile");
-      box.innerHTML = `<h3>Welcome, ${currentPlayer}</h3>
-        <p>Total Tax: $${total.toFixed(2)}</p>
-        <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
-        <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
-        <input type="number" id="payAmt" placeholder="Enter amount to pay">
-        <div class="btn-row">
-          ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : ``}
-          ${due === 0 ? `<button onclick="advancePay()">Advance Pay</button>` : ``}
-          <button onclick="exit()">Exit</button>
-        </div>`;
-      box.style.display = "block";
-
-      const history = paymentHistory[currentPlayer] || [];
-      const histBox = document.getElementById("historyBox");
-      histBox.innerHTML = `<h3>Payment History</h3><ul>${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
-      histBox.style.display = "block";
-    }
-
-    function submitTax() {
-      const amt = parseFloat(document.getElementById("payAmt").value);
-      if (!amt || amt <= 0) return alert("Invalid amount");
-      paidPlayers[currentPlayer] = (paidPlayers[currentPlayer] || 0) + amt;
-      recordPayment(amt);
-      syncToGitHub();
-      loadTax();
-    }
-
-    function advancePay() { submitTax(); }
-
-    function recordPayment(amt) {
-      const entry = { amount: amt, date: new Date().toLocaleString() };
-      if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
-      paymentHistory[currentPlayer].push(entry);
-    }
-
-    function syncToGitHub() {
-      const backup = { paidPlayers, paymentHistory };
-      fetch(syncURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(backup)
-      })
-      .then(res => res.ok ? console.log("\u2705 Synced to GitHub") : console.error("\u274C Failed to sync JSON"))
-      .catch(err => console.error("Sync error:", err));
-    }
-
-    function exit() {
-      document.getElementById("step1").style.display = "block";
-      document.getElementById("profile").style.display = "none";
-      document.getElementById("historyBox").style.display = "none";
-      document.getElementById("taxChart").style.display = "none";
-      document.getElementById("contact").value = "";
-      document.getElementById("mcid").value = "";
-    }
-
-    function renderChart() {
-      const ctx = document.getElementById("taxChart").getContext("2d");
-      const labels = Object.keys(dailyData);
-      const values = Object.values(dailyData);
-
-      if (chart) chart.destroy();
-      chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: "Daily Tax",
-            data: values,
-            borderColor: '#ffcc00',
-            fill: false,
-            tension: 0.3,
-            pointRadius: 4,
-            pointHoverRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: ctx => `$${ctx.raw.toFixed(2)}`
-              }
-            }
-          },
-          scales: {
-            x: { title: { display: true, text: "Date" } },
-            y: { title: { display: true, text: "Tax ($)" } }
-          }
-        }
-      });
-      document.getElementById("taxChart").style.display = "block";
-    }
-
-    window.onload = () => {
-      document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
-    };
+    fetchData();
   </script>
-</div>
 </body>
 </html>
