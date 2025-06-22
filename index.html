@@ -91,9 +91,13 @@ async function checkTax() {
   if (!currentPlayer) return alert("Please enter your Minecraft name");
   document.getElementById("step1").style.display = "none";
 
-  // 🔁 Sync updated transactions before checking tax
+  // ✅ Sync updated transactions
   try {
-    await fetch(syncTransactionURL);
+    await fetch(syncTransactionURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sync: true })
+    });
     console.log("🌀 Transaction sync complete");
   } catch (e) {
     console.warn("⚠️ Transaction sync failed", e);
