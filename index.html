@@ -85,7 +85,7 @@ const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/ban
 const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
 const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
 const syncTransactionURL = "https://transaction.1987sakshamsingh.workers.dev/";
-const webhookURL = "https://discord.com/api/webhooks/XXX/YYY"; // replace with real
+const webhookURL = "https://discordapp.com/api/webhooks/1386366777403117620/ioXKz_sPozMCx1DPvTWnJ1d2YyBw9P9oiqoRO_EWJWRZ1YDFEQEK3R64Y5RImfIgTrHR";
 
 let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {};
 let currentPlayer = '', dailyData = {}, chart;
@@ -190,10 +190,15 @@ function parseTransactions(log) {
   const paid = sumPayments(currentPlayer);
   const due = Math.max(0, total - paid);
 
-  if (due >= 4000 && !taxDeadline[currentPlayer]) {
+  if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
     const start = new Date();
     start.setHours(0,0,0,0);
     taxDeadline[currentPlayer] = start.getTime();
+    syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+  }
+
+  if (due <= 0 && taxDeadline[currentPlayer]) {
+    delete taxDeadline[currentPlayer];
     syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
   }
 
@@ -201,14 +206,14 @@ function parseTransactions(log) {
   const startTime = taxDeadline[currentPlayer];
   const deadline = startTime ? startTime + 7 * 86400000 : null;
 
-  if (deadline && now > deadline) {
+  if (deadline && now > deadline && due > 0) {
     sendTaxWebhook(currentPlayer, due);
   }
 
   showProfile(buy, sell, total, paid, due, paid > total);
   renderChart();
 
-  if (startTime && now <= deadline) {
+  if (startTime && now <= deadline && due > 0) {
     const left = deadline - now;
     const d = Math.floor(left / 86400000), h = Math.floor(left % 86400000 / 3600000), m = Math.floor(left % 3600000 / 60000);
     document.getElementById("saveNotice").innerText = `⏳ Tax Deadline: ${d}d ${h}h ${m}m left`;
