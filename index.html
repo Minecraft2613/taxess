@@ -1,4 +1,3 @@
-<!-- ✅ Final Fixed Version of Tax Portal Script with Full History Preservation -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,7 +72,7 @@ async function loadOnlineData() {
     paidPlayers = data.paidPlayers || {};
     paymentHistory = data.paymentHistory || {};
   } catch (e) {
-    alert("⚠️ Could not load tax data.");
+    alert("\u26a0\ufe0f Could not load tax data.");
   }
 }
 
@@ -81,6 +80,7 @@ async function loadTax() {
   try {
     const res = await fetch("transaction-log.txt");
     const text = await res.text();
+    window.cachedLines = text.split(/\r?\n/);
     parseTransactions(text);
   } catch {
     alert("Failed to load transaction log.");
@@ -110,6 +110,7 @@ function parseTransactions(log) {
       dailyData[day] = (dailyData[day] || 0) + tax;
     }
   });
+  window.cachedLines = lines;
 
   const total = buy + sell;
   const paid = sumPayments(currentPlayer);
@@ -118,7 +119,38 @@ function parseTransactions(log) {
 
   showProfile(buy, sell, total, paid, due, advanced);
   renderChart();
-  syncToCloudflare(currentPlayer, paid, paymentHistory);
+}
+
+function getTaxSummary() {
+  let buy = 0, sell = 0;
+  const lines = window.cachedLines || [];
+  dailyData = {};
+
+  lines.forEach(line => {
+    if (!line.includes(currentPlayer)) return;
+    const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
+    const day = date ? date[1].slice(5).replace('-', '/') : "";
+    const buyMatch = line.match(/bought.*?\$([\d,]+\.\d{2})/);
+    const sellMatch = line.match(/sold.*?\$([\d,]+\.\d{2})/);
+    if (buyMatch) {
+      const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
+      const tax = +(amt * 0.04).toFixed(2);
+      buy += tax;
+      dailyData[day] = (dailyData[day] || 0) + tax;
+    }
+    if (sellMatch) {
+      const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
+      const tax = +(amt * 0.10).toFixed(2);
+      sell += tax;
+      dailyData[day] = (dailyData[day] || 0) + tax;
+    }
+  });
+
+  const total = buy + sell;
+  const paid = sumPayments(currentPlayer);
+  const due = Math.max(0, total - paid);
+  const advanced = paid > total;
+  return [buy, sell, total, paid, due, advanced];
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
@@ -145,13 +177,15 @@ function submitTax() {
   const amt = parseFloat(document.getElementById("payAmt").value);
   if (!amt || amt <= 0) return alert("Invalid amount");
   recordPayment(amt);
+  showProfile(...getTaxSummary());
   syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory);
-  loadTax();
+  setTimeout(async () => {
+    await loadOnlineData();
+    showProfile(...getTaxSummary());
+  }, 3000);
 }
 
-function advancePay() {
-  submitTax();
-}
+function advancePay() { submitTax(); }
 
 function recordPayment(amt) {
   const entry = { amount: amt, date: new Date().toLocaleString() };
@@ -199,8 +233,8 @@ function syncToCloudflare(player, paid, history) {
       paidPlayers: { [player]: paid },
       paymentHistory: { [player]: history[player] || [] }
     })
-  }).then(res => res.ok ? console.log("☁️ Sync: ✅ Success") : res.text().then(txt => console.warn("☁️ Sync: ❌", txt)))
-    .catch(err => console.warn("☁️ Sync: ❌", err));
+  }).then(res => res.ok ? console.log("\u2601\ufe0f Sync: ✅ Success") : res.text().then(txt => console.warn("\u2601\ufe0f Sync: ❌", txt)))
+    .catch(err => console.warn("\u2601\ufe0f Sync: ❌", err));
 }
 
 window.onload = () => {
