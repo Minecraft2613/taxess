@@ -7,12 +7,12 @@ const syncTransactionURL = "https://transaction.1987sakshamsingh.workers.dev/";
 const webhookURL = "https://discordapp.com/api/webhooks/1386366777403117620/ioXKz_sPozMCx1DPvTWnJ1d2YyBw9P9oiqoRO_EWJWRZ1YDFEQEK3R64Y5RImfIgTrHR";
 
 let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {};
-let currentPlayer = '', dailyData = {}, chart;
+let currentPlayer = '', dailyData = {}, chart, chartType = 'line';
 
 window.onload = () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
-  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"]
-    .map(j => `<option>${j}</option>`).join("");
+  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
+  document.getElementById("chartTypeSelector").addEventListener('change', changeChartType);
 };
 
 function sumPayments(player) {
@@ -31,7 +31,6 @@ async function checkTax() {
     await fetch(syncTransactionURL, { method: "POST" });
     await loadOnlineData();
     document.getElementById("loading").style.display = "none";
-
     if (!bankAccounts[currentPlayer]) askBankDetails();
     else askBankLogin();
   } catch (e) {
@@ -86,7 +85,7 @@ function createBankAccount() {
   const pass = document.getElementById("bankPass").value;
   if (!username || !id || !pass) return alert("Fill all fields");
   bankAccounts[currentPlayer] = { username, id, password: pass };
-  syncToCloudflare(syncBankURL, { accounts: bankAccounts });
+  syncToCloud(syncBankURL, { accounts: bankAccounts });
   document.getElementById("bankBox").style.display = "none";
   loadTax();
 }
@@ -132,55 +131,33 @@ function parseTransactions(log) {
   if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
     const start = new Date(); start.setHours(0, 0, 0, 0);
     taxDeadline[currentPlayer] = start.getTime();
-    syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+    syncToCloud(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
   }
 
   if (due <= 0 && taxDeadline[currentPlayer]) {
     delete taxDeadline[currentPlayer];
-    syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+    syncToCloud(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
   }
 
-  showProfile(buy, sell, total, paid, due);
+  showProfile(buy, sell, total, paid, due, paid > total);
   renderChart();
 }
 
-function showProfile(buy, sell, total, paid, due) {
+function showProfile(buy, sell, total, paid, due, advanced) {
   document.getElementById("profile").innerHTML = `
     <h3>Welcome, ${currentPlayer}</h3>
     <p>Total Tax: $${total.toFixed(2)}</p>
     <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
-    <p>Status: <strong>${due === 0 ? "Paid" : "$" + due.toFixed(2) + " Due"}</strong></p>
+    <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
     <input type="number" id="payAmt" placeholder="Enter amount to pay">
     <button onclick="submitTax()">${due > 0 ? "Pay Tax" : "Advance Pay"}</button>`;
+
   document.getElementById("profile").style.display = "block";
 
   const history = paymentHistory[currentPlayer] || [];
   document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
     ${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
   document.getElementById("historyBox").style.display = "block";
-}
-
-function renderChart() {
-  const ctx = document.getElementById('taxChart').getContext('2d');
-  if (chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: Object.keys(dailyData),
-      datasets: [{
-        label: 'Tax Per Day',
-        data: Object.values(dailyData),
-        backgroundColor: '#ffaa00',
-        borderColor: '#ffaa00',
-        tension: 0.4,
-        fill: true
-      }]
-    },
-    options: {
-      scales: { y: { beginAtZero: true } }
-    }
-  });
-  document.getElementById("taxChart").style.display = "block";
 }
 
 function submitTax() {
@@ -191,15 +168,42 @@ function submitTax() {
   paymentHistory[currentPlayer].push(entry);
   paidPlayers[currentPlayer] = sumPayments(currentPlayer);
   document.getElementById("payAmt").value = "";
-  syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+  syncToCloud(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
   loadTax();
 }
 
-function syncToCloudflare(url, data) {
+function syncToCloud(url, data) {
   fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  }).then(res => res.ok ? console.log("☁️ Sync OK") : res.text().then(txt => console.warn("☁️ Sync Fail", txt)))
-    .catch(err => console.warn("☁️ Sync Error:", err));
+  }).then(res => res.ok ? console.log("☁️ Synced") : res.text().then(txt => console.warn("⚠️ Sync Failed", txt)))
+    .catch(err => console.warn("☁️ Error Syncing", err));
+}
+
+function changeChartType() {
+  chartType = document.getElementById("chartTypeSelector").value;
+  renderChart();
+}
+
+function renderChart() {
+  const ctx = document.getElementById('taxChart').getContext('2d');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: chartType === 'curved' ? 'line' : chartType,
+    data: {
+      labels: Object.keys(dailyData),
+      datasets: [{
+        label: 'Tax Per Day',
+        data: Object.values(dailyData),
+        borderColor: '#ffaa00',
+        backgroundColor: chartType === 'bar' ? '#ffaa00' : 'transparent',
+        tension: chartType === 'curved' ? 0.4 : 0
+      }]
+    },
+    options: {
+      scales: { y: { beginAtZero: true } },
+      responsive: true
+    }
+  });
 }
