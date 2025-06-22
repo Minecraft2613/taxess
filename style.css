@@ -1,0 +1,113 @@
+* { box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  animation: fadeIn 1.2s ease-in;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+h1 {
+  text-align: center;
+  color: #ffcc00;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% { text-shadow: 0 0 10px #ffcc00; }
+  50% { text-shadow: 0 0 20px #ffcc00; }
+  100% { text-shadow: 0 0 10px #ffcc00; }
+}
+input, select, button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+}
+input, select {
+  background: #222;
+  color: #fff;
+  border: 1px solid #444;
+}
+button {
+  background: #ff8800;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+button:hover {
+  background: #ffaa00;
+}
+.profile-box, .history-box, .bank-box {
+  background: #111;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  word-wrap: break-word;
+  animation: fadeIn 1s ease-in;
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+canvas { width: 100% !important; height: auto !important; margin-top: 20px; }
+.countdown {
+  color: #0f0;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* NovaSkin-style Loading */
+.nova-loader {
+  position: fixed;
+  inset: 0;
+  background: #0e0e0e;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: 'Segoe UI', sans-serif;
+}
+.nova-cube {
+  width: 30px;
+  height: 30px;
+  background-color: #ffcc00;
+  position: absolute;
+  opacity: 0;
+  animation: moveIn 1.5s forwards;
+}
+.top-left    { animation-delay: 0s;    top: -50px; left: -50px; }
+.top-right   { animation-delay: 0.2s;  top: -50px; right: -50px; }
+.bottom-left { animation-delay: 0.4s;  bottom: -50px; left: -50px; }
+.bottom-right{ animation-delay: 0.6s;  bottom: -50px; right: -50px; }
+
+@keyframes moveIn {
+  to {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+.nova-loader p {
+  color: #fff;
+  font-size: 20px;
+  margin-top: 60px;
+  animation: blink 1.5s infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
