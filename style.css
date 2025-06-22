@@ -1,6 +1,4 @@
-* {
-  box-sizing: border-box;
-}
+/* style.css */
 body {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
@@ -10,25 +8,19 @@ body {
   overflow-x: hidden;
   animation: fadeIn 1.2s ease-in;
 }
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
+
 .container {
   max-width: 800px;
   margin: auto;
   padding: 20px;
 }
+
 h1 {
   text-align: center;
   color: #ffcc00;
   animation: pulse 1.5s infinite;
 }
-@keyframes pulse {
-  0% { text-shadow: 0 0 10px #ffcc00; }
-  50% { text-shadow: 0 0 20px #ffcc00; }
-  100% { text-shadow: 0 0 10px #ffcc00; }
-}
+
 input, select, button {
   display: block;
   width: 100%;
@@ -38,11 +30,13 @@ input, select, button {
   border-radius: 6px;
   border: none;
 }
+
 input, select {
   background: #222;
   color: #fff;
   border: 1px solid #444;
 }
+
 button {
   background: #ff8800;
   color: black;
@@ -50,27 +44,23 @@ button {
   cursor: pointer;
   transition: background 0.3s ease;
 }
+
 button:hover {
   background: #ffaa00;
 }
-.profile-box, .history-box, .bank-box {
+
+.bank-box, .profile-box, .history-box {
   background: #111;
   padding: 15px;
   border-radius: 10px;
   margin-top: 20px;
-  word-wrap: break-word;
   animation: fadeIn 1s ease-in;
 }
-.btn-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+
+.chart-area {
+  margin-top: 30px;
 }
-canvas {
-  width: 100% !important;
-  height: auto !important;
-  margin-top: 20px;
-}
+
 .countdown {
   color: #0f0;
   font-weight: bold;
@@ -78,39 +68,55 @@ canvas {
   margin-top: 10px;
 }
 
-/* ✅ 3D Cube Animation for Loading */
-#novaLoading3D {
-  display: none;
+.loading-animation {
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   margin-top: 40px;
-  height: 140px;
-  perspective: 600px;
 }
+
+.loading-text {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
 .cube {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   position: relative;
   transform-style: preserve-3d;
-  animation: spin 2s linear infinite;
+  animation: rotateCube 2s infinite linear;
 }
+
 .face {
   position: absolute;
-  width: 40px;
-  height: 40px;
-  background: #ffcc00;
-  opacity: 0.9;
-  border: 1px solid #000;
+  width: 50px;
+  height: 50px;
+  background: #ff8800;
+  opacity: 1;
+  border: 2px solid #222;
 }
-.front  { transform: rotateY(0deg) translateZ(20px); }
-.back   { transform: rotateY(180deg) translateZ(20px); }
-.left   { transform: rotateY(-90deg) translateZ(20px); }
-.right  { transform: rotateY(90deg) translateZ(20px); }
-.top    { transform: rotateX(90deg) translateZ(20px); }
-.bottom { transform: rotateX(-90deg) translateZ(20px); }
 
-@keyframes spin {
+.front  { transform: rotateY(  0deg) translateZ(25px); }
+.back   { transform: rotateY(180deg) translateZ(25px); }
+.right  { transform: rotateY( 90deg) translateZ(25px); }
+.left   { transform: rotateY(-90deg) translateZ(25px); }
+.top    { transform: rotateX( 90deg) translateZ(25px); }
+bottom { transform: rotateX(-90deg) translateZ(25px); }
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { text-shadow: 0 0 10px #ffcc00; }
+  50% { text-shadow: 0 0 20px #ffcc00; }
+  100% { text-shadow: 0 0 10px #ffcc00; }
+}
+
+@keyframes rotateCube {
   0%   { transform: rotateX(0deg) rotateY(0deg); }
   100% { transform: rotateX(360deg) rotateY(360deg); }
 }
