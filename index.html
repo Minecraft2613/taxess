@@ -2,35 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Player Tax Portal - Graphs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💼 Player Tax Portal</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>📊 Tax Graph Dashboard</h1>
-    
-    <div class="chart-box">
-      <canvas id="pieChart"></canvas>
-    </div>
-    
-    <div class="chart-box">
-      <canvas id="barChart"></canvas>
-    </div>
-    
-    <div class="chart-box">
-      <canvas id="lineChart"></canvas>
+    <h1>📃 Player Tax Portal</h1>
+
+    <div id="step1">
+      <input id="mcid" placeholder="Enter your Minecraft Username" />
+      <select id="job"></select>
+      <select id="method">
+        <option value="Discord">Discord</option>
+        <option value="Instagram">Instagram</option>
+      </select>
+      <input id="contact" placeholder="Enter your Discord/Instagram username" />
+      <button onclick="checkTax()">Check Tax</button>
     </div>
 
-    <div class="chart-box">
-      <canvas id="curvedLineChart"></canvas>
+    <div id="loading" class="loading-animation" style="display: none;">
+      <div class="cube">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="loading-text">Loading data...</div>
     </div>
 
-    <div class="history-box">
-      <h2>Last 5 Payments</h2>
-      <ul id="lastPayments"></ul>
-      <button onclick="showFullHistory()">See Full Payment History</button>
-      <ul id="fullPayments" style="display:none;"></ul>
+    <div id="bankBox" class="bank-box" style="display:none;"></div>
+    <div id="profile" class="profile-box" style="display:none;"></div>
+    <div id="historyBox" class="history-box" style="display:none;"></div>
+    <div class="countdown" id="saveNotice" style="display:none;"></div>
+    <div class="chart-area">
+      <canvas id="taxChart" style="display:none;"></canvas>
+      <canvas id="pieChart" style="display:none;"></canvas>
+      <canvas id="lineChart" style="display:none;"></canvas>
     </div>
   </div>
 
