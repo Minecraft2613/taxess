@@ -1,23 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tax Portal with Charts</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💼 Player Tax Portal</title>
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Player Tax Dashboard</h1>
+    <h1>📃 Player Tax Portal</h1>
 
-    <!-- Top 5 Tax Payers Chart -->
-    <div class="chart-box">
-      <h2>🏆 Top 5 Tax Payers</h2>
-      <canvas id="topTaxChart"></canvas>
-    </div>
-
-    <!-- Login/Input Section -->
     <div id="step1">
       <input id="mcid" placeholder="Enter your Minecraft Username" />
       <select id="job"></select>
@@ -29,12 +22,28 @@
       <button onclick="checkTax()">Check Tax</button>
     </div>
 
-    <!-- Nova-style Loading -->
-    <div id="novaLoading3D" class="nova-loading" style="display:none">
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
-      <div class="block"></div>
+    <div id="novaLoading3D" class="loading-animation" style="display: none;">
+      <div class="cube">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="loading-text">Loading data...</div>
+    </div>
+
+    <div id="bankBox" class="bank-box" style="display:none;"></div>
+    <div id="profile" class="profile-box" style="display:none;"></div>
+    <div id="historyBox" class="history-box" style="display:none;"></div>
+    <div class="countdown" id="saveNotice" style="display:none;"></div>
+
+    <div class="chart-area">
+      <canvas id="taxChart" style="display:none;"></canvas>
+      <canvas id="pieChart" style="display:none;"></canvas>
+      <canvas id="lineChart" style="display:none;"></canvas>
+      <canvas id="topTaxPayersChart" style="display:none;"></canvas>
     </div>
   </div>
 
