@@ -1,15 +1,6 @@
 {
   "paidPlayers": {
-    "ansh": 0
   },
   "paymentHistory": {
-    "ansh": []
-  },
-  "bankData": {
-    "ansh": {
-      "user": "Saksham",
-      "id": "631095",
-      "pass": "261377189"
-    }
   }
 }
