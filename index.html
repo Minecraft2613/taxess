@@ -4,20 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>💼 Player Tax Portal</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="favicon.ico" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- NovaSkin-style Loader -->
-  <div id="novaLoading" class="nova-loader">
-    <div class="nova-cube top-left"></div>
-    <div class="nova-cube top-right"></div>
-    <div class="nova-cube bottom-left"></div>
-    <div class="nova-cube bottom-right"></div>
-    <p>Loading Data...</p>
-  </div>
-
   <div class="container">
     <h1>📃 Player Tax Portal</h1>
     <div id="step1">
@@ -29,6 +20,19 @@
       </select>
       <input id="contact" placeholder="Enter your Discord/Instagram username" />
       <button onclick="checkTax()">Check Tax</button>
+    </div>
+
+    <!-- 🔄 NovaSkin Style 3D Loading -->
+    <div id="novaLoading3D">
+      <div class="cube">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face left"></div>
+        <div class="face right"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <p style="margin-top: 20px; font-weight: bold;">Loading data...</p>
     </div>
 
     <div id="bankBox" class="bank-box" style="display:none;"></div>
