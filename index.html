@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -150,7 +151,7 @@ function createBankAccount() {
 
 async function loadTax() {
   try {
-   const res = await fetch("https://mc1524209.fmcs.cloud/transactions.php"); // Or any working endpoint on your server
+    const res = await fetch("transaction-log.txt");
     const text = await res.text();
     parseTransactions(text);
   } catch {
