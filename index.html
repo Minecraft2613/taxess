@@ -22,7 +22,7 @@
       <button onclick="checkTax()">Check Tax</button>
     </div>
 
-    <div id="novaLoading3D" class="loading-animation" style="display: none;">
+    <div id="loading" class="loading-animation" style="display: none;">
       <div class="cube">
         <div class="face front"></div>
         <div class="face back"></div>
@@ -39,11 +39,15 @@
     <div id="historyBox" class="history-box" style="display:none;"></div>
     <div class="countdown" id="saveNotice" style="display:none;"></div>
 
+    <div id="rankBoard" class="profile-box" style="display:none;">
+      <h3>🌟 Top 5 Tax Payers</h3>
+      <ul id="rankList"></ul>
+    </div>
+
     <div class="chart-area">
       <canvas id="taxChart" style="display:none;"></canvas>
       <canvas id="pieChart" style="display:none;"></canvas>
       <canvas id="lineChart" style="display:none;"></canvas>
-      <canvas id="topTaxPayersChart" style="display:none;"></canvas>
     </div>
   </div>
 
