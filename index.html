@@ -1,4 +1,3 @@
-<!-- ✅ Final Fixed Version of Tax Portal Script with Full History Preservation and Proper Payment History Display -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,20 +6,16 @@
   <title>💼 Player Tax Portal</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #0f0f0f, #1e1e1e); color: #fff; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #fff; margin: 0; padding: 0; }
     .container { max-width: 800px; margin: auto; padding: 20px; }
     h1 { text-align: center; color: #ffcc00; }
     input, select, button {
       display: block; width: 100%; padding: 12px; margin: 10px 0;
       font-size: 16px; border-radius: 6px; border: none;
     }
-    input, select {
-      background: #222; color: #fff; border: 1px solid #444;
-    }
-    button {
-      background: #ff8800; color: black; font-weight: bold; cursor: pointer;
-    }
-    .profile-box, .history-box { background: #111; padding: 15px; border-radius: 10px; margin-top: 20px; }
+    input, select { background: #222; color: #fff; border: 1px solid #444; }
+    button { background: #ff8800; color: black; font-weight: bold; cursor: pointer; }
+    .profile-box, .history-box { background: #1c1c1c; padding: 15px; border-radius: 10px; margin-top: 20px; }
     .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
     canvas { width: 100% !important; height: auto !important; }
   </style>
@@ -49,14 +44,7 @@ const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main
 const syncURL = "https://syncs.1987sakshamsingh.workers.dev/";
 let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
 
-function sumPayments(player) {
-  const history = paymentHistory[player] || [];
-  return history.reduce((sum, entry) => sum + entry.amount, 0);
-}
-
 async function checkTax() {
-  const job = document.getElementById('job').value;
-  const method = document.getElementById('method').value;
   const contact = document.getElementById('contact').value.trim();
   const mcid = document.getElementById('mcid').value.trim();
   if (!mcid || !contact) return alert("Please fill all fields");
@@ -118,6 +106,12 @@ function parseTransactions(log) {
 
   showProfile(buy, sell, total, paid, due, advanced);
   renderChart();
+  syncToCloudflare(currentPlayer, paid, paymentHistory);
+}
+
+function sumPayments(player) {
+  const history = paymentHistory[player] || [];
+  return history.reduce((sum, entry) => sum + entry.amount, 0);
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
@@ -134,24 +128,46 @@ function showProfile(buy, sell, total, paid, due, advanced) {
     </div>`;
   box.style.display = "block";
 
+  showHistory(due === 0 || advanced);
+}
+
+function showHistory(full) {
   const history = paymentHistory[currentPlayer] || [];
   const histBox = document.getElementById("historyBox");
-  histBox.innerHTML = `<h3>Payment History</h3><ul>${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+  let output = "<h3>Payment History</h3><ul id='historyList'>";
+  const records = full ? history : history.slice(-5);
+  output += records.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('');
+  output += "</ul>";
+
+  if (!full && history.length > 5) {
+    output += `<p id="countdownNotice">⏳ Showing recent 5 entries. Full history in 10s...</p>`;
+    let countdown = 10;
+    const timer = setInterval(() => {
+      countdown--;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        document.getElementById("historyList").innerHTML = history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('');
+        document.getElementById("countdownNotice").remove();
+      } else {
+        document.getElementById("countdownNotice").innerText = `⏳ Showing recent 5 entries. Full history in ${countdown}s...`;
+      }
+    }, 1000);
+  }
+
+  histBox.innerHTML = output;
   histBox.style.display = "block";
 }
 
-async function submitTax() {
+function submitTax() {
   const amt = parseFloat(document.getElementById("payAmt").value);
   if (!amt || amt <= 0) return alert("Invalid amount");
   recordPayment(amt);
-  await syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory);
-  await loadOnlineData();
-  await loadTax();
+  document.getElementById("payAmt").value = "";
+  syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory);
+  loadTax();
 }
 
-function advancePay() {
-  submitTax();
-}
+function advancePay() { submitTax(); }
 
 function recordPayment(amt) {
   const entry = { amount: amt, date: new Date().toLocaleString() };
@@ -191,25 +207,17 @@ function renderChart() {
   document.getElementById("taxChart").style.display = "block";
 }
 
-async function syncToCloudflare(player, paid, history) {
-  try {
-    const res = await fetch(syncURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paidPlayers: { [player]: paid },
-        paymentHistory: { [player]: history[player] || [] }
-      })
-    });
-    if (!res.ok) {
-      const text = await res.text();
-      console.warn("☁️ Sync: ❌", text);
-    } else {
-      console.log("☁️ Sync: ✅ Success");
-    }
-  } catch (err) {
-    console.warn("☁️ Sync: ❌", err);
-  }
+function syncToCloudflare(player, paid, history) {
+  fetch(syncURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      paidPlayers: { [player]: paid },
+      paymentHistory: { [player]: history[player] || [] }
+    })
+  })
+  .then(res => res.ok ? console.log("☁️ Sync: ✅ Success") : res.text().then(txt => console.warn("☁️ Sync: ❌", txt)))
+  .catch(err => console.warn("☁️ Sync: ❌", err));
 }
 
 window.onload = () => {
