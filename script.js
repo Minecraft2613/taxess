@@ -7,6 +7,13 @@ const webhookURL = "https://discordapp.com/api/webhooks/1386366777403117620/ioXK
 
 let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {};
 let currentPlayer = '', dailyData = {}, chart;
+const deadlineDays = 7;
+
+window.onload = () => {
+  taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
+  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"]
+    .map(j => `<option>${j}</option>`).join("");
+};
 
 function sumPayments(player) {
   const history = paymentHistory[player] || [];
@@ -16,20 +23,21 @@ function sumPayments(player) {
 async function checkTax() {
   currentPlayer = document.getElementById('mcid').value.trim();
   if (!currentPlayer) return alert("Please enter your Minecraft name");
+
   document.getElementById("step1").style.display = "none";
-  document.getElementById("novaLoading").style.display = "flex";
+  document.getElementById("novaLoading3D").style.display = "flex";
 
   try {
     await fetch(syncTransactionURL, { method: "POST" });
     await loadOnlineData();
-    document.getElementById("novaLoading").style.display = "none";
+    document.getElementById("novaLoading3D").style.display = "none";
 
     if (!bankAccounts[currentPlayer]) askBankDetails();
     else askBankLogin();
   } catch (e) {
     alert("⚠️ Failed to sync. Please try again later.");
     document.getElementById("step1").style.display = "block";
-    document.getElementById("novaLoading").style.display = "none";
+    document.getElementById("novaLoading3D").style.display = "none";
   }
 }
 
@@ -117,9 +125,12 @@ function parseTransactions(log) {
   const paid = sumPayments(currentPlayer);
   const due = Math.max(0, total - paid);
 
+  const now = Date.now();
+  const startTime = taxDeadline[currentPlayer];
+  const deadline = startTime ? startTime + 7 * 86400000 : null;
+
   if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
-    const start = new Date();
-    start.setHours(0,0,0,0);
+    const start = new Date(); start.setHours(0, 0, 0, 0);
     taxDeadline[currentPlayer] = start.getTime();
     syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
   }
@@ -128,10 +139,6 @@ function parseTransactions(log) {
     delete taxDeadline[currentPlayer];
     syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
   }
-
-  const now = Date.now();
-  const startTime = taxDeadline[currentPlayer];
-  const deadline = startTime ? startTime + 7 * 86400000 : null;
 
   if (deadline && now > deadline && due > 0) sendTaxWebhook(currentPlayer, due);
   if (startTime && now <= deadline && due > 0) {
@@ -225,9 +232,3 @@ function sendTaxWebhook(player, dueTax) {
     body: JSON.stringify(content)
   }).then(res => res.ok ? console.log("✅ Webhook sent.") : console.warn("⚠️ Webhook failed."));
 }
-
-window.onload = () => {
-  taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
-  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"]
-    .map(j => `<option>${j}</option>`).join("");
-};
