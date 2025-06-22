@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,13 +92,9 @@ async function checkTax() {
   if (!currentPlayer) return alert("Please enter your Minecraft name");
   document.getElementById("step1").style.display = "none";
 
-  // ✅ Sync updated transactions
+  // 🔁 Sync updated transactions
   try {
-    await fetch(syncTransactionURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sync: true })
-    });
+    await fetch(syncTransactionURL, { method: "POST" });
     console.log("🌀 Transaction sync complete");
   } catch (e) {
     console.warn("⚠️ Transaction sync failed", e);
@@ -164,7 +161,7 @@ function createBankAccount() {
 
 async function loadTax() {
   try {
-    const res = await fetch("transaction-log.txt");
+    const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt?nocache=" + Date.now());
     const text = await res.text();
     parseTransactions(text);
   } catch {
@@ -210,8 +207,7 @@ function showProfile(buy, sell, total, paid, due, advanced) {
     <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
     <input type="number" id="payAmt" placeholder="Enter amount to pay">
     <div class="btn-row">
-      ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : ``}
-      ${due === 0 ? `<button onclick="submitTax()">Advance Pay</button>` : ``}
+      ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : `<button onclick="submitTax()">Advance Pay</button>`}
     </div>`;
   document.getElementById("profile").style.display = "block";
   const history = paymentHistory[currentPlayer] || [];
