@@ -1,16 +1,16 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>💼 Player Tax Portal</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>📃 Player Tax Portal</h1>
+
     <div id="step1">
       <input id="mcid" placeholder="Enter your Minecraft Username" />
       <select id="job"></select>
@@ -22,7 +22,7 @@
       <button onclick="checkTax()">Check Tax</button>
     </div>
 
-    <div id="novaLoading3D" class="loading-animation" style="display:none">
+    <div id="loading" class="loading-animation" style="display: none;">
       <div class="cube">
         <div class="face front"></div>
         <div class="face back"></div>
@@ -34,21 +34,20 @@
       <div class="loading-text">Loading data...</div>
     </div>
 
-    <div id="bankBox" class="bank-box" style="display:none"></div>
-    <div id="profile" class="profile-box" style="display:none"></div>
-    <div id="historyBox" class="history-box" style="display:none"></div>
-    <div id="topTaxRanks" class="history-box" style="display:none"></div>
-    <div class="countdown" id="saveNotice" style="display:none"></div>
+    <div id="topTaxRanks" class="bank-box"></div>
+    <div id="bankBox" class="bank-box" style="display:none;"></div>
+    <div id="profile" class="profile-box" style="display:none;"></div>
+    <div id="historyBox" class="history-box" style="display:none;"></div>
+    <div class="countdown" id="saveNotice" style="display:none;"></div>
 
     <div class="chart-area">
-      <label>Choose Chart Type:</label>
-      <select onchange="renderChart(this.value)">
-        <option value="bar">Bar</option>
-        <option value="line">Line</option>
-        <option value="curved">Curved Line</option>
-        <option value="pie">Pie</option>
+      <select id="chartType" onchange="changeChartType()">
+        <option value="line">📊 Line</option>
+        <option value="curved">📈 Curved Line</option>
+        <option value="bar">📘 Bar</option>
+        <option value="pie">🥧 Pie</option>
       </select>
-      <canvas id="taxChart" style="display:block;"></canvas>
+      <canvas id="taxChart"></canvas>
     </div>
   </div>
 
