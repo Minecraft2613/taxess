@@ -1,48 +1,62 @@
+<!-- ✅ Secure Player Tax Portal with Unique Bank Account Verification -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>💼 Player Tax Portal </title>
+  <title>Secure Player Tax Portal</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #fff; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #111; color: #fff; margin: 0; padding: 0; }
     .container { max-width: 800px; margin: auto; padding: 20px; }
-    h1 { text-align: center; color: #ffcc00; }
     input, select, button {
-      display: block; width: 100%; padding: 12px; margin: 10px 0;
+      display: block; width: 100%; padding: 10px; margin: 10px 0;
       font-size: 16px; border-radius: 6px; border: none;
     }
-    input, select { background: #222; color: #fff; border: 1px solid #444; }
-    button { background: #ff8800; color: black; font-weight: bold; cursor: pointer; }
-    .profile-box, .history-box { background: #1c1c1c; padding: 15px; border-radius: 10px; margin-top: 20px; }
-    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    input, select { background: #222; color: #fff; border: 1px solid #555; }
+    button { background: orange; color: black; font-weight: bold; cursor: pointer; }
+    .profile-box, .history-box { background: #1b1b1b; padding: 15px; border-radius: 10px; margin-top: 20px; }
     canvas { width: 100% !important; height: auto !important; }
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000a; z-index:1000; justify-content:center; align-items:center; }
+    .modal-content { background:#222; padding:20px; border-radius:10px; width:90%; max-width:400px; }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>📃 Player Tax Portal</h1>
+  <h1>Secure 💼 Player Tax Portal</h1>
   <div id="step1">
     <select id="job"></select>
-    <select id="method">
-      <option value="Discord">Discord</option>
-      <option value="Instagram">Instagram</option>
-    </select>
-    <input id="contact" placeholder="Enter your Discord/Instagram username" />
-    <input id="mcid" placeholder="Enter your Minecraft Username" />
+    <input id="contact" placeholder="Discord/Instagram Username" />
+    <input id="mcid" placeholder="Minecraft Username" />
     <button onclick="checkTax()">Check Tax</button>
   </div>
-
   <div id="profile" class="profile-box" style="display:none;"></div>
   <div class="history-box" id="historyBox" style="display:none;"></div>
   <canvas id="taxChart" style="display:none;"></canvas>
 </div>
 
+<!-- Bank Modal -->
+<div id="bankModal" class="modal">
+  <div class="modal-content">
+    <h3 id="bankTitle">🔐 Bank Verification</h3>
+    <input id="bankUser" placeholder="Bank Username" />
+    <input id="bankId" placeholder="Bank ID" />
+    <input id="bankPass" placeholder="Bank Password" type="password" />
+    <button onclick="verifyBank()">✅ Proceed</button>
+    <button onclick="closeBankModal()">❌ Cancel</button>
+  </div>
+</div>
+
 <script>
 const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
 const syncURL = "https://syncs.1987sakshamsingh.workers.dev/";
-let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
+let paidPlayers = {}, paymentHistory = {}, bankData = {}, currentPlayer = '', dailyData = {}, chart;
+let pendingAmount = 0, isBankVerified = false;
+
+function sumPayments(player) {
+  const history = paymentHistory[player] || [];
+  return history.reduce((sum, entry) => sum + entry.amount, 0);
+}
 
 async function checkTax() {
   const contact = document.getElementById('contact').value.trim();
@@ -55,28 +69,21 @@ async function checkTax() {
 }
 
 async function loadOnlineData() {
-  try {
-    const res = await fetch(jsonDataURL);
-    const data = await res.json();
-    paidPlayers = data.paidPlayers || {};
-    paymentHistory = data.paymentHistory || {};
-  } catch (e) {
-    alert("⚠️ Could not load tax data.");
-  }
+  const res = await fetch(jsonDataURL);
+  const data = await res.json();
+  paidPlayers = data.paidPlayers || {};
+  paymentHistory = data.paymentHistory || {};
+  bankData = data.bankData || {};
 }
 
 async function loadTax() {
-  try {
-    const res = await fetch("transaction-log.txt");
-    const text = await res.text();
-    parseTransactions(text);
-  } catch {
-    alert("Failed to load transaction log.");
-  }
+  const res = await fetch("transaction-log.txt");
+  const text = await res.text();
+  parseTransactions(text);
 }
 
 function parseTransactions(log) {
-  const lines = log.split(/\r?\n/);
+  const lines = log.split("\n");
   let buy = 0, sell = 0;
   dailyData = {};
   lines.forEach(line => {
@@ -98,20 +105,12 @@ function parseTransactions(log) {
       dailyData[day] = (dailyData[day] || 0) + tax;
     }
   });
-
   const total = buy + sell;
   const paid = sumPayments(currentPlayer);
   const due = Math.max(0, total - paid);
   const advanced = paid > total;
-
   showProfile(buy, sell, total, paid, due, advanced);
   renderChart();
-  syncToCloudflare(currentPlayer, paid, paymentHistory);
-}
-
-function sumPayments(player) {
-  const history = paymentHistory[player] || [];
-  return history.reduce((sum, entry) => sum + entry.amount, 0);
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
@@ -121,53 +120,45 @@ function showProfile(buy, sell, total, paid, due, advanced) {
     <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
     <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
     <input type="number" id="payAmt" placeholder="Enter amount to pay">
-    <div class="btn-row">
-      ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : ``}
-      ${due === 0 ? `<button onclick="advancePay()">Advance Pay</button>` : ``}
-      <button onclick="exit()">Exit</button>
-    </div>`;
+    <button onclick="preparePayment()">Pay Tax</button>
+    <button onclick="exit()">Exit</button>`;
   box.style.display = "block";
 
-  showHistory(due === 0 || advanced);
-}
-
-function showHistory(full) {
   const history = paymentHistory[currentPlayer] || [];
-  const histBox = document.getElementById("historyBox");
-  let output = "<h3>Payment History</h3><ul id='historyList'>";
-  const records = full ? history : history.slice(-5);
-  output += records.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('');
-  output += "</ul>";
+  document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+  document.getElementById("historyBox").style.display = "block";
+}
 
-  if (!full && history.length > 5) {
-    output += `<p id="countdownNotice">⏳ Showing recent 5 entries. Full history in 10s...</p>`;
-    let countdown = 10;
-    const timer = setInterval(() => {
-      countdown--;
-      if (countdown <= 0) {
-        clearInterval(timer);
-        document.getElementById("historyList").innerHTML = history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('');
-        document.getElementById("countdownNotice").remove();
-      } else {
-        document.getElementById("countdownNotice").innerText = `⏳ Showing recent 5 entries. Full history in ${countdown}s...`;
-      }
-    }, 1000);
+function preparePayment() {
+  pendingAmount = parseFloat(document.getElementById("payAmt").value);
+  if (!pendingAmount || pendingAmount <= 0) return alert("Invalid amount");
+  const bank = bankData[currentPlayer];
+  document.getElementById("bankTitle").textContent = bank ? "🔐 Login to Bank" : "📝 Create Bank Account";
+  document.getElementById("bankUser").value = bank ? bank.bankUser : "";
+  document.getElementById("bankId").value = bank ? bank.bankId : "";
+  document.getElementById("bankPass").value = "";
+  document.getElementById("bankModal").style.display = "flex";
+}
+
+function closeBankModal() {
+  document.getElementById("bankModal").style.display = "none";
+}
+
+function verifyBank() {
+  const user = document.getElementById("bankUser").value.trim();
+  const id = document.getElementById("bankId").value.trim();
+  const pass = document.getElementById("bankPass").value.trim();
+  if (!user || !id || !pass) return alert("Fill all bank details");
+  const bank = bankData[currentPlayer];
+  if (bank) {
+    if (bank.bankUser !== user || bank.bankPass !== pass) return alert("Incorrect bank credentials");
+  } else {
+    bankData[currentPlayer] = { bankUser: user, bankId: id, bankPass: pass };
   }
-
-  histBox.innerHTML = output;
-  histBox.style.display = "block";
+  recordPayment(pendingAmount);
+  syncToCloudflare();
+  closeBankModal();
 }
-
-function submitTax() {
-  const amt = parseFloat(document.getElementById("payAmt").value);
-  if (!amt || amt <= 0) return alert("Invalid amount");
-  recordPayment(amt);
-  document.getElementById("payAmt").value = "";
-  syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory);
-  loadTax();
-}
-
-function advancePay() { submitTax(); }
 
 function recordPayment(amt) {
   const entry = { amount: amt, date: new Date().toLocaleString() };
@@ -175,13 +166,17 @@ function recordPayment(amt) {
   paymentHistory[currentPlayer].push(entry);
 }
 
-function exit() {
-  document.getElementById("step1").style.display = "block";
-  document.getElementById("profile").style.display = "none";
-  document.getElementById("historyBox").style.display = "none";
-  document.getElementById("taxChart").style.display = "none";
-  document.getElementById("contact").value = "";
-  document.getElementById("mcid").value = "";
+function syncToCloudflare() {
+  const body = {
+    paidPlayers: Object.fromEntries(Object.entries(paymentHistory).map(([k, v]) => [k, sumPayments(k)])),
+    paymentHistory: paymentHistory,
+    bankData: bankData
+  };
+  fetch(syncURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  }).then(res => res.ok ? alert("✅ Synced") : res.text().then(txt => console.warn("❌ Sync error:", txt)));
 }
 
 function renderChart() {
@@ -191,37 +186,21 @@ function renderChart() {
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{ label: "Daily Tax", data: values, borderColor: '#ffcc00', fill: false, tension: 0.3 }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `$${ctx.raw.toFixed(2)}` } } },
-      scales: {
-        x: { title: { display: true, text: "Date" } },
-        y: { title: { display: true, text: "Tax ($)" } }
-      }
-    }
+    data: { labels: labels, datasets: [{ label: "Daily Tax", data: values, borderColor: '#ffcc00', fill: false }] },
+    options: { responsive: true }
   });
   document.getElementById("taxChart").style.display = "block";
 }
 
-function syncToCloudflare(player, paid, history) {
-  fetch(syncURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      paidPlayers: { [player]: paid },
-      paymentHistory: { [player]: history[player] || [] }
-    })
-  })
-  .then(res => res.ok ? console.log("☁️ Sync: ✅ Success") : res.text().then(txt => console.warn("☁️ Sync: ❌", txt)))
-  .catch(err => console.warn("☁️ Sync: ❌", err));
+function exit() {
+  document.getElementById("step1").style.display = "block";
+  document.getElementById("profile").style.display = "none";
+  document.getElementById("historyBox").style.display = "none";
+  document.getElementById("taxChart").style.display = "none";
 }
 
 window.onload = () => {
-  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
+  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader"].map(j => `<option>${j}</option>`).join("");
 };
 </script>
 </body>
