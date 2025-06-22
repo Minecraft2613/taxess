@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>💼 Player Tax Portal</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -13,13 +13,11 @@
       display: block; width: 100%; padding: 12px; margin: 10px 0;
       font-size: 16px; border-radius: 6px; border: none;
     }
-    input, select {
-      background: #222; color: #fff; border: 1px solid #444;
+    input, select { background: #222; color: #fff; border: 1px solid #444; }
+    button { background: #ff8800; color: black; font-weight: bold; cursor: pointer; }
+    .profile-box, .history-box, .bank-box {
+      background: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 20px;
     }
-    button {
-      background: #ff8800; color: black; font-weight: bold; cursor: pointer;
-    }
-    .box { background: #1a1a1a; padding: 15px; border-radius: 10px; margin-top: 20px; }
     .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
     canvas { width: 100% !important; height: auto !important; }
   </style>
@@ -27,6 +25,7 @@
 <body>
 <div class="container">
   <h1>📃 Player Tax Portal</h1>
+
   <div id="step1">
     <select id="job"></select>
     <select id="method">
@@ -38,104 +37,118 @@
     <button onclick="checkTax()">Check Tax</button>
   </div>
 
-  <div id="bankSetup" class="box" style="display:none;"></div>
-  <div id="profile" class="box" style="display:none;"></div>
-  <div class="box" id="historyBox" style="display:none;"></div>
+  <div id="bankForm" class="bank-box" style="display:none;"></div>
+  <div id="profile" class="profile-box" style="display:none;"></div>
+  <div class="history-box" id="historyBox" style="display:none;"></div>
   <canvas id="taxChart" style="display:none;"></canvas>
 </div>
 
 <script>
-const jsonDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
+const taxURL = "https://syncs.1987sakshamsingh.workers.dev/";
+const bankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
+const taxDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
 const bankDataURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
-const syncURL = "https://syncs.1987sakshamsingh.workers.dev/";
 
-let paidPlayers = {}, paymentHistory = {}, bankData = {}, currentPlayer = '', dailyData = {}, chart;
+let paidPlayers = {}, paymentHistory = {}, currentPlayer = '', dailyData = {}, chart;
+let bankAccounts = {};
 
 function sumPayments(player) {
   const history = paymentHistory[player] || [];
-  return history.reduce((sum, entry) => sum + entry.amount, 0);
+  return history.reduce((sum, e) => sum + e.amount, 0);
 }
 
 async function checkTax() {
-  const mcid = document.getElementById('mcid').value.trim();
-  const contact = document.getElementById('contact').value.trim();
-  if (!mcid || !contact) return alert("Please fill all fields");
+  const mcid = document.getElementById("mcid").value.trim();
+  const contact = document.getElementById("contact").value.trim();
+  if (!mcid || !contact) return alert("Fill all fields");
+
   currentPlayer = mcid;
   document.getElementById("step1").style.display = "none";
-  await loadOnlineData();
-  if (!bankData[currentPlayer]) return showBankSetup();
-  askBankLogin();
+
+  await loadBankData();
+  if (!bankAccounts[currentPlayer]) {
+    showBankCreationForm();
+  } else {
+    showBankLoginForm();
+  }
 }
 
-function showBankSetup() {
-  const bankBox = document.getElementById("bankSetup");
-  bankBox.innerHTML = `
-    <h3>Create Bank Account</h3>
-    <input id="bankUser" placeholder="Create Bank Username">
-    <input id="bankId" placeholder="Create Bank ID">
-    <input id="bankPass" placeholder="Create Bank Password">
-    <button onclick="createBankAccount()">Create</button>
-  `;
-  bankBox.style.display = "block";
+async function loadBankData() {
+  try {
+    const res = await fetch(bankDataURL);
+    const data = await res.json();
+    bankAccounts = data.accounts || {};
+  } catch {
+    alert("⚠️ Could not load bank data.");
+  }
 }
 
-function createBankAccount() {
-  const user = document.getElementById("bankUser").value;
-  const id = document.getElementById("bankId").value;
-  const pass = document.getElementById("bankPass").value;
-  if (!user || !id || !pass) return alert("Fill all fields");
-  bankData[currentPlayer] = { user, id, pass };
-  syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory, bankData);
-  document.getElementById("bankSetup").style.display = "none";
-  askBankLogin();
+function showBankCreationForm() {
+  const box = document.getElementById("bankForm");
+  box.innerHTML = `
+    <h3>🔒 Create Bank Account</h3>
+    <input id="bankUser" placeholder="Bank Username">
+    <input id="bankId" placeholder="Bank ID">
+    <input id="bankPass" type="password" placeholder="Bank Password">
+    <button onclick="createBankAccount()">Create Account</button>`;
+  box.style.display = "block";
 }
 
-function askBankLogin() {
-  const bankBox = document.getElementById("bankSetup");
-  bankBox.innerHTML = `
-    <h3>Bank Login</h3>
-    <input id="loginUser" placeholder="Bank Username">
-    <input id="loginId" placeholder="Bank ID">
-    <input id="loginPass" placeholder="Bank Password">
-    <button onclick="verifyBankLogin()">Login</button>
-  `;
-  bankBox.style.display = "block";
+function showBankLoginForm() {
+  const box = document.getElementById("bankForm");
+  box.innerHTML = `
+    <h3>🔐 Bank Login</h3>
+    <input id="bankUser" placeholder="Bank Username">
+    <input id="bankId" placeholder="Bank ID">
+    <input id="bankPass" type="password" placeholder="Bank Password">
+    <button onclick="verifyBankLogin()">Login</button>`;
+  box.style.display = "block";
 }
 
 function verifyBankLogin() {
-  const user = document.getElementById("loginUser").value;
-  const id = document.getElementById("loginId").value;
-  const pass = document.getElementById("loginPass").value;
-  const data = bankData[currentPlayer];
-  if (user === data.user && id === data.id && pass === data.pass) {
-    document.getElementById("bankSetup").style.display = "none";
+  const u = document.getElementById("bankUser").value.trim();
+  const i = document.getElementById("bankId").value.trim();
+  const p = document.getElementById("bankPass").value.trim();
+  const acc = bankAccounts[currentPlayer];
+  if (acc && acc.username === u && acc.id === i && acc.password === p) {
+    document.getElementById("bankForm").style.display = "none";
     loadTax();
   } else {
-    alert("Incorrect bank login");
+    alert("❌ Incorrect bank credentials");
   }
 }
 
-async function loadOnlineData() {
-  try {
-    const res1 = await fetch(jsonDataURL);
-    const data1 = await res1.json();
-    paidPlayers = data1.paidPlayers || {};
-    paymentHistory = data1.paymentHistory || {};
-    const res2 = await fetch(bankDataURL);
-    const data2 = await res2.json();
-    bankData = data2.bankData || {};
-  } catch (e) {
-    alert("⚠️ Could not load tax/bank data.");
-  }
+function createBankAccount() {
+  const u = document.getElementById("bankUser").value.trim();
+  const i = document.getElementById("bankId").value.trim();
+  const p = document.getElementById("bankPass").value.trim();
+  if (!u || !i || !p) return alert("Fill all fields");
+
+  bankAccounts[currentPlayer] = { username: u, id: i, password: p };
+  document.getElementById("bankForm").style.display = "none";
+  syncToCloudflare(bankURL, { accounts: bankAccounts });
+  loadTax();
 }
 
 async function loadTax() {
+  await loadOnlineTax();
   try {
     const res = await fetch("transaction-log.txt");
     const text = await res.text();
     parseTransactions(text);
   } catch {
     alert("Failed to load transaction log.");
+  }
+}
+
+async function loadOnlineTax() {
+  try {
+    const res = await fetch(taxDataURL);
+    const data = await res.json();
+    paidPlayers = data.paidPlayers || {};
+    paymentHistory = data.paymentHistory || {};
+  } catch {
+    alert("⚠️ Could not load tax data.");
   }
 }
 
@@ -167,9 +180,13 @@ function parseTransactions(log) {
   const paid = sumPayments(currentPlayer);
   const due = Math.max(0, total - paid);
   const advanced = paid > total;
+
   showProfile(buy, sell, total, paid, due, advanced);
   renderChart();
-  syncToCloudflare(currentPlayer, paid, paymentHistory, bankData);
+  syncToCloudflare(taxURL, {
+    paidPlayers: { [currentPlayer]: paid },
+    paymentHistory: { [currentPlayer]: paymentHistory[currentPlayer] || [] }
+  });
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
@@ -196,7 +213,11 @@ function submitTax() {
   const amt = parseFloat(document.getElementById("payAmt").value);
   if (!amt || amt <= 0) return alert("Invalid amount");
   recordPayment(amt);
-  syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory, bankData);
+  document.getElementById("payAmt").value = "";
+  syncToCloudflare(taxURL, {
+    paidPlayers: { [currentPlayer]: sumPayments(currentPlayer) },
+    paymentHistory: { [currentPlayer]: paymentHistory[currentPlayer] }
+  });
   loadTax();
 }
 
@@ -211,10 +232,10 @@ function recordPayment(amt) {
 }
 
 function exit() {
+  ["step1", "profile", "historyBox", "taxChart", "bankForm"].forEach(id =>
+    document.getElementById(id).style.display = "none"
+  );
   document.getElementById("step1").style.display = "block";
-  document.getElementById("profile").style.display = "none";
-  document.getElementById("historyBox").style.display = "none";
-  document.getElementById("taxChart").style.display = "none";
   document.getElementById("contact").value = "";
   document.getElementById("mcid").value = "";
 }
@@ -232,7 +253,10 @@ function renderChart() {
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `$${ctx.raw.toFixed(2)}` } } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `$${ctx.raw.toFixed(2)}` } }
+      },
       scales: {
         x: { title: { display: true, text: "Date" } },
         y: { title: { display: true, text: "Tax ($)" } }
@@ -242,17 +266,13 @@ function renderChart() {
   document.getElementById("taxChart").style.display = "block";
 }
 
-function syncToCloudflare(player, paid, history, banks) {
-  fetch(syncURL, {
+function syncToCloudflare(url, data) {
+  fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      paidPlayers: { [player]: paid },
-      paymentHistory: { [player]: history[player] || [] },
-      bankData: banks
-    })
-  }).then(res => res.ok ? console.log("☁️ Sync: ✅ Success") : res.text().then(txt => console.warn("☁️ Sync: ❌", txt)))
-    .catch(err => console.warn("☁️ Sync: ❌", err));
+    body: JSON.stringify(data)
+  }).then(res => res.ok ? console.log("☁️ Sync Success") : res.text().then(t => console.warn("☁️ Sync Error:", t)))
+    .catch(err => console.warn("☁️ Sync Fail:", err));
 }
 
 window.onload = () => {
