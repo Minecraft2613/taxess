@@ -1,3 +1,4 @@
+<!-- ✅ Final Fixed Version of Tax Portal Script with Full History Preservation and Proper Payment History Display -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -117,7 +118,6 @@ function parseTransactions(log) {
 
   showProfile(buy, sell, total, paid, due, advanced);
   renderChart();
-  syncToCloudflare(currentPlayer, paid, paymentHistory);
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
@@ -143,7 +143,6 @@ function showProfile(buy, sell, total, paid, due, advanced) {
 async function submitTax() {
   const amt = parseFloat(document.getElementById("payAmt").value);
   if (!amt || amt <= 0) return alert("Invalid amount");
-
   recordPayment(amt);
   await syncToCloudflare(currentPlayer, sumPayments(currentPlayer), paymentHistory);
   await loadOnlineData();
@@ -192,19 +191,25 @@ function renderChart() {
   document.getElementById("taxChart").style.display = "block";
 }
 
-function syncToCloudflare(player, paid, history) {
-  return fetch(syncURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      paidPlayers: { [player]: paid },
-      paymentHistory: { [player]: history[player] || [] }
-    })
-  }).then(res => res.ok
-      ? console.log("☁️ Sync: ✅ Success")
-      : res.text().then(txt => console.warn("☁️ Sync: ❌", txt))
-    )
-    .catch(err => console.warn("☁️ Sync: ❌", err));
+async function syncToCloudflare(player, paid, history) {
+  try {
+    const res = await fetch(syncURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        paidPlayers: { [player]: paid },
+        paymentHistory: { [player]: history[player] || [] }
+      })
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      console.warn("☁️ Sync: ❌", text);
+    } else {
+      console.log("☁️ Sync: ✅ Success");
+    }
+  } catch (err) {
+    console.warn("☁️ Sync: ❌", err);
+  }
 }
 
 window.onload = () => {
