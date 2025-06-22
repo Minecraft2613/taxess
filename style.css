@@ -1,3 +1,4 @@
+/* style.css */
 body {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
@@ -48,7 +49,7 @@ button:hover {
   background: #ffaa00;
 }
 
-.bank-box, .profile-box, .history-box {
+.bank-box, .profile-box, .history-box, .ranking-box {
   background: #111;
   padding: 15px;
   border-radius: 10px;
@@ -73,36 +74,49 @@ button:hover {
   align-items: center;
   justify-content: center;
   margin-top: 40px;
+  gap: 10px;
+}
+
+.loading-cube-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  width: 104px;
+  height: 104px;
+  justify-content: space-between;
+  animation: assemble 2s ease-in-out forwards;
+}
+
+.loading-cube {
+  width: 48px;
+  height: 48px;
+  background-color: #ff8800;
+  margin: 2px;
+  animation: pulseCube 1.2s infinite alternate;
+  border-radius: 4px;
 }
 
 .loading-text {
   font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+}
+
+.exit-button {
+  background: #880000;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
   margin-top: 10px;
+  width: 100%;
+  max-width: 200px;
 }
 
-.cube {
-  width: 50px;
-  height: 50px;
-  position: relative;
-  transform-style: preserve-3d;
-  animation: rotateCube 2s infinite linear;
+.exit-button:hover {
+  background: #cc0000;
 }
-
-.face {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  background: #ff8800;
-  opacity: 1;
-  border: 2px solid #222;
-}
-
-.front  { transform: rotateY(  0deg) translateZ(25px); }
-.back   { transform: rotateY(180deg) translateZ(25px); }
-.right  { transform: rotateY( 90deg) translateZ(25px); }
-.left   { transform: rotateY(-90deg) translateZ(25px); }
-.top    { transform: rotateX( 90deg) translateZ(25px); }
-.bottom { transform: rotateX(-90deg) translateZ(25px); }
 
 @keyframes fadeIn {
   0% { opacity: 0; transform: translateY(20px); }
@@ -115,7 +129,12 @@ button:hover {
   100% { text-shadow: 0 0 10px #ffcc00; }
 }
 
-@keyframes rotateCube {
-  0%   { transform: rotateX(0deg) rotateY(0deg); }
-  100% { transform: rotateX(360deg) rotateY(360deg); }
+@keyframes pulseCube {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes assemble {
+  0% { transform: scale(0.5) rotate(0deg); }
+  100% { transform: scale(1.2) rotate(360deg); }
 }
