@@ -4,99 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>💼 Player Tax Portal</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
-      color: #fff;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      animation: fadeIn 1.2s ease-in;
-    }
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
-    }
-    h1 { text-align: center; color: #ffcc00; animation: pulse 1.5s infinite; }
-    @keyframes pulse {
-      0% { text-shadow: 0 0 10px #ffcc00; }
-      50% { text-shadow: 0 0 20px #ffcc00; }
-      100% { text-shadow: 0 0 10px #ffcc00; }
-    }
-    input, select, button {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-      border-radius: 6px;
-      border: none;
-    }
-    input, select {
-      background: #222;
-      color: #fff;
-      border: 1px solid #444;
-    }
-    button {
-      background: #ff8800;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background: #ffaa00;
-    }
-    .profile-box, .history-box, .bank-box {
-      background: #111;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
-      word-wrap: break-word;
-      animation: fadeIn 1s ease-in;
-    }
-    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
-    canvas { width: 100% !important; height: auto !important; margin-top: 20px; }
-    .countdown {
-      color: #0f0;
-      font-weight: bold;
-      text-align: center;
-      margin-top: 10px;
-    }
-    .loading-animation {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 40px;
-      height: 60px;
-    }
-    .block {
-      width: 20px;
-      height: 20px;
-      background: #ffcc00;
-      margin: 0 5px;
-      animation: blockAnim 1s ease-in-out infinite;
-    }
-    .block:nth-child(2) { animation-delay: 0.2s; }
-    .block:nth-child(3) { animation-delay: 0.4s; }
-    .block:nth-child(4) { animation-delay: 0.6s; }
-    @keyframes blockAnim {
-      0%, 100% { transform: scale(1); opacity: 0.5; }
-      50% { transform: scale(1.5); opacity: 1; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>📃 Player Tax Portal</h1>
+
     <div id="step1">
       <input id="mcid" placeholder="Enter your Minecraft Username" />
       <select id="job"></select>
@@ -115,6 +30,7 @@
       <div class="block"></div>
       <p style="margin-left: 10px; font-weight: bold;">Loading data...</p>
     </div>
+
     <div id="bankBox" class="bank-box" style="display:none;"></div>
     <div id="profile" class="profile-box" style="display:none;"></div>
     <div id="historyBox" class="history-box" style="display:none;"></div>
