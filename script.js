@@ -1,3 +1,4 @@
+// script.js
 const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
 const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
 const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
@@ -5,9 +6,8 @@ const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
 const syncTransactionURL = "https://transaction.1987sakshamsingh.workers.dev/";
 const webhookURL = "https://discordapp.com/api/webhooks/1386366777403117620/ioXKz_sPozMCx1DPvTWnJ1d2YyBw9P9oiqoRO_EWJWRZ1YDFEQEK3R64Y5RImfIgTrHR";
 
-let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {};
-let currentPlayer = '', dailyData = {}, chart;
-const deadlineDays = 7;
+let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, dailyData = {}, chart;
+let currentPlayer = "";
 
 window.onload = () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
@@ -30,6 +30,7 @@ async function checkTax() {
     await fetch(syncTransactionURL, { method: "POST" });
     await loadOnlineData();
     document.getElementById("loading").style.display = "none";
+
     if (!bankAccounts[currentPlayer]) askBankDetails();
     else askBankLogin();
   } catch (e) {
@@ -47,7 +48,6 @@ async function loadOnlineData() {
   paymentHistory = taxData.paymentHistory || {};
   bankAccounts = bankData.accounts || {};
   taxDeadline = taxData.taxDeadline || {};
-  showTopTaxPayers();
 }
 
 function askBankDetails() {
@@ -123,9 +123,10 @@ function parseTransactions(log) {
   const total = buy + sell;
   const paid = sumPayments(currentPlayer);
   const due = Math.max(0, total - paid);
+
   const now = Date.now();
   const startTime = taxDeadline[currentPlayer];
-  const deadline = startTime ? startTime + deadlineDays * 86400000 : null;
+  const deadline = startTime ? startTime + 7 * 86400000 : null;
 
   if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
     const start = new Date(); start.setHours(0, 0, 0, 0);
@@ -147,7 +148,7 @@ function parseTransactions(log) {
   }
 
   showProfile(buy, sell, total, paid, due, paid > total);
-  renderChart("line");
+  renderChart('bar');
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
@@ -158,7 +159,13 @@ function showProfile(buy, sell, total, paid, due, advanced) {
     <input type="number" id="payAmt" placeholder="Enter amount to pay">
     <div class="btn-row">
       ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : `<button onclick="submitTax()">Advance Pay</button>`}
-    </div>`;
+    </div>
+    <label for="chartType">Chart Type:</label>
+    <select id="chartType" onchange="changeChartType(this.value)">
+      <option value="bar">Bar</option>
+      <option value="line">Curved Line</option>
+      <option value="pie">Pie</option>
+    </select>`;
   document.getElementById("profile").style.display = "block";
 
   const history = paymentHistory[currentPlayer] || [];
@@ -167,25 +174,45 @@ function showProfile(buy, sell, total, paid, due, advanced) {
   document.getElementById("historyBox").style.display = "block";
 }
 
-function renderChart(type = "bar") {
+function changeChartType(type) {
+  renderChart(type);
+}
+
+function renderChart(type) {
   const ctx = document.getElementById('taxChart').getContext('2d');
   if (chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type,
-    data: {
-      labels: Object.keys(dailyData),
-      datasets: [{
-        label: 'Tax Per Day',
-        data: Object.values(dailyData),
-        backgroundColor: '#ffaa00',
-        borderColor: '#ffaa00',
-        tension: type === "line" ? 0.4 : 0
-      }]
-    },
-    options: {
-      scales: { y: { beginAtZero: true } }
-    }
-  });
+  let config;
+  if (type === 'pie') {
+    config = {
+      type: 'pie',
+      data: {
+        labels: Object.keys(dailyData),
+        datasets: [{
+          label: 'Tax Per Day',
+          data: Object.values(dailyData),
+          backgroundColor: Object.keys(dailyData).map(() => `hsl(${Math.random() * 360}, 70%, 60%)`)
+        }]
+      }
+    };
+  } else {
+    config = {
+      type: type,
+      data: {
+        labels: Object.keys(dailyData),
+        datasets: [{
+          label: 'Tax Per Day',
+          data: Object.values(dailyData),
+          borderColor: '#ffaa00',
+          backgroundColor: '#ffaa00',
+          tension: type === 'line' ? 0.3 : 0
+        }]
+      },
+      options: {
+        scales: { y: { beginAtZero: true } }
+      }
+    };
+  }
+  chart = new Chart(ctx, config);
   document.getElementById("taxChart").style.display = "block";
 }
 
@@ -225,21 +252,9 @@ function sendTaxWebhook(player, dueTax) {
       timestamp: new Date().toISOString()
     }]
   };
-
   fetch(webhookURL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(content)
   }).then(res => res.ok ? console.log("✅ Webhook sent.") : console.warn("⚠️ Webhook failed."));
-}
-
-function showTopTaxPayers() {
-  const top = Object.entries(paidPlayers)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
-  const html = top.map((entry, i) => `<li><strong>#${i + 1}</strong> ${entry[0]} - $${entry[1].toFixed(2)}</li>`).join('');
-  const box = document.createElement("div");
-  box.className = "bank-box";
-  box.innerHTML = `<h3>Top 5 Tax Payers</h3><ul>${html}</ul>`;
-  document.querySelector(".container").appendChild(box);
 }
