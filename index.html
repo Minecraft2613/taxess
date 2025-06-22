@@ -1,4 +1,4 @@
-<!-- ✅ Updated Player Tax Portal with JSON sync & layout fix -->
+<!-- ✅ Updated Player Tax Portal with JSON sync & graph fix -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -180,12 +180,14 @@ function parseTransactions(log) {
   const lines = log.split(/\r?\n/);
   let buy = 0, sell = 0;
   dailyData = {};
+
   lines.forEach(line => {
     if (!line.toLowerCase().includes(currentPlayer.toLowerCase())) return;
     const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
     const day = date ? date[1].slice(5).replace('-', '/') : "";
     const buyMatch = line.match(/bought.*?\$(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)/);
     const sellMatch = line.match(/sold.*?\$(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)/);
+
     if (buyMatch) {
       const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
       const tax = +(amt * 0.04).toFixed(2);
@@ -199,11 +201,20 @@ function parseTransactions(log) {
       dailyData[day] = (dailyData[day] || 0) + tax;
     }
   });
-  const total = buy + sell;
+
+  // ✅ Subtract paid entries from the dailyData
+  const history = paymentHistory[currentPlayer] || [];
+  history.forEach(entry => {
+    const d = new Date(entry.date);
+    const key = (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getDate().toString().padStart(2, '0');
+    dailyData[key] = Math.max(0, (dailyData[key] || 0) - Number(entry.amount));
+  });
+
+  const total = Object.values(dailyData).reduce((a, b) => a + b, 0);
   const paid = sumPayments(currentPlayer);
-  const due = Math.max(0, total - paid);
+  const due = Math.max(0, total);
   const advanced = paid > total;
-  showProfile(buy, sell, total, paid, due, advanced);
+  showProfile(buy, sell, total + paid, paid, due, advanced);
   renderChart();
 }
 
@@ -217,6 +228,7 @@ function showProfile(buy, sell, total, paid, due, advanced) {
       ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : `<button onclick="submitTax()">Advance Pay</button>`}
     </div>`;
   document.getElementById("profile").style.display = "block";
+
   const history = paymentHistory[currentPlayer] || [];
   const last = history.slice(-5);
   document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
