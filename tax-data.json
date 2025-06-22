@@ -1,6 +1,6 @@
 {
   "paidPlayers": {
-    "ansh": 4
+    "ansh": 3
   },
   "paymentHistory": {
     "ansh": [
@@ -47,6 +47,18 @@
       {
         "amount": 1,
         "date": "6/22/2025, 11:29:21 AM"
+      },
+      {
+        "amount": 1,
+        "date": "6/22/2025, 11:23:17 AM"
+      },
+      {
+        "amount": 1,
+        "date": "6/22/2025, 11:24:19 AM"
+      },
+      {
+        "amount": 1,
+        "date": "6/22/2025, 11:24:19 AM"
       }
     ]
   }
