@@ -123,7 +123,7 @@ async function loadOnlineData() {
     paymentHistory = taxData.paymentHistory || {};
     bankAccounts = bankData.accounts || {};
   } catch (e) {
-    alert("⚠️ Could not load tax/bank data.");
+    alert("\u26a0\ufe0f Could not load tax/bank data.");
   }
 }
 
@@ -181,7 +181,6 @@ function parseTransactions(log) {
       dailyData[day] = (dailyData[day] || 0) + tax;
     }
   });
-
   const total = buy + sell;
   const paid = sumPayments(currentPlayer);
   const due = Math.max(0, total - paid);
@@ -201,7 +200,6 @@ function showProfile(buy, sell, total, paid, due, advanced) {
       ${due === 0 ? `<button onclick="submitTax()">Advance Pay</button>` : ``}
     </div>`;
   document.getElementById("profile").style.display = "block";
-
   const history = paymentHistory[currentPlayer] || [];
   const last = history.slice(-5);
   document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
@@ -228,8 +226,8 @@ function syncToCloudflare(url, data) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  }).then(res => res.ok ? console.log("☁️ Sync OK") : res.text().then(txt => console.warn("☁️ Sync Fail", txt)))
-    .catch(err => console.warn("☁️ Sync Error:", err));
+  }).then(res => res.ok ? console.log("\u2601\ufe0f Sync OK") : res.text().then(txt => console.warn("\u2601\ufe0f Sync Fail", txt)))
+    .catch(err => console.warn("\u2601\ufe0f Sync Error:", err));
 }
 
 function showCountdown() {
@@ -252,17 +250,23 @@ function renderChart() {
   document.getElementById('taxChart').style.display = "block";
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: Object.keys(dailyData),
       datasets: [{
         label: 'Daily Tax ($)',
         data: Object.values(dailyData),
-        backgroundColor: '#ffcc00'
+        borderColor: '#ffcc00',
+        backgroundColor: 'rgba(255, 204, 0, 0.2)',
+        fill: true,
+        tension: 0.4
       }]
     },
     options: {
-      scales: { y: { beginAtZero: true } }
+      scales: {
+        y: { beginAtZero: true },
+        x: { ticks: { color: '#fff' } }
+      }
     }
   });
 }
