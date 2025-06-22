@@ -88,10 +88,16 @@ function sumPayments(player) {
 async function checkTax() {
   currentPlayer = document.getElementById('mcid').value.trim();
   if (!currentPlayer) return alert("Please enter your Minecraft name");
+
   document.getElementById("step1").style.display = "none";
+
   await loadOnlineData();
-  if (!bankAccounts[currentPlayer]) askBankDetails();
-  else askBankLogin();
+
+  if (!bankAccounts[currentPlayer]) {
+    askBankDetails();
+  } else {
+    askBankLogin();
+  }
 }
 
 function askBankDetails() {
@@ -101,7 +107,8 @@ function askBankDetails() {
     <input id="bankUser" placeholder="Bank Username" />
     <input id="bankId" placeholder="Bank ID" />
     <input id="bankPass" placeholder="Bank Password" type="password" />
-    <button onclick="createBankAccount()">Create Account</button>`;
+    <button onclick="createBankAccount()">Create Account</button>
+  `;
   box.style.display = "block";
 }
 
@@ -111,7 +118,8 @@ function askBankLogin() {
     <h3>Login to Bank</h3>
     <input id="bankId" placeholder="Bank ID" />
     <input id="bankPass" placeholder="Bank Password" type="password" />
-    <button onclick="verifyBankLogin()">Login</button>`;
+    <button onclick="verifyBankLogin()">Login</button>
+  `;
   box.style.display = "block";
 }
 
@@ -119,22 +127,26 @@ async function loadOnlineData() {
   try {
     const taxRes = await fetch(taxURL);
     const bankRes = await fetch(bankURL);
-    paidPlayers = (await taxRes.json()).paidPlayers || {};
-    paymentHistory = (await taxRes.json()).paymentHistory || {};
-    bankAccounts = (await bankRes.json()).accounts || {};
-  } catch {
-    alert("⚠️ Could not load tax/bank data.");
+    const taxData = await taxRes.json();
+    const bankData = await bankRes.json();
+    paidPlayers = taxData.paidPlayers || {};
+    paymentHistory = taxData.paymentHistory || {};
+    bankAccounts = bankData.accounts || {};
+  } catch (e) {
+    alert("\u26a0\ufe0f Could not load tax/bank data.");
   }
 }
 
 function verifyBankLogin() {
   const id = document.getElementById("bankId").value;
   const pass = document.getElementById("bankPass").value;
-  const acc = bankAccounts[currentPlayer];
-  if (acc && acc.id === id && acc.password === pass) {
+  const account = bankAccounts[currentPlayer];
+  if (account && account.id === id && account.password === pass) {
     document.getElementById("bankBox").style.display = "none";
     loadTax();
-  } else alert("Invalid credentials");
+  } else {
+    alert("Invalid credentials");
+  }
 }
 
 function createBankAccount() {
@@ -162,6 +174,7 @@ function parseTransactions(log) {
   const lines = log.split(/\r?\n/);
   let buy = 0, sell = 0;
   dailyData = {};
+
   lines.forEach(line => {
     if (!line.toLowerCase().includes(currentPlayer.toLowerCase())) return;
     const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
@@ -181,29 +194,33 @@ function parseTransactions(log) {
       dailyData[day] = (dailyData[day] || 0) + tax;
     }
   });
+
   const total = buy + sell;
   const paid = sumPayments(currentPlayer);
   const due = Math.max(0, total - paid);
-  showProfile(buy, sell, total, paid, due);
+  const advanced = paid > total;
+  showProfile(buy, sell, total, paid, due, advanced);
   renderChart();
 }
 
-function showProfile(buy, sell, total, paid, due) {
+function showProfile(buy, sell, total, paid, due, advanced) {
   const box = document.getElementById("profile");
   box.innerHTML = `<h3>Welcome, ${currentPlayer}</h3>
     <p>Total Tax: $${total.toFixed(2)}</p>
     <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
-    <p>Status: <strong>${due === 0 ? "No Tax Due" : "$" + due.toFixed(2) + " Due"}</strong></p>
+    <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
     <input type="number" id="payAmt" placeholder="Enter amount to pay">
     <div class="btn-row">
-      <button onclick="submitTax()">${due === 0 ? "Advance Pay" : "Pay Tax"}</button>
+      ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : ``}
+      ${due === 0 ? `<button onclick="submitTax()">Advance Pay</button>` : ``}
     </div>`;
   box.style.display = "block";
 
   const history = paymentHistory[currentPlayer] || [];
   const last = history.slice(-5);
-  document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>${last.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
-  document.getElementById("historyBox").style.display = "block";
+  const histBox = document.getElementById("historyBox");
+  histBox.innerHTML = `<h3>Payment History</h3><ul>${last.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul><button onclick="alert('Full history not yet implemented')">See Full History</button>`;
+  histBox.style.display = "block";
 }
 
 function submitTax() {
@@ -224,8 +241,8 @@ function syncToCloudflare(url, data) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  }).then(r => r.ok ? console.log("✅ Synced") : r.text().then(t => console.warn("❌ Sync failed", t)))
-    .catch(err => console.error("❌ Sync error", err));
+  }).then(res => res.ok ? console.log("\u2601\ufe0f Sync OK") : res.text().then(txt => console.warn("\u2601\ufe0f Sync Fail", txt)))
+    .catch(err => console.warn("\u2601\ufe0f Sync Error:", err));
 }
 
 function showCountdown() {
