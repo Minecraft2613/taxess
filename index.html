@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,7 +52,7 @@
 </head>
 <body>
 <div class="container">
-  <h1>📃 Player Tax Portal</h1>
+  <h1>📜 Player Tax Portal</h1>
   <div id="step1">
     <input id="mcid" placeholder="Enter your Minecraft Username" />
     <select id="job"></select>
@@ -92,7 +91,6 @@ async function checkTax() {
   if (!currentPlayer) return alert("Please enter your Minecraft name");
   document.getElementById("step1").style.display = "none";
 
-  // 🔁 Sync updated transactions
   try {
     await fetch(syncTransactionURL, { method: "POST" });
     console.log("🌀 Transaction sync complete");
@@ -236,8 +234,8 @@ function syncToCloudflare(url, data) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  }).then(res => res.ok ? console.log("☁️ Sync OK") : res.text().then(txt => console.warn("☁️ Sync Fail", txt)))
-    .catch(err => console.warn("☁️ Sync Error:", err));
+  }).then(res => res.ok ? console.log("\u2601\ufe0f Sync OK") : res.text().then(txt => console.warn("\u2601\ufe0f Sync Fail", txt)))
+    .catch(err => console.warn("\u2601\ufe0f Sync Error:", err));
 }
 
 function showCountdown() {
