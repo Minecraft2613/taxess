@@ -1,8 +1,9 @@
 {
-  "paidPlayers": {
-    "ansh": 0
-  },
-  "paymentHistory": {
-    "ansh": []
+  "accounts": {
+    "ansh": {
+      "username": "Saksham",
+      "id": "631095",
+      "password": "261377189"
+    }
   }
 }
