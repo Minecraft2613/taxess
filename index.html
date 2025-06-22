@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -77,6 +76,7 @@ const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-
 const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
 const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
 const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
+const syncTransactionURL = "https://sync-transaction.1987sakshamsingh.workers.dev/";
 
 let paidPlayers = {}, paymentHistory = {}, bankAccounts = {};
 let currentPlayer = '', dailyData = {}, chart;
@@ -90,6 +90,15 @@ async function checkTax() {
   currentPlayer = document.getElementById('mcid').value.trim();
   if (!currentPlayer) return alert("Please enter your Minecraft name");
   document.getElementById("step1").style.display = "none";
+
+  // 🔁 Sync updated transactions before checking tax
+  try {
+    await fetch(syncTransactionURL);
+    console.log("🌀 Transaction sync complete");
+  } catch (e) {
+    console.warn("⚠️ Transaction sync failed", e);
+  }
+
   await loadOnlineData();
   if (!bankAccounts[currentPlayer]) askBankDetails();
   else askBankLogin();
@@ -124,7 +133,7 @@ async function loadOnlineData() {
     paymentHistory = taxData.paymentHistory || {};
     bankAccounts = bankData.accounts || {};
   } catch (e) {
-    alert("\u26a0\ufe0f Could not load tax/bank data.");
+    alert("⚠️ Could not load tax/bank data.");
   }
 }
 
@@ -227,8 +236,8 @@ function syncToCloudflare(url, data) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  }).then(res => res.ok ? console.log("\u2601\ufe0f Sync OK") : res.text().then(txt => console.warn("\u2601\ufe0f Sync Fail", txt)))
-    .catch(err => console.warn("\u2601\ufe0f Sync Error:", err));
+  }).then(res => res.ok ? console.log("☁️ Sync OK") : res.text().then(txt => console.warn("☁️ Sync Fail", txt)))
+    .catch(err => console.warn("☁️ Sync Error:", err));
 }
 
 function showCountdown() {
