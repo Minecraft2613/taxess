@@ -265,23 +265,37 @@
   }
 
   async function checkTax() {
-    currentPlayer = document.getElementById('mcid').value.trim();
-    if (!currentPlayer) return alert("Please enter your Minecraft name");
-    document.getElementById("step1").style.display = "none";
-    document.getElementById("loading").style.display = "flex";
+  const input = document.getElementById('mcid');
+  if (!input) return alert("Input field not found!");
 
-    try {
-      await fetch(syncTransactionURL, { method: "POST" });
-      await loadOnlineData();
-      document.getElementById("loading").style.display = "none";
-      if (!bankAccounts[currentPlayer]) askBankDetails();
-      else askBankLogin();
-    } catch (e) {
-      alert("⚠️ Failed to sync. Please try again later.");
-      document.getElementById("step1").style.display = "block";
-      document.getElementById("loading").style.display = "none";
+  currentPlayer = input.value.trim();
+  if (!currentPlayer) return alert("Please enter your Minecraft name");
+
+  const step1 = document.getElementById("step1");
+  const loading = document.getElementById("loading");
+
+  if (step1) step1.style.display = "none";
+  if (loading) loading.style.display = "flex";
+
+  try {
+    await fetch(syncTransactionURL, { method: "POST" });
+    await loadOnlineData();
+
+    if (loading) loading.style.display = "none";
+
+    // Check for bank account
+    if (!bankAccounts || !bankAccounts[currentPlayer]) {
+      askBankDetails();
+    } else {
+      askBankLogin();
     }
+  } catch (e) {
+    alert("⚠️ Failed to sync. Please try again later.");
+    if (step1) step1.style.display = "block";
+    if (loading) loading.style.display = "none";
+    console.error("Sync error:", e);
   }
+}
 
   async function loadOnlineData() {
     const [taxRes, bankRes] = await Promise.all([fetch(taxURL), fetch(bankURL)]);
@@ -556,7 +570,7 @@ gradient.addColorStop(1, '#ff8800'); // Bright orange
   document.getElementById("taxChart").style.display = "block";
 }
 
-let currentWeek = 'this'; // Track which week to show
+currentWeek = 'last'; // No 'let' here
 
        function changeChart(type) {
       chartType = type;
