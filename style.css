@@ -1,144 +1,59 @@
 /* style.css */
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
-  color: #fff;
+  font-family: Arial, sans-serif;
+  background: #121212;
+  color: white;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  animation: fadeIn 1.2s ease-in;
-}
-
-.container {
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
-}
-
-h1 {
   text-align: center;
-  color: #ffcc00;
-  animation: pulse 1.5s infinite;
 }
-
-input, select, button {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  font-size: 16px;
-  border-radius: 6px;
-  border: none;
-}
-
-input, select {
-  background: #222;
-  color: #fff;
-  border: 1px solid #444;
-}
-
-button {
-  background: #ff8800;
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-button:hover {
-  background: #ffaa00;
-}
-
-.bank-box, .profile-box, .history-box {
-  background: #111;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 20px;
-  animation: fadeIn 1s ease-in;
-}
-
-.chart-area {
-  margin-top: 30px;
-  background: #1a1a1a;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-canvas {
-  margin-bottom: 20px;
-  background: #000;
-  padding: 10px;
-  border-radius: 12px;
-}
-
-.countdown {
-  color: #0f0;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 10px;
-}
-
-.loading-animation {
+.centered {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 40px;
+  height: 100vh;
 }
-
-.loading-text {
-  font-weight: bold;
+input, select, button {
+  margin: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+}
+button {
+  cursor: pointer;
+  background-color: #ffaa00;
+  color: black;
+}
+canvas {
+  max-width: 100%;
+  margin-top: 20px;
+}
+.hidden {
+  display: none;
+}
+.warning {
+  color: orange;
   margin-top: 10px;
 }
-
-.loader-blocks {
-  position: relative;
-  width: 100px;
-  height: 100px;
-}
-
-.loader-blocks .small-block {
-  width: 30px;
-  height: 30px;
-  background: #00ff00;
-  position: absolute;
-  animation: moveAndMerge 2s infinite ease-in-out;
-}
-
-.loader-blocks .b1 { top: 0; left: 0; animation-delay: 0s; }
-.loader-blocks .b2 { top: 0; right: 0; animation-delay: 0.2s; }
-.loader-blocks .b3 { bottom: 0; left: 0; animation-delay: 0.4s; }
-.loader-blocks .b4 { bottom: 0; right: 0; animation-delay: 0.6s; }
-
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse {
-  0% { text-shadow: 0 0 10px #ffcc00; }
-  50% { text-shadow: 0 0 20px #ffcc00; }
-  100% { text-shadow: 0 0 10px #ffcc00; }
-}
-
-@keyframes moveAndMerge {
-  0% { transform: scale(1) translate(0, 0); opacity: 1; }
-  50% { transform: scale(1.2) translate(35px, 35px); opacity: 0.7; }
-  100% { transform: scale(1) translate(0, 0); opacity: 1; }
-}
-
-.chart-switch {
-  margin-top: 10px;
+.loading-cube {
   display: flex;
   gap: 10px;
-  justify-content: center;
+  perspective: 1000px;
 }
+.loading-cube div {
+  width: 20px;
+  height: 20px;
+  background: #00ff00;
+  animation: cubeAnim 1.5s infinite ease-in-out;
+  transform-style: preserve-3d;
+}
+.loading-cube div:nth-child(2) { animation-delay: 0.2s; }
+.loading-cube div:nth-child(3) { animation-delay: 0.4s; }
+.loading-cube div:nth-child(4) { animation-delay: 0.6s; }
 
-.chart-switch select {
-  width: auto;
-  padding: 6px 10px;
-  background: #222;
-  color: #fff;
-  border-radius: 5px;
-  border: 1px solid #555;
+@keyframes cubeAnim {
+  0%, 100% { transform: scale(1) rotateY(0deg); opacity: 0.3; }
+  50% { transform: scale(1.2) rotateY(180deg); opacity: 1; }
 }
