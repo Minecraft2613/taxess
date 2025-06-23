@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>💼 Player Tax Portal</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.ico" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -23,8 +23,7 @@
       <button onclick="checkTax()">Check Tax</button>
     </div>
 
-    <!-- 🌟 Nova Style Smooth 3D Cube Loading -->
-    <div id="loading" class="loading-animation">
+    <div id="loading" style="display:none;">
       <div class="loading-cubes">
         <div class="cube"></div>
         <div class="cube"></div>
@@ -34,23 +33,26 @@
       <p>Loading data...</p>
     </div>
 
-    <div id="bankBox" style="display:none;"></div>
-    <div id="profile" style="display:none;"></div>
-    <div id="historyBox" style="display:none;"></div>
-    <div id="fullHistoryBox" style="display:none;"></div>
-    <div class="countdown" id="saveNotice" style="display:none;"></div>
-    <canvas id="taxChart" style="display:none;"><!-- Chart Tools -->
-<div class="chart-switcher" style="display: none;">
-  <button onclick="toggleChartOptions()">📊 Change Chart Type</button>
-  <div class="chart-type-options" id="chartOptions">
-    <button onclick="changeChart('bar')">Bar</button>
-    <button onclick="changeChart('line')">Curved Line</button>
-    <button onclick="changeChart('pie')">Pie</button>
-    <button onclick="changeChart('radar')">Radar</button>
-    <button onclick="downloadChart()">⬇️ Download Chart</button>
-  </div>
-</div>
-</canvas>
+    <div id="bankBox" class="bank-box" style="display:none;"></div>
+    <div id="profile" class="profile-box" style="display:none;"></div>
+    <div id="historyBox" class="history-box" style="display:none;"></div>
+    <div id="saveNotice" class="countdown" style="display:none;"></div>
+
+    <canvas id="taxChart" style="display:none;"></canvas>
+
+    <div class="chart-switcher">
+      <button onclick="toggleChartOptions()">Change Chart</button>
+    </div>
+
+    <div class="chart-type-options" id="chartOptions">
+      <button onclick="renderChart('bar')">Bar</button>
+      <button onclick="renderChart('line')">Line</button>
+      <button onclick="renderChart('pie')">Pie</button>
+      <button onclick="renderChart('radar')">Radar</button>
+    </div>
+
+    <div id="topTaxPlayers" class="profile-box" style="display:none;"></div>
+    <div id="fullHistoryBox" class="profile-box" style="display:none;"></div>
   </div>
 
   <script src="script.js"></script>
