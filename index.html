@@ -623,19 +623,19 @@ gradient.addColorStop(1, '#ff8800'); // Bright orange
   document.getElementById("taxChart").style.display = "block";
 }
 
-       function changeChart(type) {
-      chartType = type;
-      localStorage.setItem("chartType", type);
-      renderChart();
-    }
-  function changeTension(isSmooth) {
+     function changeChart(type) {
+  chartType = type;
+  localStorage.setItem("chartType", type);
+  renderChart();
+}
+
+function changeTension(isSmooth) {
   chartType = "line";
-tension: chartType === 'line' ? parseFloat(localStorage.getItem("lineTension") || "0.4") : 0,
+  const tensionValue = isSmooth ? 0.4 : 0;
   localStorage.setItem("chartType", "line");
   localStorage.setItem("lineTension", tensionValue);
   renderChart();
 }
-
 
 function handleChartOption(value) {
   if (value === "bar" || value === "pie") {
@@ -647,7 +647,9 @@ function handleChartOption(value) {
   } else if (value === "export") {
     downloadChart();
   }
-  function showWeek(weekType) {
+}
+
+function showWeek(weekType) {
   currentWeek = weekType;
   renderChart();
 }
