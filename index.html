@@ -11,6 +11,7 @@
 <body>
   <div class="container">
     <h1>📃 Player Tax Portal</h1>
+
     <div id="step1">
       <input id="mcid" placeholder="Enter your Minecraft Username" />
       <select id="job"></select>
@@ -22,38 +23,24 @@
       <button onclick="checkTax()">Check Tax</button>
     </div>
 
-    <div id="loading" class="loading-animation" style="display: none;">
-      <div class="block block1"></div>
-      <div class="block block2"></div>
-      <div class="block block3"></div>
-      <div class="block block4"></div>
-      <p style="margin-left: 10px; font-weight: bold;">Loading data...</p>
+    <!-- 🌟 Nova Style Smooth 3D Cube Loading -->
+    <div id="loading" class="loading-animation">
+      <div class="loading-cubes">
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+      </div>
+      <p>Loading data...</p>
     </div>
 
-    <div id="bankBox" class="bank-box" style="display:none;"></div>
-    <div id="profile" class="profile-box" style="display:none;"></div>
-    <div id="historyBox" class="history-box" style="display:none;"></div>
-    <div id="fullHistoryBox" class="full-history-box" style="display:none;"></div>
+    <div id="bankBox" style="display:none;"></div>
+    <div id="profile" style="display:none;"></div>
+    <div id="historyBox" style="display:none;"></div>
+    <div id="fullHistoryBox" style="display:none;"></div>
     <div class="countdown" id="saveNotice" style="display:none;"></div>
     <canvas id="taxChart" style="display:none;"></canvas>
-
-    <div class="chart-switcher" style="display:none;">
-      <button onclick="changeChart('bar')">Bar Chart</button>
-      <button onclick="changeChart('line')">Line Chart</button>
-      <button onclick="changeChart('pie')">Pie Chart</button>
-      <button onclick="changeChart('radar')">Curved Line (Radar)</button>
-    </div>
-
-    <div id="topTaxPlayers" class="top-tax-box" style="display:none;"></div>
   </div>
-<div id="topTaxPlayers" class="top-tax-box" style="display:none;"></div>
-<div class="chart-switcher" style="text-align:center; display:none;">
-  <button onclick="changeChart('pie')">Pie</button>
-  <button onclick="changeChart('bar')">Bar</button>
-  <button onclick="changeChart('line')">Line</button>
-  <button onclick="changeChart('radar')">Radar</button>
-</div>
-<div id="fullHistoryBox" class="full-history-box" style="display:none;"></div>
 
   <script src="script.js"></script>
 </body>
