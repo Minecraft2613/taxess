@@ -284,11 +284,7 @@
     if (loading) loading.style.display = "none";
 
     // Check for bank account
-    if (!bankAccounts || !bankAccounts[currentPlayer]) {
-      askBankDetails();
-    } else {
-      askBankLogin();
-    }
+   askBankDetails();
   } catch (e) {
     alert("⚠️ Failed to sync. Please try again later.");
     if (step1) step1.style.display = "block";
