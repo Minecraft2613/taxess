@@ -237,9 +237,7 @@
   </select>
 </div>
 
-<canvas id="taxChart"></canvas>
-
-
+<canvas id="taxChart" width="800" height="400" style="width: 100%; background: #111;"></canvas>
 
   <!-- Footer Buttons -->
   <div class="btn-row" id="footerButtons" style="display:none;">
@@ -315,10 +313,12 @@ function askBankDetails() {
     document.getElementById("bankBox").innerHTML = `
       <h3>🏦 Create Bank Account</h3>
       <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <input id="bankId" value="${randomId}" readonly style="flex:1; font-weight: bold; font-size: 16px;" />
-        <button onclick="navigator.clipboard.writeText('${randomId}')" style="flex-shrink: 0;">📋 Copy</button>
-      </div>
+   <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+  <input id="bankId" value="${randomId}" readonly
+         style="flex: 1; font-size: 18px; font-weight: bold; background: #222; color: #ffee00; padding: 5px; border: 2px solid #ffaa00;" />
+  <button onclick="copyBankId()" style="padding: 6px 12px; background: #ffaa00; border: none; color: #000; font-weight: bold; border-radius: 6px;">📋</button>
+</div>
+
       <p style="color: #ff6666; font-size: 14px; margin-top: 5px;">
         ⚠️ Remember your Bank ID: <b>${randomId}</b>. You'll need it to login later.
       </p>
@@ -375,10 +375,11 @@ function createBankAccount() {
 
   bankAccounts[currentPlayer] = { username, id, password: pass };
 
-  syncToCloudflare(syncBankURL, { accounts: bankAccounts });
+ syncToCloudflare(syncBankURL, { accounts: bankAccounts }).then(() => {
   document.getElementById("bankBox").style.display = "none";
-  loadTax();
-}
+  verifyBankLogin(); // Auto-login after creation
+});
+
 
 
     async function loadTax() {
@@ -520,8 +521,8 @@ function createBankAccount() {
   });
 
   const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, '#ffee00');
-  gradient.addColorStop(1, '#ffaa00');
+gradient.addColorStop(0, '#fff700'); // Neon yellow
+gradient.addColorStop(1, '#ff8800'); // Bright orange
 
   chart = new Chart(ctx, {
     type: chartType,
@@ -623,7 +624,8 @@ function handleChartOption(value) {
   ctx.font = "14px Arial";
   ctx.textAlign = "left";
 
-  const maxLines = 4;
+const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
+
   const x = 10;
   let y = canvas.height - 80;
   
@@ -726,12 +728,17 @@ function handleChartOption(value) {
       taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
     };
 function copyBankId() {
-  const bankIdInput = document.getElementById("bankId");
-  navigator.clipboard.writeText(bankIdInput.value)
-    .then(() => alert("📋 Bank ID copied to clipboard!"))
-    .catch(() => alert("❌ Failed to copy Bank ID."));
+  const bankId = document.getElementById("bankId").value;
+  navigator.clipboard.writeText(bankId).then(() => {
+    alert("📋 Bank ID copied to clipboard!");
+  }).catch(() => {
+    alert("❌ Copy failed.");
+  });
 }
-
+function showWeek(weekType) {
+  currentWeek = weekType;
+  renderChart();
+}
 
   </script>
 </body>
