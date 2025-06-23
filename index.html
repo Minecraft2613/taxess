@@ -222,17 +222,17 @@
    <div id="chartArea" class="card" style="display:none;">
   <canvas id="taxChart"></canvas>
 
-  <!-- Chart Type Dropdown -->
-  <div class="btn-row" style="margin-top:10px; margin-bottom: 20px;">
-    <select onchange="handleChartOption(this.value)">
-      <option disabled selected>📈 Change Chart Type</option>
-      <option value="bar">📊 Bar Chart</option>
-      <option value="pie">🥧 Pie Chart</option>
-      <option value="smooth">🌈 Smooth Curve</option>
-      <option value="line">📈 Straight Line</option>
-      <option value="export">📥 Export Chart</option>
-    </select>
-  </div>
+<div class="btn-row" style="margin-top:10px; margin-bottom:30px;">
+  <select onchange="handleChartOption(this.value)">
+    <option disabled selected>📈 Change Chart Type</option>
+    <option value="bar">📊 Bar Chart</option>
+    <option value="pie">🥧 Pie Chart</option>
+    <option value="smooth">🌈 Smooth Curve</option>
+    <option value="line">📈 Straight Line</option>
+    <option value="export">📥 Export Chart</option>
+  </select>
+</div>
+
 
   <!-- Footer Buttons -->
   <div class="btn-row" id="footerButtons" style="display:none;">
