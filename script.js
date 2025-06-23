@@ -6,8 +6,7 @@ const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
 const syncTransactionURL = "https://transaction.1987sakshamsingh.workers.dev/";
 const webhookURL = "https://discordapp.com/api/webhooks/1386366777403117620/ioXKz_sPozMCx1DPvTWnJ1d2YyBw9P9oiqoRO_EWJWRZ1YDFEQEK3R64Y5RImfIgTrHR";
 
-let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, currentPlayer = "", dailyData = {}, chartType = "pie", chart;
-const deadlineDays = 7;
+let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, currentPlayer = "", dailyData = {}, chartType = localStorage.getItem("chartType") || "pie", chart;
 
 function sumPayments(player) {
   const history = paymentHistory[player] || [];
@@ -190,28 +189,47 @@ function renderChart() {
   const ctx = document.getElementById('taxChart').getContext('2d');
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
-    type: chartType,
+    type: chartType === "curved" ? "line" : chartType,
     data: {
       labels: Object.keys(dailyData),
       datasets: [{
         label: 'Tax Per Day',
         data: Object.values(dailyData),
-        backgroundColor: ['#ffaa00', '#ff8800', '#ff6600', '#ff4400'],
-        borderColor: '#000',
-        borderWidth: 1
+        backgroundColor: ['#ffaa00', '#00ffaa', '#ff66cc', '#3399ff', '#ccff33', '#ff3333', '#33ffcc'],
+        borderColor: '#00ff88',
+        borderWidth: 2,
+        fill: ['line', 'radar'].includes(chartType),
+        tension: chartType === "curved" ? 0.4 : 0
       }]
     },
     options: {
       responsive: true,
-      scales: chartType === 'pie' ? {} : { y: { beginAtZero: true } }
+      animation: { duration: 1000, easing: 'easeInOutQuart' },
+      plugins: {
+        legend: { labels: { color: '#fff' } },
+        tooltip: { enabled: true }
+      },
+      scales: ['bar', 'line', 'curved'].includes(chartType) ? {
+        x: { ticks: { color: '#fff' } },
+        y: { beginAtZero: true, ticks: { color: '#fff' } }
+      } : {}
     }
   });
   document.getElementById("taxChart").style.display = "block";
+  document.getElementById("downloadChartBtn").style.display = "inline-block";
 }
 
 function changeChart(type) {
   chartType = type;
+  localStorage.setItem("chartType", type);
   renderChart();
+}
+
+function downloadChartImage() {
+  const link = document.createElement('a');
+  link.download = `tax_chart_${chartType}.png`;
+  link.href = document.getElementById("taxChart").toDataURL("image/png");
+  link.click();
 }
 
 function submitTax() {
@@ -263,11 +281,22 @@ function showTopTaxPlayers() {
     .slice(0, 5)
     .map(([name, tax]) => `<li><strong>${name}</strong>: $${tax.toFixed(2)}</li>`)
     .join('');
-  document.getElementById("topTaxPlayers").innerHTML = `<h3>Top 5 Tax Payers</h3><ul>${top}</ul>`;
+  document.getElementById("topTaxPlayers").innerHTML = `<h3>🏆 Top 5 Tax Payers</h3><ul>${top}</ul>`;
   document.getElementById("topTaxPlayers").style.display = "block";
 }
 
 window.onload = () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
   document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
+
+  const chartSwitcher = document.querySelector(".chart-switcher");
+  if (chartSwitcher && !document.getElementById("downloadChartBtn")) {
+    const dlBtn = document.createElement("button");
+    dlBtn.id = "downloadChartBtn";
+    dlBtn.textContent = "📊 Export Chart";
+    dlBtn.style.marginTop = "10px";
+    dlBtn.onclick = downloadChartImage;
+    dlBtn.style.display = "none";
+    chartSwitcher.appendChild(dlBtn);
+  }
 };
