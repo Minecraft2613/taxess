@@ -219,23 +219,27 @@
 
     <div id="saveNotice" class="card" style="display:none;"></div>
 
-    <div id="chartArea" class="card" style="display:none;">
-      <canvas id="taxChart"></canvas>
- <div class="btn-row" style="margin-top:10px;">
-  <select onchange="handleChartOption(this.value)">
-    <option disabled selected>📈 Change Chart Type</option>
-    <option value="bar">📊 Bar Chart</option>
-    <option value="pie">🥧 Pie Chart</option>
-    <option value="smooth">🌈 Smooth Curve</option>
-    <option value="line">📈 Straight Line</option>
-    <option value="export">📥 Export Chart</option>
-  </select>
-</div>
-    <div class="btn-row" id="footerButtons" style="display:none;">
-      <button onclick="showFullHistory()">Full History</button>
-      <button onclick="exitApp()">Exit</button>
-    </div>
+   <div id="chartArea" class="card" style="display:none;">
+  <canvas id="taxChart"></canvas>
+
+  <!-- Chart Type Dropdown -->
+  <div class="btn-row" style="margin-top:10px; margin-bottom: 20px;">
+    <select onchange="handleChartOption(this.value)">
+      <option disabled selected>📈 Change Chart Type</option>
+      <option value="bar">📊 Bar Chart</option>
+      <option value="pie">🥧 Pie Chart</option>
+      <option value="smooth">🌈 Smooth Curve</option>
+      <option value="line">📈 Straight Line</option>
+      <option value="export">📥 Export Chart</option>
+    </select>
   </div>
+
+  <!-- Footer Buttons -->
+  <div class="btn-row" id="footerButtons" style="display:none;">
+    <button onclick="showFullHistory()">Full History</button>
+    <button onclick="exitApp()">Exit</button>
+  </div>
+</div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
