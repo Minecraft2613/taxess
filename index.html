@@ -220,9 +220,8 @@
     <div id="saveNotice" class="card" style="display:none;"></div>
 
    <div id="chartArea" class="card" style="display:none;">
-  <canvas id="taxChart"></canvas>
 
-<div class="btn-row" style="margin-top:10px; margin-bottom:30px;">
+<div class="btn-row" style="margin-bottom: 10px;">
   <select onchange="handleChartOption(this.value)">
     <option disabled selected>📈 Change Chart Type</option>
     <option value="bar">📊 Bar Chart</option>
@@ -232,6 +231,9 @@
     <option value="export">📥 Export Chart</option>
   </select>
 </div>
+
+<canvas id="taxChart"></canvas>
+
 
 
   <!-- Footer Buttons -->
