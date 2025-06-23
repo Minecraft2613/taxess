@@ -1,59 +1,118 @@
-/* style.css */
+/* === General Styles === */
 body {
-  font-family: Arial, sans-serif;
-  background: #121212;
-  color: white;
   margin: 0;
-  padding: 0;
-  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #1e1e2f, #3b3b58);
+  color: white;
+  overflow-x: hidden;
 }
-.centered {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-input, select, button {
-  margin: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  border: none;
-  font-size: 16px;
-}
-button {
-  cursor: pointer;
-  background-color: #ffaa00;
-  color: black;
-}
-canvas {
-  max-width: 100%;
-  margin-top: 20px;
-}
-.hidden {
-  display: none;
-}
-.warning {
-  color: orange;
-  margin-top: 10px;
-}
-.loading-cube {
-  display: flex;
-  gap: 10px;
-  perspective: 1000px;
-}
-.loading-cube div {
-  width: 20px;
-  height: 20px;
-  background: #00ff00;
-  animation: cubeAnim 1.5s infinite ease-in-out;
-  transform-style: preserve-3d;
-}
-.loading-cube div:nth-child(2) { animation-delay: 0.2s; }
-.loading-cube div:nth-child(3) { animation-delay: 0.4s; }
-.loading-cube div:nth-child(4) { animation-delay: 0.6s; }
 
-@keyframes cubeAnim {
-  0%, 100% { transform: scale(1) rotateY(0deg); opacity: 0.3; }
-  50% { transform: scale(1.2) rotateY(180deg); opacity: 1; }
+input, select, button {
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+button {
+  background: #ffaa00;
+  color: black;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #ffc93c;
+}
+
+h3 {
+  margin: 10px 0 5px;
+  color: #ffaa00;
+}
+
+p, li {
+  font-size: 15px;
+}
+
+/* === Layout === */
+.container {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+#step1, #profile, #bankBox, #historyBox, #top5Box, #fullHistoryBox {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: #2a2a3d;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+#taxChart {
+  max-width: 100%;
+  height: 300px;
+  margin-top: 20px;
+  background: white;
+  border-radius: 10px;
+}
+
+/* === Nova 3D Loading Cube === */
+#novaLoading3D {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #000000d0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 1000;
+  flex-direction: column;
+}
+
+.cube-container {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  transform-style: preserve-3d;
+  animation: rotateCube 3s infinite linear;
+}
+
+.cube-face {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: #00ff88;
+  opacity: 0.85;
+  border: 2px solid #fff;
+  box-shadow: 0 0 10px #00ff88;
+}
+
+.cube-face.front  { transform: translateZ(30px); }
+.cube-face.back   { transform: rotateY(180deg) translateZ(30px); }
+.cube-face.right  { transform: rotateY(90deg) translateZ(30px); }
+.cube-face.left   { transform: rotateY(-90deg) translateZ(30px); }
+.cube-face.top    { transform: rotateX(90deg) translateZ(30px); }
+.cube-face.bottom { transform: rotateX(-90deg) translateZ(30px); }
+
+@keyframes rotateCube {
+  0%   { transform: rotateX(0deg) rotateY(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+#loadingText {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #00ff88;
+  text-shadow: 0 0 10px #00ff88;
+}
+
+/* === Utility === */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
