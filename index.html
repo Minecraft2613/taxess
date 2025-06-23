@@ -225,6 +225,10 @@
   <button onclick="showWeek('this')">📅 This Week</button>
   <button onclick="showWeek('last')">⏪ Previous Week</button>
 </div>
+<div id="weekSelector" style="margin: 20px 0; display:none;">
+  <label for="weekDropdown">📅 Select Week:</label>
+  <select id="weekDropdown" onchange="changeWeek(this.value)"></select>
+</div>
 
 <div class="btn-row" style="margin-bottom: 10px;">
   <select onchange="handleChartOption(this.value)">
@@ -257,7 +261,7 @@
 
   let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, currentPlayer = "", dailyData = {}, chart;
   let chartType = localStorage.getItem("chartType") || "line";
-  let currentWeek = 'this';
+ currentWeek = 'this';
 
   function sumPayments(player) {
     const history = paymentHistory[player] || [];
@@ -409,6 +413,8 @@
         dailyData[day] = (dailyData[day] || 0) + tax;
       }
     });
+    
+populateWeekDropdown();
 
     const total = buy + sell;
     const paid = sumPayments(currentPlayer);
@@ -487,31 +493,80 @@
       document.getElementById("fullHistoryBox").style.display = "none";
     }
 
- function renderChart() {
-  const ctx = document.getElementById('taxChart').getContext('2d');
-  if (chart) chart.destroy();
-
-  // Filter dailyData based on week
-  const filteredLabels = [];
-  const filteredValues = [];
+  function groupDataByWeek() {
+  const weeks = {};
   const today = new Date();
-  const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const currentTime = now.getTime();
 
   Object.entries(dailyData).forEach(([date, value]) => {
     const [month, day] = date.split('/').map(Number);
-    const entryDate = new Date(today.getFullYear(), month - 1, day);
-    const entryTime = entryDate.getTime();
-    const diffDays = Math.floor((currentTime - entryTime) / 86400000);
+    const dateObj = new Date(today.getFullYear(), month - 1, day);
 
-    if (
-      (currentWeek === 'this' && diffDays >= 0 && diffDays < 7) ||
-      (currentWeek === 'last' && diffDays >= 7 && diffDays < 14)
-    ) {
-      filteredLabels.push(date);
-      filteredValues.push(value);
+    const weekStart = new Date(dateObj);
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const key = weekStart.toISOString().split('T')[0];
+
+    if (!weeks[key]) weeks[key] = {};
+    weeks[key][date] = value;
+  });
+
+  return weeks;
+}
+
+ function renderChart() {
+  const weekData = groupDataByWeek();
+  const selectedWeek = currentWeek; // global variable
+  const data = weekData[selectedWeek];
+
+  if (!data) return;
+
+  const ctx = document.getElementById("taxChart").getContext("2d");
+  if (chart) chart.destroy();
+
+  const labels = Object.keys(data);
+  const values = Object.values(data);
+
+  chart = new Chart(ctx, {
+    type: chartType,
+    data: {
+      labels,
+      datasets: [{
+        label: `Tax Data for Week Starting ${selectedWeek}`,
+        data: values,
+        fill: false,
+        borderColor: "#ffee00",
+        backgroundColor: "#ffaa00",
+        tension: chartType === "line" ? 0.4 : 0
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { ticks: { color: "#aaa" }, grid: { color: "#333" } },
+        y: { beginAtZero: true, ticks: { color: "#aaa" }, grid: { color: "#333" } }
+      }
     }
   });
+function populateWeekDropdown() {
+  const weekData = groupDataByWeek();
+  const dropdown = document.getElementById("weekDropdown");
+  dropdown.innerHTML = "";
+  Object.keys(weekData).sort().reverse().forEach(weekStart => {
+    const option = document.createElement("option");
+    option.value = weekStart;
+    option.textContent = `Week of ${weekStart}`;
+    dropdown.appendChild(option);
+  });
+
+  document.getElementById("weekSelector").style.display = "block";
+}
+
+function changeWeek(week) {
+  currentWeek = week;
+  renderChart();
+}
+
+  document.getElementById("taxChart").style.display = "block";
+}
 
   const gradient = ctx.createLinearGradient(0, 0, 0, 400);
 gradient.addColorStop(0, '#fff700'); // Neon yellow
@@ -729,9 +784,10 @@ function copyBankId() {
   });
 }
 function showWeek(weekType) {
-  currentWeek = weekType;
+  currentWeek = weekType; // ✅ Correct: we're just updating the existing global variable
   renderChart();
 }
+
 
   </script>
 </body>
