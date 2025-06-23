@@ -1,35 +1,62 @@
+<!-- Updated Player Tax Portal HTML -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Player Tax Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💼 Player Tax Portal</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div id="step1" class="centered">
-    <h2>Enter Your Minecraft Username</h2>
-    <input type="text" id="mcid" placeholder="Minecraft Username">
-    <select id="job"></select>
-    <button onclick="checkTax()">Check Tax</button>
-  </div>
+  <div class="container">
+    <h1>📃 Player Tax Portal</h1>
 
-  <div id="novaLoading3D" class="centered hidden">
-    <div class="loading-cube">
-      <div></div><div></div><div></div><div></div>
+    <div id="step1">
+      <input id="mcid" placeholder="Enter your Minecraft Username" />
+      <select id="job"></select>
+      <select id="method">
+        <option value="Discord">Discord</option>
+        <option value="Instagram">Instagram</option>
+      </select>
+      <input id="contact" placeholder="Enter your Discord/Instagram username" />
+      <button onclick="checkTax()">Check Tax</button>
     </div>
-    <p>Loading data...</p>
+
+    <!-- Real 3D 4-block animation -->
+    <div id="novaLoading3D" class="loading-animation" style="display:none;">
+      <div class="block-group">
+        <div class="block block1"></div>
+        <div class="block block2"></div>
+        <div class="block block3"></div>
+        <div class="block block4"></div>
+      </div>
+      <div class="loading-text">Loading data...</div>
+      <button onclick="cancelLoad()" class="exit-btn">Exit</button>
+    </div>
+
+    <div id="bankBox" class="bank-box" style="display:none;"></div>
+    <div id="profile" class="profile-box" style="display:none;"></div>
+    <div id="historyBox" class="history-box" style="display:none;"></div>
+    <div class="countdown" id="saveNotice" style="display:none;"></div>
+
+    <!-- Chart Type Selection -->
+    <select id="chartType" onchange="changeChartType(this.value)">
+      <option value="line">📈 Line</option>
+      <option value="bar">📊 Bar</option>
+      <option value="pie">🥧 Pie</option>
+      <option value="curved">🌀 Curved Line</option>
+    </select>
+
+    <div class="chart-area">
+      <canvas id="taxChart" style="display:none;"></canvas>
+    </div>
+
+    <div id="top5Box" class="top-rank" style="display:none;"></div>
+    <div id="showMorePayments" style="text-align:center;margin-top:20px;display:none;">
+      <button onclick="showFullPaymentHistory()">📜 View Full Payment History</button>
+    </div>
   </div>
-
-  <div id="bankBox" class="centered hidden"></div>
-
-  <div id="profile" class="hidden"></div>
-  <div id="historyBox" class="hidden"></div>
-  <div id="top5Box" class="hidden"></div>
-  <div id="fullHistoryBox" class="hidden"></div>
-  <canvas id="taxChart" class="hidden"></canvas>
-  <div id="saveNotice" class="hidden warning"></div>
 
   <script src="script.js"></script>
 </body>
