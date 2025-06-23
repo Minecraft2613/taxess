@@ -570,59 +570,6 @@ function changeWeek(week) {
   document.getElementById("taxChart").style.display = "block";
 }
 
-  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-gradient.addColorStop(0, '#fff700'); // Neon yellow
-gradient.addColorStop(1, '#ff8800'); // Bright orange
-
-  chart = new Chart(ctx, {
-    type: chartType,
-    data: {
-      labels: filteredLabels,
-      datasets: [{
-        label: `Tax Per Day (${currentWeek === 'this' ? "This Week" : "Last Week"})`,
-        data: filteredValues,
-        fill: chartType !== 'pie' && chartType !== 'radar',
-        backgroundColor: chartType === 'pie' || chartType === 'radar'
-          ? ['#ffaa00', '#ff8800', '#ff6600', '#00ffaa', '#00ccaa', '#0066ff', '#cc00ff']
-          : gradient,
-        borderColor: '#ffee00',
-        borderWidth: 3,
-        tension: chartType === 'line' ? 0.4 : 0,
-        pointRadius: 5,
-        pointHoverRadius: 8,
-        pointBackgroundColor: '#ffee00',
-        pointHoverBackgroundColor: '#ff6600',
-      }]
-    },
-    options: {
-      responsive: true,
-      animation: {
-        duration: 0
-      },
-      plugins: {
-        tooltip: {
-          enabled: true,
-          backgroundColor: '#222',
-          titleColor: '#ffee00',
-          bodyColor: '#fff',
-          borderColor: '#ffee00',
-          borderWidth: 1
-        },
-        legend: {
-          labels: { color: '#fff' }
-        }
-      },
-      scales: chartType === 'pie' || chartType === 'radar' ? {} : {
-        x: { ticks: { color: '#aaa' }, grid: { color: '#333' } },
-        y: { beginAtZero: true, ticks: { color: '#aaa' }, grid: { color: '#333' } }
-      },
-      maintainAspectRatio: false
-    }
-  });
-
-  document.getElementById("taxChart").style.display = "block";
-}
-
      function changeChart(type) {
   chartType = type;
   localStorage.setItem("chartType", type);
