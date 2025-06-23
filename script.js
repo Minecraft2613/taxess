@@ -1,5 +1,4 @@
-// Starting point: loading screen animation, chart default, exit buttons, top 5 bank users
-
+// script.js
 const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
 const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
 const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
@@ -9,32 +8,27 @@ const webhookURL = "https://discordapp.com/api/webhooks/1386366777403117620/ioXK
 
 let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {};
 let currentPlayer = '', dailyData = {}, chart;
-const deadlineDays = 7;
 
 window.onload = () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
   document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"]
     .map(j => `<option>${j}</option>`).join("");
-  document.getElementById("exitBtn").onclick = () => location.reload();
+  document.getElementById("chartType").addEventListener("change", changeChartType);
 };
 
-function sumPayments(player) {
-  const history = paymentHistory[player] || [];
-  return history.reduce((sum, entry) => sum + Number(entry.amount), 0);
+function changeChartType() {
+  renderChart(this.value);
 }
 
 async function checkTax() {
   currentPlayer = document.getElementById('mcid').value.trim();
   if (!currentPlayer) return alert("Please enter your Minecraft name");
-
   document.getElementById("step1").style.display = "none";
   document.getElementById("novaLoading3D").style.display = "flex";
-
   try {
     await fetch(syncTransactionURL, { method: "POST" });
     await loadOnlineData();
     document.getElementById("novaLoading3D").style.display = "none";
-
     if (!bankAccounts[currentPlayer]) askBankDetails();
     else askBankLogin();
   } catch (e) {
@@ -96,6 +90,11 @@ function createBankAccount() {
   loadTax();
 }
 
+function sumPayments(player) {
+  const history = paymentHistory[player] || [];
+  return history.reduce((sum, entry) => sum + Number(entry.amount), 0);
+}
+
 async function loadTax() {
   const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt?nocache=" + Date.now());
   const text = await res.text();
@@ -131,8 +130,7 @@ function parseTransactions(log) {
   const due = Math.max(0, total - paid);
 
   showProfile(buy, sell, total, paid, due, paid > total);
-  renderChart();
-  renderTopBank();
+  renderChart("line");
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
@@ -144,38 +142,38 @@ function showProfile(buy, sell, total, paid, due, advanced) {
     <div class="btn-row">
       ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : `<button onclick="submitTax()">Advance Pay</button>`}
       <button onclick="location.reload()">Exit</button>
-    </div>`;
+    </div>
+    <label>Chart Type:</label>
+    <select id="chartType">
+      <option value="line">Line</option>
+      <option value="bar">Bar</option>
+      <option value="pie">Pie</option>
+    </select>`;
   document.getElementById("profile").style.display = "block";
-}
 
-function renderTopBank() {
-  const users = Object.entries(bankAccounts).map(([k, v]) => ({ name: v.username, id: v.id }))
-    .slice(0, 5).map(u => `<li>${u.name} (ID: ${u.id})</li>`).join('');
-  document.getElementById("historyBox").innerHTML = `<h3>Top 5 Bank Users</h3><ul>${users}</ul>`;
+  const history = paymentHistory[currentPlayer] || [];
+  document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
+    ${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
   document.getElementById("historyBox").style.display = "block";
 }
 
-function renderChart() {
+function renderChart(type = 'line') {
   const ctx = document.getElementById('taxChart').getContext('2d');
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
-    type: 'line',
+    type,
     data: {
       labels: Object.keys(dailyData),
       datasets: [{
         label: 'Tax Per Day',
         data: Object.values(dailyData),
-        fill: true,
+        backgroundColor: '#ffaa00',
         borderColor: '#ffaa00',
-        backgroundColor: 'rgba(255, 170, 0, 0.2)',
-        tension: 0.4
+        fill: type === 'line',
+        tension: 0.3
       }]
     },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true } }
-    }
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
   });
   document.getElementById("taxChart").style.display = "block";
 }
@@ -197,5 +195,6 @@ function syncToCloudflare(url, data) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  });
+  }).then(res => res.ok ? console.log("☁️ Synced") : res.text().then(txt => console.warn("Sync Failed", txt)))
+    .catch(err => console.warn("Sync Error:", err));
 }
