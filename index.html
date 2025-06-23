@@ -3,56 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>💼 Player Tax Portal</title>
+  <title>📄 Player Tax Portal</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.ico" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>📃 Player Tax Portal</h1>
+  <div class="main">
+    <h1>📄 <span class="glow">Player Tax Portal</span></h1>
 
-    <div id="step1">
-      <input id="mcid" placeholder="Enter your Minecraft Username" />
-      <select id="job"></select>
-      <select id="method">
-        <option value="Discord">Discord</option>
-        <option value="Instagram">Instagram</option>
+    <div id="step1" class="card">
+      <select id="version">
+        <option>Java</option>
+        <option>Bedrock</option>
       </select>
-      <input id="contact" placeholder="Enter your Discord/Instagram username" />
-      <button onclick="checkTax()">Check Tax</button>
+      <select id="method">
+        <option>Discord</option>
+        <option>Instagram</option>
+      </select>
+      <input id="mcid" placeholder="e.g. Steve or .Atharva" />
+      <button onclick="checkTax()">Next</button>
     </div>
 
-    <div id="loading" style="display:none;">
-      <div class="loading-cubes">
-        <div class="cube"></div>
-        <div class="cube"></div>
-        <div class="cube"></div>
-        <div class="cube"></div>
-      </div>
+    <div id="loading" class="loading">
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
+      <div class="block"></div>
       <p>Loading data...</p>
     </div>
 
-    <div id="bankBox" class="bank-box" style="display:none;"></div>
-    <div id="profile" class="profile-box" style="display:none;"></div>
-    <div id="historyBox" class="history-box" style="display:none;"></div>
-    <div id="saveNotice" class="countdown" style="display:none;"></div>
+    <div id="bankBox" class="card" style="display:none;"></div>
+    <div id="profile" class="card" style="display:none;"></div>
+    <div id="historyBox" class="card" style="display:none;"></div>
+    <div id="fullHistoryBox" class="card" style="display:none;"></div>
 
-    <canvas id="taxChart" style="display:none;"></canvas>
-
-    <div class="chart-switcher">
-      <button onclick="toggleChartOptions()">Change Chart</button>
+    <div id="chartArea" class="card" style="display:none;">
+      <canvas id="taxChart"></canvas>
+      <div class="btn-row">
+        <button onclick="toggleChart()">Change Chart</button>
+        <button onclick="exportChart()">Export</button>
+        <button onclick="toggleCurve()">Toggle Curve</button>
+      </div>
     </div>
 
-    <div class="chart-type-options" id="chartOptions">
-      <button onclick="renderChart('bar')">Bar</button>
-      <button onclick="renderChart('line')">Line</button>
-      <button onclick="renderChart('pie')">Pie</button>
-      <button onclick="renderChart('radar')">Radar</button>
+    <div class="btn-row" id="footerButtons" style="display:none;">
+      <button onclick="toggleHistory()">Full History</button>
+      <button onclick="exitApp()">Exit</button>
     </div>
-
-    <div id="topTaxPlayers" class="profile-box" style="display:none;"></div>
-    <div id="fullHistoryBox" class="profile-box" style="display:none;"></div>
   </div>
 
   <script src="script.js"></script>
