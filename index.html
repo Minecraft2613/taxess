@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>💼 Player Tax Portal</title>
-  <link rel="icon" href="favicon.ico" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -22,24 +22,29 @@
       <button onclick="checkTax()">Check Tax</button>
     </div>
 
-    <!-- 🔄 NovaSkin Style 3D Loading -->
-    <div id="novaLoading3D">
-      <div class="cube">
-        <div class="face front"></div>
-        <div class="face back"></div>
-        <div class="face left"></div>
-        <div class="face right"></div>
-        <div class="face top"></div>
-        <div class="face bottom"></div>
-      </div>
-      <p style="margin-top: 20px; font-weight: bold;">Loading data...</p>
+    <div id="loading" class="loading-animation" style="display: none;">
+      <div class="block block1"></div>
+      <div class="block block2"></div>
+      <div class="block block3"></div>
+      <div class="block block4"></div>
+      <p style="margin-left: 10px; font-weight: bold;">Loading data...</p>
     </div>
 
     <div id="bankBox" class="bank-box" style="display:none;"></div>
     <div id="profile" class="profile-box" style="display:none;"></div>
     <div id="historyBox" class="history-box" style="display:none;"></div>
+    <div id="fullHistoryBox" class="full-history-box" style="display:none;"></div>
     <div class="countdown" id="saveNotice" style="display:none;"></div>
     <canvas id="taxChart" style="display:none;"></canvas>
+
+    <div class="chart-switcher" style="display:none;">
+      <button onclick="changeChart('bar')">Bar Chart</button>
+      <button onclick="changeChart('line')">Line Chart</button>
+      <button onclick="changeChart('pie')">Pie Chart</button>
+      <button onclick="changeChart('radar')">Curved Line (Radar)</button>
+    </div>
+
+    <div id="topTaxPlayers" class="top-tax-box" style="display:none;"></div>
   </div>
 
   <script src="script.js"></script>
