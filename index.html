@@ -291,20 +291,40 @@
       taxDeadline = taxData.taxDeadline || {};
     }
 function askBankDetails() {
-  const randomId = "BANK" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
+  const randomId = "BANK" + Math.floor(100000 + Math.random() * 900000); // BANK + 6-digit
+
   document.getElementById("bankBox").innerHTML = `
     <h3>Create Bank Account</h3>
+
     <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
 
-    <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-      <input id="bankId" value="${randomId}" readonly
-        style="flex: 1; font-size: 20px; font-weight: bold; padding: 10px; background: #222; border: 1px solid #444; border-radius: 5px;" />
-      <button onclick="copyBankId('${randomId}')" style="flex-shrink: 0;">📋 Copy</button>
+    <div style="position: relative; margin-bottom: 10px;">
+      <input id="bankId" value="${randomId}" readonly style="
+        font-size: 1.4em;
+        font-weight: bold;
+        text-align: center;
+        padding-right: 60px;
+        width: 100%;
+        box-sizing: border-box;
+      " />
+      <button onclick="copyBankId()" style="
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 6px 10px;
+        font-size: 0.9em;
+        background: #ff8800;
+        border: none;
+        color: #000;
+        border-radius: 4px;
+        cursor: pointer;
+        box-shadow: 0 0 6px #ff8800aa;
+      ">📋 Copy</button>
     </div>
 
-    <p style="color: #ff6666; font-size: 14px; margin: 5px 0;">
-      ⚠️ <b>Remember this Bank ID:</b> ${randomId}<br>
-      You’ll need it to log in later.
+    <p style="color: #ff6666; font-size: 14px; margin: 5px 0 15px;">
+      ⚠️ Remember this Bank ID: <b>${randomId}</b><br>You'll need it to login later!
     </p>
 
     <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
@@ -316,7 +336,17 @@ function askBankDetails() {
   `;
 
   document.getElementById("bankBox").style.display = "block";
-  hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
+
+  // Hide other sections
+  hideElements([
+    'profile',
+    'historyBox',
+    'fullHistoryBox',
+    'chartArea',
+    'topTaxPlayers',
+    'saveNotice',
+    'footerButtons'
+  ]);
 }
 
     function exitBank() {
@@ -623,6 +653,13 @@ function handleChartOption(value) {
       // Removed invalid job element code
       taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
     };
+function copyBankId() {
+  const bankIdInput = document.getElementById("bankId");
+  navigator.clipboard.writeText(bankIdInput.value)
+    .then(() => alert("📋 Bank ID copied to clipboard!"))
+    .catch(() => alert("❌ Failed to copy Bank ID."));
+}
+
   </script>
 </body>
 </html>
