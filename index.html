@@ -1,4 +1,3 @@
-<!-- Updated Player Tax Portal HTML -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,16 +22,14 @@
       <button onclick="checkTax()">Check Tax</button>
     </div>
 
-    <!-- Real 3D 4-block animation -->
-    <div id="novaLoading3D" class="loading-animation" style="display:none;">
-      <div class="block-group">
-        <div class="block block1"></div>
-        <div class="block block2"></div>
-        <div class="block block3"></div>
-        <div class="block block4"></div>
+    <div id="loading" class="loading-animation" style="display: none;">
+      <div class="cube-container">
+        <div class="mini-cube" id="c1"></div>
+        <div class="mini-cube" id="c2"></div>
+        <div class="mini-cube" id="c3"></div>
+        <div class="mini-cube" id="c4"></div>
       </div>
       <div class="loading-text">Loading data...</div>
-      <button onclick="cancelLoad()" class="exit-btn">Exit</button>
     </div>
 
     <div id="bankBox" class="bank-box" style="display:none;"></div>
@@ -40,25 +37,20 @@
     <div id="historyBox" class="history-box" style="display:none;"></div>
     <div class="countdown" id="saveNotice" style="display:none;"></div>
 
-    <!-- Chart Type Selection -->
-    <select id="chartType" onchange="changeChartType(this.value)">
-      <option value="line">📈 Line</option>
-      <option value="bar">📊 Bar</option>
-      <option value="pie">🥧 Pie</option>
-      <option value="curved">🌀 Curved Line</option>
-    </select>
-
-    <div class="chart-area">
-      <canvas id="taxChart" style="display:none;"></canvas>
+    <div id="chartContainer" style="display: none;">
+      <label for="chartType">Chart Type:</label>
+      <select id="chartType" onchange="changeChartType()">
+        <option value="bar">Bar</option>
+        <option value="line">Line</option>
+        <option value="curved">Curved Line</option>
+        <option value="pie">Pie</option>
+      </select>
+      <canvas id="taxChart"></canvas>
     </div>
 
-    <div id="top5Box" class="top-rank" style="display:none;"></div>
-    <div id="showMorePayments" style="text-align:center;margin-top:20px;display:none;">
-      <button onclick="showFullPaymentHistory()">📜 View Full Payment History</button>
-    </div>
+    <div class="top-tax-payers" id="rankBox" style="display: none;"></div>
   </div>
 
   <script src="script.js"></script>
 </body>
 </html>
-
