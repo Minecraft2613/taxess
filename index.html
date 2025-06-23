@@ -221,17 +221,16 @@
 
     <div id="chartArea" class="card" style="display:none;">
       <canvas id="taxChart"></canvas>
-  <div class="btn-row" style="margin-top:10px;">
-  <button onclick="changeChart('bar')">📊 Bar Chart</button>
-  <button onclick="changeChart('pie')">🥧 Pie Chart</button>
-  <button onclick="changeTension(true)">🌈 Smooth Curve</button>
-  <button onclick="changeTension(false)">📈 Straight Line</button>
-  <button onclick="downloadChart()">📥 Export Chart</button>
+ <div class="btn-row" style="margin-top:10px;">
+  <select onchange="handleChartOption(this.value)">
+    <option disabled selected>📈 Change Chart Type</option>
+    <option value="bar">📊 Bar Chart</option>
+    <option value="pie">🥧 Pie Chart</option>
+    <option value="smooth">🌈 Smooth Curve</option>
+    <option value="line">📈 Straight Line</option>
+    <option value="export">📥 Export Chart</option>
+  </select>
 </div>
-
-
-
-
     <div class="btn-row" id="footerButtons" style="display:none;">
       <button onclick="showFullHistory()">Full History</button>
       <button onclick="exitApp()">Exit</button>
@@ -522,6 +521,17 @@
   renderChart();
 }
 
+function handleChartOption(value) {
+  if (value === "bar" || value === "pie") {
+    changeChart(value);
+  } else if (value === "smooth") {
+    changeTension(true);
+  } else if (value === "line") {
+    changeTension(false);
+  } else if (value === "export") {
+    downloadChart();
+  }
+}
 
     function downloadChart() {
       const link = document.createElement("a");
