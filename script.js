@@ -1,4 +1,3 @@
-// script.js
 const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
 const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
 const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
@@ -12,8 +11,11 @@ const deadlineDays = 7;
 
 window.onload = () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
-  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"]
-    .map(j => `<option>${j}</option>`).join("");
+  const jobSelect = document.getElementById("job");
+  if (jobSelect) {
+    jobSelect.innerHTML = ["Farmer", "Miner", "Trader", "Builder"]
+      .map(j => `<option>${j}</option>`).join("");
+  }
 };
 
 function sumPayments(player) {
@@ -22,23 +24,28 @@ function sumPayments(player) {
 }
 
 async function checkTax() {
-  currentPlayer = document.getElementById('mcid').value.trim();
+  const mcInput = document.getElementById('mcid');
+  const loading = document.getElementById("novaLoading3D");
+  const step1 = document.getElementById("step1");
+  if (!mcInput || !loading || !step1) return;
+
+  currentPlayer = mcInput.value.trim();
   if (!currentPlayer) return alert("Please enter your Minecraft name");
 
-  document.getElementById("step1").style.display = "none";
-  document.getElementById("novaLoading3D").style.display = "flex";
+  step1.style.display = "none";
+  loading.style.display = "flex";
 
   try {
     await fetch(syncTransactionURL, { method: "POST" });
     await loadOnlineData();
-    document.getElementById("novaLoading3D").style.display = "none";
+    loading.style.display = "none";
 
     if (!bankAccounts[currentPlayer]) askBankDetails();
     else askBankLogin();
   } catch (e) {
     alert("⚠️ Failed to sync. Please try again later.");
-    document.getElementById("step1").style.display = "block";
-    document.getElementById("novaLoading3D").style.display = "none";
+    step1.style.display = "block";
+    loading.style.display = "none";
   }
 }
 
@@ -53,22 +60,26 @@ async function loadOnlineData() {
 }
 
 function askBankDetails() {
-  document.getElementById("bankBox").innerHTML = `
+  const box = document.getElementById("bankBox");
+  if (!box) return;
+  box.innerHTML = `
     <h3>Create Bank Account</h3>
     <input id="bankUser" placeholder="Bank Username" />
     <input id="bankId" placeholder="Bank ID" />
     <input id="bankPass" placeholder="Bank Password" type="password" />
     <button onclick="createBankAccount()">Create Account</button>`;
-  document.getElementById("bankBox").style.display = "block";
+  box.style.display = "block";
 }
 
 function askBankLogin() {
-  document.getElementById("bankBox").innerHTML = `
+  const box = document.getElementById("bankBox");
+  if (!box) return;
+  box.innerHTML = `
     <h3>Login to Bank</h3>
     <input id="bankId" placeholder="Bank ID" />
     <input id="bankPass" placeholder="Bank Password" type="password" />
     <button onclick="verifyBankLogin()">Login</button>`;
-  document.getElementById("bankBox").style.display = "block";
+  box.style.display = "block";
 }
 
 function verifyBankLogin() {
