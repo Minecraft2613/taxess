@@ -296,64 +296,42 @@
       taxDeadline = taxData.taxDeadline || {};
     }
 function askBankDetails() {
-  const randomId = "BANK" + Math.floor(100000 + Math.random() * 900000);
-
-  document.getElementById("bankBox").innerHTML = `
-    <h3>Create Bank Account</h3>
-
-    <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
-
-    <div style="margin-bottom: 10px;">
-      <label style="display:block; font-weight: bold; margin-bottom: 5px;">Your Bank ID</label>
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <input id="bankId" value="${randomId}" readonly style="
-          font-size: 1.4em;
-          font-weight: bold;
-          text-align: center;
-          background: #1a1a1a;
-          border: 2px solid #ffcc00;
-          color: #ffcc00;
-          flex: 1;
-          padding: 10px;
-          border-radius: 6px;
-        "/>
-        <button onclick="copyBankId()" style="
-          background-color: #ffcc00;
-          color: #000;
-          font-weight: bold;
-          border: none;
-          padding: 10px 16px;
-          border-radius: 6px;
-          font-size: 1em;
-          box-shadow: 0 0 8px #ffcc00aa;
-          cursor: pointer;
-        ">📋 Copy</button>
+  const existing = bankAccounts[currentPlayer];
+  if (existing) {
+    // If bank account exists, show login form instead
+    document.getElementById("bankBox").innerHTML = `
+      <h3>🔐 Login to Bank</h3>
+      <input id="bankId" placeholder="Enter your Bank ID" value="${existing.id}" />
+      <input id="bankPass" placeholder="Bank Password" type="password" />
+      <div class="btn-row">
+        <button onclick="verifyBankLogin()">Login</button>
+        <button onclick="exitBank()">Exit</button>
       </div>
-    </div>
+    `;
+  } else {
+    // Generate random Bank ID
+    const randomId = "BANK" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
 
-    <p style="color: #ff6666; font-size: 14px; margin-bottom: 15px;">
-      ⚠️ Please remember your Bank ID: <b>${randomId}</b><br>You'll need it when logging in.
-    </p>
-
-    <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
-
-    <div class="btn-row">
-      <button onclick="createBankAccount()">Create</button>
-      <button onclick="exitBank()">Exit</button>
-    </div>
-  `;
+    document.getElementById("bankBox").innerHTML = `
+      <h3>🏦 Create Bank Account</h3>
+      <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <input id="bankId" value="${randomId}" readonly style="flex:1; font-weight: bold; font-size: 16px;" />
+        <button onclick="navigator.clipboard.writeText('${randomId}')" style="flex-shrink: 0;">📋 Copy</button>
+      </div>
+      <p style="color: #ff6666; font-size: 14px; margin-top: 5px;">
+        ⚠️ Remember your Bank ID: <b>${randomId}</b>. You'll need it to login later.
+      </p>
+      <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
+      <div class="btn-row">
+        <button onclick="createBankAccount()">Create</button>
+        <button onclick="exitBank()">Exit</button>
+      </div>
+    `;
+  }
 
   document.getElementById("bankBox").style.display = "block";
-
-  hideElements([
-    'profile',
-    'historyBox',
-    'fullHistoryBox',
-    'chartArea',
-    'topTaxPlayers',
-    'saveNotice',
-    'footerButtons'
-  ]);
+  hideElements(['profile', 'historyBox', 'fullHistoryBox', 'chartArea', 'topTaxPlayers', 'saveNotice', 'footerButtons']);
 }
 
     function exitBank() {
@@ -362,27 +340,46 @@ function askBankDetails() {
       hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
     }
 
+function verifyBankLogin() {
+  const id = document.getElementById("bankId").value.trim();
+  const pass = document.getElementById("bankPass").value;
+  const account = bankAccounts[currentPlayer];
 
-    function verifyBankLogin() {
-      const id = document.getElementById("bankId").value.trim();
-      const pass = document.getElementById("bankPass").value;
-      const account = bankAccounts[currentPlayer];
-      if (account && account.id === id && account.password === pass) {
-        document.getElementById("bankBox").style.display = "none";
-        loadTax();
-      } else alert("Invalid credentials");
-    }
+  if (!account) {
+    alert("⚠️ No account found. Please create a bank account.");
+    askBankDetails(); // Offer creation if not found
+    return;
+  }
 
-    function createBankAccount() {
-      const username = document.getElementById("bankUser").value.trim();
-      const id = document.getElementById("bankId").value.trim();
-      const pass = document.getElementById("bankPass").value;
-      if (!username || !id || !pass) return alert("Fill all fields");
-      bankAccounts[currentPlayer] = { username, id, password: pass };
-      syncToCloudflare(syncBankURL, { accounts: bankAccounts });
-      document.getElementById("bankBox").style.display = "none";
-      loadTax();
-    }
+  if (account.id === id && account.password === pass) {
+    document.getElementById("bankBox").style.display = "none";
+    loadTax(); // Proceed to load tax info after successful login
+  } else {
+    alert("❌ Invalid Bank ID or Password.");
+  }
+}
+
+    
+function createBankAccount() {
+  const username = document.getElementById("bankUser").value.trim();
+  const id = document.getElementById("bankId").value.trim();
+  const pass = document.getElementById("bankPass").value;
+
+  if (!username || !id || !pass) return alert("Fill all fields");
+
+  if (bankAccounts[currentPlayer]) {
+    alert("Account already exists. Please login.");
+    askBankDetails();
+    return;
+  }
+
+  bankAccounts[currentPlayer] = { username, id, password: pass };
+
+  syncToCloudflare(syncBankURL, { accounts: bankAccounts });
+  document.getElementById("bankBox").style.display = "none";
+  loadTax();
+}
+
 
     async function loadTax() {
       document.getElementById("loading").style.display = "flex";
