@@ -1,122 +1,123 @@
 /* style.css */
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
-  color: #fff;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  animation: fadeIn 1.2s ease-in;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
 }
 
 .container {
   max-width: 800px;
-  margin: auto;
+  width: 100%;
   padding: 20px;
-}
-
-h1 {
-  text-align: center;
-  color: #ffcc00;
-  animation: pulse 1.5s infinite;
 }
 
 input, select, button {
   display: block;
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
+  margin: 10px auto;
+  padding: 10px;
   font-size: 16px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
-}
-
-input, select {
-  background: #222;
-  color: #fff;
-  border: 1px solid #444;
+  width: 90%;
+  max-width: 400px;
 }
 
 button {
-  background: #ff8800;
-  color: black;
+  background-color: #ffaa00;
+  color: #000;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s;
 }
 
 button:hover {
-  background: #ffaa00;
-}
-
-.bank-box, .profile-box, .history-box {
-  background: #111;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 20px;
-  animation: fadeIn 1s ease-in;
-}
-
-.chart-area {
-  margin-top: 30px;
-}
-
-.countdown {
-  color: #0f0;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 10px;
+  background-color: #ffcc33;
 }
 
 .loading-animation {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 40px;
+  gap: 5px;
+  margin: 20px 0;
 }
 
-.loading-text {
+.block {
+  width: 20px;
+  height: 20px;
+  background: #ffaa00;
+  transform-style: preserve-3d;
+  animation: loadBlocks 1.2s infinite ease-in-out;
+  border-radius: 4px;
+}
+
+.block1 { animation-delay: 0s; }
+.block2 { animation-delay: 0.2s; }
+.block3 { animation-delay: 0.4s; }
+.block4 { animation-delay: 0.6s; }
+
+@keyframes loadBlocks {
+  0%, 100% { transform: rotateX(0deg) rotateY(0deg); opacity: 1; }
+  50% { transform: rotateX(180deg) rotateY(180deg); opacity: 0.3; }
+}
+
+.bank-box, .profile-box, .history-box, .full-history-box, .top-tax-box {
+  background-color: #1f1f1f;
+  padding: 20px;
+  margin: 10px auto;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+  width: 90%;
+}
+
+.chart-switcher button {
+  display: inline-block;
+  width: auto;
+  margin: 5px;
+  background-color: #444;
+  color: #fff;
+}
+
+#taxChart {
+  margin-top: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.countdown {
+  text-align: center;
   font-weight: bold;
+  color: #ffaa00;
   margin-top: 10px;
 }
 
-.cube {
-  width: 50px;
-  height: 50px;
-  position: relative;
-  transform-style: preserve-3d;
-  animation: rotateCube 2s infinite linear;
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.face {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  background: #ff8800;
-  opacity: 1;
-  border: 2px solid #222;
+li {
+  margin: 5px 0;
+  padding: 6px 10px;
+  background-color: #292929;
+  border-radius: 6px;
 }
 
-.front  { transform: rotateY(  0deg) translateZ(25px); }
-.back   { transform: rotateY(180deg) translateZ(25px); }
-.right  { transform: rotateY( 90deg) translateZ(25px); }
-.left   { transform: rotateY(-90deg) translateZ(25px); }
-.top    { transform: rotateX( 90deg) translateZ(25px); }
-bottom { transform: rotateX(-90deg) translateZ(25px); }
-
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
+.btn-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-@keyframes pulse {
-  0% { text-shadow: 0 0 10px #ffcc00; }
-  50% { text-shadow: 0 0 20px #ffcc00; }
-  100% { text-shadow: 0 0 10px #ffcc00; }
-}
-
-@keyframes rotateCube {
-  0%   { transform: rotateX(0deg) rotateY(0deg); }
-  100% { transform: rotateX(360deg) rotateY(360deg); }
+h1, h3, p {
+  text-align: center;
 }
