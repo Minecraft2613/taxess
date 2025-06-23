@@ -220,6 +220,11 @@
     <div id="saveNotice" class="card" style="display:none;"></div>
 
    <div id="chartArea" class="card" style="display:none;">
+<!-- Week Selector Buttons -->
+<div class="btn-row" style="margin-bottom: 10px;">
+  <button onclick="showWeek('this')">📅 This Week</button>
+  <button onclick="showWeek('last')">⏪ Previous Week</button>
+</div>
 
 <div class="btn-row" style="margin-bottom: 10px;">
   <select onchange="handleChartOption(this.value)">
@@ -291,40 +296,43 @@
       taxDeadline = taxData.taxDeadline || {};
     }
 function askBankDetails() {
-  const randomId = "BANK" + Math.floor(100000 + Math.random() * 900000); // BANK + 6-digit
+  const randomId = "BANK" + Math.floor(100000 + Math.random() * 900000);
 
   document.getElementById("bankBox").innerHTML = `
     <h3>Create Bank Account</h3>
 
     <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
 
-    <div style="position: relative; margin-bottom: 10px;">
-      <input id="bankId" value="${randomId}" readonly style="
-        font-size: 1.4em;
-        font-weight: bold;
-        text-align: center;
-        padding-right: 60px;
-        width: 100%;
-        box-sizing: border-box;
-      " />
-      <button onclick="copyBankId()" style="
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        padding: 6px 10px;
-        font-size: 0.9em;
-        background: #ff8800;
-        border: none;
-        color: #000;
-        border-radius: 4px;
-        cursor: pointer;
-        box-shadow: 0 0 6px #ff8800aa;
-      ">📋 Copy</button>
+    <div style="margin-bottom: 10px;">
+      <label style="display:block; font-weight: bold; margin-bottom: 5px;">Your Bank ID</label>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <input id="bankId" value="${randomId}" readonly style="
+          font-size: 1.4em;
+          font-weight: bold;
+          text-align: center;
+          background: #1a1a1a;
+          border: 2px solid #ffcc00;
+          color: #ffcc00;
+          flex: 1;
+          padding: 10px;
+          border-radius: 6px;
+        "/>
+        <button onclick="copyBankId()" style="
+          background-color: #ffcc00;
+          color: #000;
+          font-weight: bold;
+          border: none;
+          padding: 10px 16px;
+          border-radius: 6px;
+          font-size: 1em;
+          box-shadow: 0 0 8px #ffcc00aa;
+          cursor: pointer;
+        ">📋 Copy</button>
+      </div>
     </div>
 
-    <p style="color: #ff6666; font-size: 14px; margin: 5px 0 15px;">
-      ⚠️ Remember this Bank ID: <b>${randomId}</b><br>You'll need it to login later!
+    <p style="color: #ff6666; font-size: 14px; margin-bottom: 15px;">
+      ⚠️ Please remember your Bank ID: <b>${randomId}</b><br>You'll need it when logging in.
     </p>
 
     <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
@@ -337,7 +345,6 @@ function askBankDetails() {
 
   document.getElementById("bankBox").style.display = "block";
 
-  // Hide other sections
   hideElements([
     'profile',
     'historyBox',
@@ -489,47 +496,68 @@ function askBankDetails() {
       document.getElementById("fullHistoryBox").style.display = "none";
     }
 
-   function renderChart() {
+ function renderChart() {
   const ctx = document.getElementById('taxChart').getContext('2d');
   if (chart) chart.destroy();
 
+  // Filter dailyData based on week
+  const filteredLabels = [];
+  const filteredValues = [];
+  const today = new Date();
+  const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const currentTime = now.getTime();
+
+  Object.entries(dailyData).forEach(([date, value]) => {
+    const [month, day] = date.split('/').map(Number);
+    const entryDate = new Date(today.getFullYear(), month - 1, day);
+    const entryTime = entryDate.getTime();
+    const diffDays = Math.floor((currentTime - entryTime) / 86400000);
+
+    if (
+      (currentWeek === 'this' && diffDays >= 0 && diffDays < 7) ||
+      (currentWeek === 'last' && diffDays >= 7 && diffDays < 14)
+    ) {
+      filteredLabels.push(date);
+      filteredValues.push(value);
+    }
+  });
+
   const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, '#00ffaa');
-  gradient.addColorStop(1, '#0066ff');
+  gradient.addColorStop(0, '#ffee00');
+  gradient.addColorStop(1, '#ffaa00');
 
   chart = new Chart(ctx, {
     type: chartType,
     data: {
-      labels: Object.keys(dailyData),
+      labels: filteredLabels,
       datasets: [{
-        label: 'Tax Per Day',
-        data: Object.values(dailyData),
+        label: `Tax Per Day (${currentWeek === 'this' ? "This Week" : "Last Week"})`,
+        data: filteredValues,
         fill: chartType !== 'pie' && chartType !== 'radar',
         backgroundColor: chartType === 'pie' || chartType === 'radar'
           ? ['#ffaa00', '#ff8800', '#ff6600', '#00ffaa', '#00ccaa', '#0066ff', '#cc00ff']
           : gradient,
-        borderColor: '#00ffaa',
+        borderColor: '#ffee00',
         borderWidth: 3,
-    tension: chartType === 'line' ? 0.4 : 0,
+        tension: chartType === 'line' ? 0.4 : 0,
         pointRadius: 5,
         pointHoverRadius: 8,
-        pointBackgroundColor: '#00ffaa',
+        pointBackgroundColor: '#ffee00',
         pointHoverBackgroundColor: '#ff6600',
       }]
     },
     options: {
       responsive: true,
       animation: {
-        duration: 1500,
-        easing: 'easeOutQuart'
+        duration: 0
       },
       plugins: {
         tooltip: {
           enabled: true,
           backgroundColor: '#222',
-          titleColor: '#00ffaa',
+          titleColor: '#ffee00',
           bodyColor: '#fff',
-          borderColor: '#00ffaa',
+          borderColor: '#ffee00',
           borderWidth: 1
         },
         legend: {
@@ -547,18 +575,21 @@ function askBankDetails() {
   document.getElementById("taxChart").style.display = "block";
 }
 
+let currentWeek = 'this'; // Track which week to show
 
-    function changeChart(type) {
+       function changeChart(type) {
       chartType = type;
       localStorage.setItem("chartType", type);
       renderChart();
     }
-    function changeTension(isSmooth) {
+  function changeTension(isSmooth) {
   chartType = "line";
+tension: chartType === 'line' ? parseFloat(localStorage.getItem("lineTension") || "0.4") : 0,
   localStorage.setItem("chartType", "line");
-  localStorage.setItem("lineTension", isSmooth ? "0.4" : "0");
+  localStorage.setItem("lineTension", tensionValue);
   renderChart();
 }
+
 
 function handleChartOption(value) {
   if (value === "bar" || value === "pie") {
@@ -570,14 +601,58 @@ function handleChartOption(value) {
   } else if (value === "export") {
     downloadChart();
   }
+  function showWeek(weekType) {
+  currentWeek = weekType;
+  renderChart();
+}
+
 }
 
     function downloadChart() {
-      const link = document.createElement("a");
-      link.download = `${currentPlayer}-tax-chart.png`;
-      link.href = document.getElementById('taxChart').toDataURL('image/png');
-      link.click();
+  const canvas = document.getElementById('taxChart');
+  const ctx = canvas.getContext('2d');
+
+  // Get original chart image
+  const original = canvas.toDataURL('image/png');
+
+  // Add extra details (payment history)
+  const payments = paymentHistory[currentPlayer] || [];
+  const textLines = payments.map((e, i) => `${i + 1}. $${e.amount} on ${e.date}`);
+  
+  // Draw payment history on canvas
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, canvas.height - 100, canvas.width, 100); // background box
+  ctx.fillStyle = "#ffcc00";
+  ctx.font = "14px Arial";
+  ctx.textAlign = "left";
+
+  const maxLines = 4;
+  const x = 10;
+  let y = canvas.height - 80;
+  
+  if (payments.length === 0) {
+    ctx.fillText("No payment history available.", x, y);
+  } else {
+    ctx.fillText("Payment History:", x, y);
+    y += 18;
+    for (let i = 0; i < Math.min(payments.length, maxLines); i++) {
+      ctx.fillText(textLines[i], x, y);
+      y += 18;
     }
+    if (payments.length > maxLines) {
+      ctx.fillText("...and more", x, y);
+    }
+  }
+
+  // Now download
+  const link = document.createElement("a");
+  link.download = `${currentPlayer}-tax-chart.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+
+  // Re-render chart to remove the added text (cleanup)
+  renderChart();
+}
 
     function submitTax() {
       const amt = parseFloat(document.getElementById("payAmt").value);
@@ -659,6 +734,7 @@ function copyBankId() {
     .then(() => alert("📋 Bank ID copied to clipboard!"))
     .catch(() => alert("❌ Failed to copy Bank ID."));
 }
+
 
   </script>
 </body>
