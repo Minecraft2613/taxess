@@ -425,6 +425,17 @@
         <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
         <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
         <input type="number" id="payAmt" placeholder="Enter amount to pay" min="1" />
+          <div class="btn-row" style="margin-top: 10px;">
+    <select onchange="handleChartOption(this.value)">
+      <option disabled selected>📈 Change Chart Type</option>
+      <option value="bar">📊 Bar Chart</option>
+      <option value="pie">🥧 Pie Chart</option>
+      <option value="smooth">🌈 Smooth Curve</option>
+      <option value="line">📈 Straight Line</option>
+      <option value="export">📥 Export Chart</option>
+    </select>
+  </div>
+
         <div class="btn-row">
           <button onclick="submitTax()">${due > 0 ? "Pay Tax" : "Advance Pay"}</button>
           <button onclick="showFullHistory()">Full History</button>
