@@ -1,118 +1,122 @@
-/* === General Styles === */
+/* style.css */
 body {
-  margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #1e1e2f, #3b3b58);
-  color: white;
+  background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
+  color: #fff;
+  margin: 0;
+  padding: 0;
   overflow-x: hidden;
+  animation: fadeIn 1.2s ease-in;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #ffcc00;
+  animation: pulse 1.5s infinite;
 }
 
 input, select, button {
-  padding: 10px;
-  margin: 5px;
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 16px;
+  border-radius: 6px;
   border: none;
-  border-radius: 5px;
-  font-size: 14px;
+}
+
+input, select {
+  background: #222;
+  color: #fff;
+  border: 1px solid #444;
 }
 
 button {
-  background: #ffaa00;
+  background: #ff8800;
   color: black;
+  font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s ease;
 }
 
 button:hover {
-  background: #ffc93c;
+  background: #ffaa00;
 }
 
-h3 {
-  margin: 10px 0 5px;
-  color: #ffaa00;
-}
-
-p, li {
-  font-size: 15px;
-}
-
-/* === Layout === */
-.container {
-  padding: 20px;
-  max-width: 900px;
-  margin: auto;
-}
-
-#step1, #profile, #bankBox, #historyBox, #top5Box, #fullHistoryBox {
-  margin-bottom: 20px;
-  padding: 20px;
-  background: #2a2a3d;
+.bank-box, .profile-box, .history-box {
+  background: #111;
+  padding: 15px;
   border-radius: 10px;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-}
-
-#taxChart {
-  max-width: 100%;
-  height: 300px;
   margin-top: 20px;
-  background: white;
-  border-radius: 10px;
+  animation: fadeIn 1s ease-in;
 }
 
-/* === Nova 3D Loading Cube === */
-#novaLoading3D {
-  display: none;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: #000000d0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  z-index: 1000;
+.chart-area {
+  margin-top: 30px;
+}
+
+.countdown {
+  color: #0f0;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.loading-animation {
+  display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
 }
 
-.cube-container {
+.loading-text {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.cube {
+  width: 50px;
+  height: 50px;
   position: relative;
-  width: 60px;
-  height: 60px;
   transform-style: preserve-3d;
-  animation: rotateCube 3s infinite linear;
+  animation: rotateCube 2s infinite linear;
 }
 
-.cube-face {
+.face {
   position: absolute;
-  width: 60px;
-  height: 60px;
-  background: #00ff88;
-  opacity: 0.85;
-  border: 2px solid #fff;
-  box-shadow: 0 0 10px #00ff88;
+  width: 50px;
+  height: 50px;
+  background: #ff8800;
+  opacity: 1;
+  border: 2px solid #222;
 }
 
-.cube-face.front  { transform: translateZ(30px); }
-.cube-face.back   { transform: rotateY(180deg) translateZ(30px); }
-.cube-face.right  { transform: rotateY(90deg) translateZ(30px); }
-.cube-face.left   { transform: rotateY(-90deg) translateZ(30px); }
-.cube-face.top    { transform: rotateX(90deg) translateZ(30px); }
-.cube-face.bottom { transform: rotateX(-90deg) translateZ(30px); }
+.front  { transform: rotateY(  0deg) translateZ(25px); }
+.back   { transform: rotateY(180deg) translateZ(25px); }
+.right  { transform: rotateY( 90deg) translateZ(25px); }
+.left   { transform: rotateY(-90deg) translateZ(25px); }
+.top    { transform: rotateX( 90deg) translateZ(25px); }
+bottom { transform: rotateX(-90deg) translateZ(25px); }
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { text-shadow: 0 0 10px #ffcc00; }
+  50% { text-shadow: 0 0 20px #ffcc00; }
+  100% { text-shadow: 0 0 10px #ffcc00; }
+}
 
 @keyframes rotateCube {
   0%   { transform: rotateX(0deg) rotateY(0deg); }
   100% { transform: rotateX(360deg) rotateY(360deg); }
-}
-
-#loadingText {
-  margin-top: 20px;
-  font-size: 18px;
-  color: #00ff88;
-  text-shadow: 0 0 10px #00ff88;
-}
-
-/* === Utility === */
-.btn-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
 }
