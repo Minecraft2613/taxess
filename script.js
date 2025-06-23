@@ -32,7 +32,7 @@ async function checkTax() {
     if (!bankAccounts[currentPlayer]) askBankDetails();
     else askBankLogin();
   } catch (e) {
-    alert("⚠️ Failed to sync. Please try again later.");
+    alert("\u26A0\uFE0F Failed to sync. Please try again later.");
     document.getElementById("step1").style.display = "block";
     document.getElementById("novaLoading3D").style.display = "none";
   }
@@ -133,6 +133,25 @@ function parseTransactions(log) {
   renderChart("line");
 }
 
+function showTopPlayers() {
+  const sorted = Object.entries(paidPlayers)
+    .map(([name, total]) => ({ name, total }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5);
+
+  return `<h3>\ud83c\udfc6 Top 5 Tax Payers</h3><ol>${sorted
+    .map(p => `<li>${p.name}: $${p.total.toFixed(2)}</li>`).join('')}</ol>`;
+}
+
+function showFullHistory() {
+  const history = paymentHistory[currentPlayer] || [];
+  if (!history.length) return "<p>No history available.</p>";
+
+  return `<div><h3>\ud83d\udcdc Full Payment History</h3><ul>${history.map(
+    (e, i) => `<li>${i + 1}. $${e.amount} on ${e.date}</li>`
+  ).join('')}</ul></div>`;
+}
+
 function showProfile(buy, sell, total, paid, due, advanced) {
   document.getElementById("profile").innerHTML = `<h3>Welcome, ${currentPlayer}</h3>
     <p>Total Tax: $${total.toFixed(2)}</p>
@@ -153,8 +172,15 @@ function showProfile(buy, sell, total, paid, due, advanced) {
 
   const history = paymentHistory[currentPlayer] || [];
   document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
-    ${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+    ${history.map((e, i) => `<li>${i + 1}. $${e.amount} on ${e.date}</li>`).join('')}</ul>
+    <button onclick="document.getElementById('fullHistoryBox').style.display='block'">See Full Payment History</button>`;
   document.getElementById("historyBox").style.display = "block";
+
+  document.getElementById("top5Box").innerHTML = showTopPlayers();
+  document.getElementById("top5Box").style.display = "block";
+
+  document.getElementById("fullHistoryBox").innerHTML = showFullHistory();
+  document.getElementById("fullHistoryBox").style.display = "none";
 }
 
 function renderChart(type = 'line') {
@@ -195,6 +221,6 @@ function syncToCloudflare(url, data) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  }).then(res => res.ok ? console.log("☁️ Synced") : res.text().then(txt => console.warn("Sync Failed", txt)))
+  }).then(res => res.ok ? console.log("\u2601\uFE0F Synced") : res.text().then(txt => console.warn("Sync Failed", txt)))
     .catch(err => console.warn("Sync Error:", err));
 }
