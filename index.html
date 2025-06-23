@@ -159,7 +159,7 @@
     }
 #chartArea {
   height: 540px;
-  overflow: auto;
+  overflow: hidden;
 }
 
 #taxChart {
@@ -290,27 +290,34 @@
       bankAccounts = bankData.accounts || {};
       taxDeadline = taxData.taxDeadline || {};
     }
-
 function askBankDetails() {
   const randomId = "BANK" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
-  localStorage.setItem("tempBankId", randomId); // Save for use later if needed
-
   document.getElementById("bankBox").innerHTML = `
     <h3>Create Bank Account</h3>
     <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
-    <input id="bankId" value="${randomId}" readonly />
+
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+      <input id="bankId" value="${randomId}" readonly
+        style="flex: 1; font-size: 20px; font-weight: bold; padding: 10px; background: #222; border: 1px solid #444; border-radius: 5px;" />
+      <button onclick="copyBankId('${randomId}')" style="flex-shrink: 0;">📋 Copy</button>
+    </div>
+
     <p style="color: #ff6666; font-size: 14px; margin: 5px 0;">
-      ⚠️ Remember this Bank ID: <b>${randomId}</b><br>You'll need it to login later!
+      ⚠️ <b>Remember this Bank ID:</b> ${randomId}<br>
+      You’ll need it to log in later.
     </p>
+
     <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
+
     <div class="btn-row">
       <button onclick="createBankAccount()">Create</button>
       <button onclick="exitBank()">Exit</button>
-    </div>`;
+    </div>
+  `;
+
   document.getElementById("bankBox").style.display = "block";
   hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
 }
-
 
     function exitBank() {
       document.getElementById("bankBox").style.display = "none";
@@ -422,16 +429,6 @@ function askBankDetails() {
         <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
         <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
         <input type="number" id="payAmt" placeholder="Enter amount to pay" min="1" />
-          <div class="btn-row" style="margin-top: 10px;">
-    <select onchange="handleChartOption(this.value)">
-      <option disabled selected>📈 Change Chart Type</option>
-      <option value="bar">📊 Bar Chart</option>
-      <option value="pie">🥧 Pie Chart</option>
-      <option value="smooth">🌈 Smooth Curve</option>
-      <option value="line">📈 Straight Line</option>
-      <option value="export">📥 Export Chart</option>
-    </select>
-  </div>
 
         <div class="btn-row">
           <button onclick="submitTax()">${due > 0 ? "Pay Tax" : "Advance Pay"}</button>
@@ -529,7 +526,7 @@ function askBankDetails() {
     function changeTension(isSmooth) {
   chartType = "line";
   localStorage.setItem("chartType", "line");
-  localStorage.setItem("lineTension", isSmooth ? "0.5" : "0");
+  localStorage.setItem("lineTension", isSmooth ? "0.4" : "0");
   renderChart();
 }
 
