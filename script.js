@@ -7,6 +7,7 @@ const syncTransactionURL = "https://transaction.1987sakshamsingh.workers.dev/";
 const webhookURL = "https://discordapp.com/api/webhooks/1386366777403117620/ioXKz_sPozMCx1DPvTWnJ1d2YyBw9P9oiqoRO_EWJWRZ1YDFEQEK3R64Y5RImfIgTrHR";
 
 let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, currentPlayer = "", dailyData = {}, chartType = localStorage.getItem("chartType") || "pie", chart;
+const deadlineDays = 7;
 
 function sumPayments(player) {
   const history = paymentHistory[player] || [];
@@ -16,6 +17,7 @@ function sumPayments(player) {
 async function checkTax() {
   currentPlayer = document.getElementById('mcid').value.trim();
   if (!currentPlayer) return alert("Please enter your Minecraft name");
+
   document.getElementById("step1").style.display = "none";
   document.getElementById("loading").style.display = "flex";
 
@@ -178,18 +180,11 @@ function showProfile(buy, sell, total, paid, due, advanced) {
   document.querySelector(".chart-switcher").style.display = "block";
 }
 
-function showFullHistory() {
-  const all = paymentHistory[currentPlayer] || [];
-  document.getElementById("fullHistoryBox").innerHTML = `<h3>Full Payment History</h3><ul>
-    ${all.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
-  document.getElementById("fullHistoryBox").style.display = "block";
-}
-
 function renderChart() {
   const ctx = document.getElementById('taxChart').getContext('2d');
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
-    type: chartType === "curved" ? "line" : chartType,
+    type: chartType === 'curved' ? 'line' : chartType,
     data: {
       labels: Object.keys(dailyData),
       datasets: [{
@@ -199,12 +194,15 @@ function renderChart() {
         borderColor: '#00ff88',
         borderWidth: 2,
         fill: ['line', 'radar'].includes(chartType),
-        tension: chartType === "curved" ? 0.4 : 0
+        tension: chartType === 'curved' ? 0.4 : 0
       }]
     },
     options: {
       responsive: true,
-      animation: { duration: 1000, easing: 'easeInOutQuart' },
+      animation: {
+        duration: 1000,
+        easing: 'easeInOutQuart'
+      },
       plugins: {
         legend: { labels: { color: '#fff' } },
         tooltip: { enabled: true }
@@ -216,7 +214,13 @@ function renderChart() {
     }
   });
   document.getElementById("taxChart").style.display = "block";
+  document.querySelector(".chart-switcher").style.display = "block";
   document.getElementById("downloadChartBtn").style.display = "inline-block";
+}
+
+function changeChartOptions() {
+  const switcher = document.querySelector(".chart-type-options");
+  switcher.style.display = switcher.style.display === "block" ? "none" : "block";
 }
 
 function changeChart(type) {
@@ -227,7 +231,7 @@ function changeChart(type) {
 
 function downloadChartImage() {
   const link = document.createElement('a');
-  link.download = `tax_chart_${chartType}.png`;
+  link.download = `${currentPlayer}_tax_chart_${chartType}.png`;
   link.href = document.getElementById("taxChart").toDataURL("image/png");
   link.click();
 }
@@ -285,9 +289,17 @@ function showTopTaxPlayers() {
   document.getElementById("topTaxPlayers").style.display = "block";
 }
 
+function showFullHistory() {
+  const all = paymentHistory[currentPlayer] || [];
+  document.getElementById("fullHistoryBox").innerHTML = `<h3>📄 Full Payment History</h3><ul style="max-height: 300px; overflow-y: auto;">
+    ${all.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+  document.getElementById("fullHistoryBox").style.display = "block";
+}
+
 window.onload = () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
-  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
+  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"]
+    .map(j => `<option>${j}</option>`).join("");
 
   const chartSwitcher = document.querySelector(".chart-switcher");
   if (chartSwitcher && !document.getElementById("downloadChartBtn")) {
