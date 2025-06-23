@@ -1,4 +1,3 @@
-// script.js
 const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
 const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
 const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
@@ -6,8 +5,8 @@ const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
 const syncTransactionURL = "https://transaction.1987sakshamsingh.workers.dev/";
 const webhookURL = "https://discordapp.com/api/webhooks/1386366777403117620/ioXKz_sPozMCx1DPvTWnJ1d2YyBw9P9oiqoRO_EWJWRZ1YDFEQEK3R64Y5RImfIgTrHR";
 
-let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, currentPlayer = "", dailyData = {}, chartType = localStorage.getItem("chartType") || "pie", chart;
-const deadlineDays = 7;
+let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, currentPlayer = "", dailyData = {}, chart;
+let chartType = localStorage.getItem("chartType") || "bar";
 
 function sumPayments(player) {
   const history = paymentHistory[player] || [];
@@ -17,7 +16,6 @@ function sumPayments(player) {
 async function checkTax() {
   currentPlayer = document.getElementById('mcid').value.trim();
   if (!currentPlayer) return alert("Please enter your Minecraft name");
-
   document.getElementById("step1").style.display = "none";
   document.getElementById("loading").style.display = "flex";
 
@@ -180,47 +178,48 @@ function showProfile(buy, sell, total, paid, due, advanced) {
   document.querySelector(".chart-switcher").style.display = "block";
 }
 
+function showFullHistory() {
+  const all = paymentHistory[currentPlayer] || [];
+  document.getElementById("fullHistoryBox").innerHTML = `<h3>Full Payment History</h3><ul>
+    ${all.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+  document.getElementById("fullHistoryBox").style.display = "block";
+}
+
 function renderChart() {
   const ctx = document.getElementById('taxChart').getContext('2d');
   if (chart) chart.destroy();
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+  gradient.addColorStop(0, '#00ffaa');
+  gradient.addColorStop(1, '#0099ff');
+
   chart = new Chart(ctx, {
-    type: chartType === 'curved' ? 'line' : chartType,
+    type: chartType,
     data: {
       labels: Object.keys(dailyData),
       datasets: [{
         label: 'Tax Per Day',
         data: Object.values(dailyData),
-        backgroundColor: ['#ffaa00', '#00ffaa', '#ff66cc', '#3399ff', '#ccff33', '#ff3333', '#33ffcc'],
-        borderColor: '#00ff88',
+        fill: true,
+        backgroundColor: chartType === 'pie' || chartType === 'radar' ? ['#ffaa00', '#ff8800', '#ff6600', '#00ffaa'] : gradient,
+        borderColor: '#00ffaa',
         borderWidth: 2,
-        fill: ['line', 'radar'].includes(chartType),
-        tension: chartType === 'curved' ? 0.4 : 0
+        tension: chartType === 'line' ? 0.4 : 0,
+        pointRadius: chartType === 'line' ? 4 : 0,
       }]
     },
     options: {
       responsive: true,
-      animation: {
-        duration: 1000,
-        easing: 'easeInOutQuart'
-      },
-      plugins: {
-        legend: { labels: { color: '#fff' } },
-        tooltip: { enabled: true }
-      },
-      scales: ['bar', 'line', 'curved'].includes(chartType) ? {
-        x: { ticks: { color: '#fff' } },
-        y: { beginAtZero: true, ticks: { color: '#fff' } }
-      } : {}
+      animation: { duration: 1000 },
+      plugins: { legend: { display: true } },
+      scales: chartType === 'pie' || chartType === 'radar' ? {} : {
+        x: { ticks: { color: '#ccc' }, grid: { color: '#333' } },
+        y: { beginAtZero: true, ticks: { color: '#ccc' }, grid: { color: '#333' } }
+      }
     }
   });
-  document.getElementById("taxChart").style.display = "block";
-  document.querySelector(".chart-switcher").style.display = "block";
-  document.getElementById("downloadChartBtn").style.display = "inline-block";
-}
 
-function changeChartOptions() {
-  const switcher = document.querySelector(".chart-type-options");
-  switcher.style.display = switcher.style.display === "block" ? "none" : "block";
+  document.getElementById("taxChart").style.display = "block";
 }
 
 function changeChart(type) {
@@ -229,10 +228,15 @@ function changeChart(type) {
   renderChart();
 }
 
-function downloadChartImage() {
-  const link = document.createElement('a');
-  link.download = `${currentPlayer}_tax_chart_${chartType}.png`;
-  link.href = document.getElementById("taxChart").toDataURL("image/png");
+function toggleChartOptions() {
+  const box = document.getElementById("chartOptions");
+  box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+function downloadChart() {
+  const link = document.createElement("a");
+  link.download = `${currentPlayer}-tax-chart.png`;
+  link.href = document.getElementById('taxChart').toDataURL('image/png');
   link.click();
 }
 
@@ -285,30 +289,12 @@ function showTopTaxPlayers() {
     .slice(0, 5)
     .map(([name, tax]) => `<li><strong>${name}</strong>: $${tax.toFixed(2)}</li>`)
     .join('');
-  document.getElementById("topTaxPlayers").innerHTML = `<h3>🏆 Top 5 Tax Payers</h3><ul>${top}</ul>`;
+  document.getElementById("topTaxPlayers").innerHTML = `<h3>Top 5 Tax Payers</h3><ul>${top}</ul>`;
   document.getElementById("topTaxPlayers").style.display = "block";
-}
-
-function showFullHistory() {
-  const all = paymentHistory[currentPlayer] || [];
-  document.getElementById("fullHistoryBox").innerHTML = `<h3>📄 Full Payment History</h3><ul style="max-height: 300px; overflow-y: auto;">
-    ${all.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
-  document.getElementById("fullHistoryBox").style.display = "block";
 }
 
 window.onload = () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
   document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"]
     .map(j => `<option>${j}</option>`).join("");
-
-  const chartSwitcher = document.querySelector(".chart-switcher");
-  if (chartSwitcher && !document.getElementById("downloadChartBtn")) {
-    const dlBtn = document.createElement("button");
-    dlBtn.id = "downloadChartBtn";
-    dlBtn.textContent = "📊 Export Chart";
-    dlBtn.style.marginTop = "10px";
-    dlBtn.onclick = downloadChartImage;
-    dlBtn.style.display = "none";
-    chartSwitcher.appendChild(dlBtn);
-  }
 };
