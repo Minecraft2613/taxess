@@ -85,16 +85,20 @@
       cursor: not-allowed;
       box-shadow: none;
     }
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .btn-row button {
-      flex: 1 1 30%;
-      max-width: 150px;
-    }
+  .btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.btn-row button {
+  flex: 1 1 140px;
+  max-width: 180px;
+  min-width: 120px;
+}
+
     #loading {
       display: none;
       justify-content: center;
@@ -454,7 +458,7 @@
           : gradient,
         borderColor: '#00ffaa',
         borderWidth: 3,
-        tension: chartType === 'line' ? 0.5 : 0,
+     tension: chartType === 'line' ? parseFloat(localStorage.getItem("lineTension") || "0.5") : 0,
         pointRadius: 5,
         pointHoverRadius: 8,
         pointBackgroundColor: '#00ffaa',
@@ -497,6 +501,13 @@
       localStorage.setItem("chartType", type);
       renderChart();
     }
+    function changeTension(isSmooth) {
+  chartType = "line";
+  localStorage.setItem("chartType", "line");
+  localStorage.setItem("lineTension", isSmooth ? "0.5" : "0");
+  renderChart();
+}
+
 
     function downloadChart() {
       const link = document.createElement("a");
