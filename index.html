@@ -157,9 +157,9 @@
       margin-bottom: 1rem;
       box-shadow: 0 0 8px #ff8800aa;
     }
-   #chartArea {
-  height: 400px;
-  overflow: hidden;
+#chartArea {
+  height: 540px;
+  overflow: auto;
 }
 
 #taxChart {
@@ -304,25 +304,23 @@
       document.getElementById("bankBox").style.display = "block";
       hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
     }
-
-    function askBankLogin() {
-      document.getElementById("bankBox").innerHTML = `
-        <h3>Login to Bank</h3>
-        <input id="bankId" placeholder="Bank ID" autocomplete="off" />
-        <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
-        <div class="btn-row">
-          <button onclick="verifyBankLogin()">Login</button>
-          <button onclick="exitBank()">Exit</button>
-        </div>`;
-      document.getElementById("bankBox").style.display = "block";
-      hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
-    }
-
-    function exitBank() {
-      document.getElementById("bankBox").style.display = "none";
-      document.getElementById("step1").style.display = "block";
-      hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
-    }
+function askBankDetails() {
+  const randomId = "BANK" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
+  document.getElementById("bankBox").innerHTML = `
+    <h3>Create Bank Account</h3>
+    <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
+    <input id="bankId" value="${randomId}" readonly />
+    <p style="color: #ff6666; font-size: 14px; margin: 5px 0;">
+      ⚠️ Remember this Bank ID: <b>${randomId}</b><br>You'll need it to login later!
+    </p>
+    <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
+    <div class="btn-row">
+      <button onclick="createBankAccount()">Create</button>
+      <button onclick="exitBank()">Exit</button>
+    </div>`;
+  document.getElementById("bankBox").style.display = "block";
+  hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
+}
 
     function verifyBankLogin() {
       const id = document.getElementById("bankId").value.trim();
@@ -488,7 +486,7 @@
           : gradient,
         borderColor: '#00ffaa',
         borderWidth: 3,
-     tension: chartType === 'line' ? parseFloat(localStorage.getItem("lineTension") || "0.5") : 0,
+    tension: chartType === 'line' ? 0.4 : 0,
         pointRadius: 5,
         pointHoverRadius: 8,
         pointBackgroundColor: '#00ffaa',
