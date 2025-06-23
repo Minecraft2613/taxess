@@ -199,7 +199,9 @@
         <option>Instagram</option>
       </select>
       <input id="mcid" type="text" placeholder="e.g. Steve or .Atharva" autocomplete="off" />
-      <button id="nextBtn" onclick="checkTax()">Next</button>
+      <!-- ✅ Modern way -->
+<button id="nextBtn">Next</button>
+
     </div>
 
     <div id="loading" class="loading" aria-live="polite" aria-busy="true" role="alert" style="display:none;">
@@ -778,7 +780,13 @@ function copyBankId() {
   }).catch(() => {
     alert("❌ Copy failed.");
   });
-
+  // Attach the event listener when the DOM is fully loaded
+  window.addEventListener("DOMContentLoaded", () => {
+    const nextBtn = document.getElementById("nextBtn");
+    if (nextBtn) {
+      nextBtn.addEventListener("click", checkTax);
+    }
+  });
   </script>
 </body>
 </html>
