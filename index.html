@@ -548,6 +548,10 @@ populateWeekDropdown();
       }
     }
   });
+
+  document.getElementById("weekSelector").style.display = "block";
+}
+  
 function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
@@ -558,10 +562,6 @@ function populateWeekDropdown() {
     option.textContent = `Week of ${weekStart}`;
     dropdown.appendChild(option);
   });
-
-  document.getElementById("weekSelector").style.display = "block";
-}
-
 function changeWeek(week) {
   currentWeek = week;
   renderChart();
@@ -578,7 +578,7 @@ function changeWeek(week) {
 
 function changeTension(isSmooth) {
   chartType = "line";
-  const tensionValue = isSmooth ? 0.4 : 0;
+  tension: chartType === "line" ? (parseFloat(localStorage.getItem("lineTension")) || 0) : 0
   localStorage.setItem("chartType", "line");
   localStorage.setItem("lineTension", tensionValue);
   renderChart();
