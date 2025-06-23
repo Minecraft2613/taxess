@@ -98,9 +98,12 @@
 
 .btn-row button {
   flex: 1 1 140px;
-  max-width: 180px;
+  max-width: 160px;
   min-width: 120px;
+  text-align: center;
+  white-space: nowrap;
 }
+
 
     #loading {
       display: none;
@@ -173,6 +176,13 @@
       margin-bottom: 1rem;
       text-align: center;
     }
+    @media (max-width: 600px) {
+  .btn-row button {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -211,13 +221,14 @@
 
     <div id="chartArea" class="card" style="display:none;">
       <canvas id="taxChart"></canvas>
-    <div class="btn-row" style="margin-top:10px;">
-  <button onclick="changeChart('bar')">Bar Chart</button>
-  <button onclick="changeChart('pie')">Pie Chart</button>
-  <button onclick="changeTension(true)">Smooth Curve</button>
-  <button onclick="changeTension(false)">Straight Line</button>
-  <button onclick="downloadChart()">Export Chart</button>
+  <div class="btn-row" style="margin-top:10px;">
+  <button onclick="changeChart('bar')">📊 Bar Chart</button>
+  <button onclick="changeChart('pie')">🥧 Pie Chart</button>
+  <button onclick="changeTension(true)">🌈 Smooth Curve</button>
+  <button onclick="changeTension(false)">📈 Straight Line</button>
+  <button onclick="downloadChart()">📥 Export Chart</button>
 </div>
+
 
 
 
