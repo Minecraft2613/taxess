@@ -621,8 +621,6 @@ gradient.addColorStop(1, '#ff8800'); // Bright orange
   document.getElementById("taxChart").style.display = "block";
 }
 
-currentWeek = 'last'; // No 'let' here
-
        function changeChart(type) {
       chartType = type;
       localStorage.setItem("chartType", type);
@@ -780,12 +778,6 @@ function copyBankId() {
   }).catch(() => {
     alert("❌ Copy failed.");
   });
-}
-function showWeek(weekType) {
-  currentWeek = weekType; // ✅ Correct: we're just updating the existing global variable
-  renderChart();
-}
-
 
   </script>
 </body>
