@@ -2,119 +2,190 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>📄 Player Tax Portal</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    /* --- CSS Styles --- */
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
       color: #fff;
       margin: 0;
       padding: 0;
       overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 20px;
+    }
+    .main {
+      max-width: 800px;
+      width: 100%;
+      padding: 20px;
+      animation: fadeIn 1s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
     }
     h1 {
       text-align: center;
       color: #ffcc00;
       animation: pulse 2s infinite;
+      margin-bottom: 1rem;
     }
     @keyframes pulse {
       0%, 100% { color: #ffcc00; }
       50% { color: #ff8800; }
     }
-    .main {
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
+    .glow {
+      text-shadow:
+        0 0 8px #ffcc00,
+        0 0 15px #ffcc00,
+        0 0 20px #ff8800;
     }
     .card {
       background: #111;
-      padding: 20px;
-      margin: 20px 0;
       border-radius: 10px;
-      box-shadow: 0 0 10px #ff880088;
+      padding: 20px;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 15px #ff8800aa;
+      animation: fadeIn 1s ease;
     }
-    input, select, button {
+    select, input[type="text"], input[type="number"], input[type="password"], button {
+      display: block;
       width: 100%;
-      padding: 10px;
+      padding: 12px 10px;
       margin: 10px 0;
-      border-radius: 5px;
       font-size: 16px;
-    }
-    input, select {
+      border-radius: 5px;
+      border: 1px solid #444;
       background: #222;
       color: #fff;
-      border: 1px solid #444;
+      box-sizing: border-box;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    select:hover, input:hover, button:hover {
+      background-color: #333;
+      border-color: #ff8800;
+      color: #ffcc00;
+      cursor: pointer;
     }
     button {
       background: #ff8800;
       color: #000;
       border: none;
-      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 0 8px #ff8800;
     }
-    button:hover {
-      opacity: 0.9;
+    button:disabled {
+      background: #555;
+      color: #999;
+      cursor: not-allowed;
+      box-shadow: none;
     }
-    .loading {
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn-row button {
+      flex: 1 1 30%;
+      max-width: 150px;
+    }
+    #loading {
       display: none;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      margin-top: 30px;
+      gap: 10px;
+      flex-wrap: nowrap;
+      margin-bottom: 1rem;
+      color: #ffcc00;
+      font-weight: bold;
+      font-size: 1.2rem;
     }
-    .loading .block {
+    #loading .block {
       width: 20px;
       height: 20px;
       background: #ff8800;
-      margin: 5px;
-      animation: bounce 1.2s infinite ease-in-out;
+      border-radius: 3px;
+      animation: loadingBounce 1.2s infinite ease-in-out;
     }
-    .loading .block:nth-child(2) { animation-delay: 0.2s; }
-    .loading .block:nth-child(3) { animation-delay: 0.4s; }
-    .loading .block:nth-child(4) { animation-delay: 0.6s; }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+    #loading .block:nth-child(1) { animation-delay: 0s; }
+    #loading .block:nth-child(2) { animation-delay: 0.2s; }
+    #loading .block:nth-child(3) { animation-delay: 0.4s; }
+    #loading .block:nth-child(4) { animation-delay: 0.6s; }
+    @keyframes loadingBounce {
+      0%, 80%, 100% { transform: scaleY(1); opacity: 0.6; }
+      40% { transform: scaleY(1.6); opacity: 1; }
     }
-    #taxChart {
-      width: 100%;
-      max-height: 300px;
+    #profile p, #profile h3 {
+      margin: 8px 0;
     }
-    .theme-toggle {
-      text-align: right;
-      margin: -10px 0 10px;
-    }
-    #countdownTimer {
-      text-align: center;
-      font-weight: bold;
+    #profile input[type="number"] {
+      max-width: 200px;
       margin: 10px auto;
-      color: #ff5555;
+      display: block;
+    }
+    #historyBox ul, #fullHistoryBox ul, #topTaxPlayers ul {
+      list-style-type: none;
+      padding-left: 0;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+    #historyBox li, #fullHistoryBox li, #topTaxPlayers li {
+      padding: 5px 10px;
+      border-bottom: 1px solid #333;
+    }
+    #historyBox, #fullHistoryBox, #topTaxPlayers {
+      background: #222;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 8px #ff8800aa;
+    }
+   #chartArea {
+  height: 400px;
+  overflow: hidden;
+}
+
+#taxChart {
+  height: 100% !important;
+  max-height: 100% !important;
+  width: 100% !important;
+}
+
+    }
+    .hidden { display: none !important; }
+    #saveNotice {
+      color: #ff6666;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="main">
-    <div class="theme-toggle">
-      <label><input type="checkbox" id="themeToggle" /> Light Mode</label>
-    </div>
     <h1>📄 <span class="glow">Player Tax Portal</span></h1>
 
     <div id="step1" class="card">
-      <select id="version">
+      <select id="version" title="Select Minecraft version">
         <option>Java</option>
         <option>Bedrock</option>
       </select>
-      <select id="method">
+      <select id="method" title="Select contact method">
         <option>Discord</option>
         <option>Instagram</option>
       </select>
-      <input id="mcid" placeholder="Minecraft Name" />
-      <input id="contactId" placeholder="Your Discord or Insta Name" />
-      <button onclick="checkTax()">Next</button>
+      <input id="mcid" type="text" placeholder="e.g. Steve or .Atharva" autocomplete="off" />
+      <button id="nextBtn" onclick="checkTax()">Next</button>
     </div>
 
-    <div id="loading" class="loading">
+    <div id="loading" class="loading" aria-live="polite" aria-busy="true" role="alert" style="display:none;">
       <div class="block"></div>
       <div class="block"></div>
       <div class="block"></div>
@@ -123,72 +194,151 @@
     </div>
 
     <div id="bankBox" class="card" style="display:none;"></div>
-    <div id="countdownTimer" style="display:none;"></div>
     <div id="profile" class="card" style="display:none;"></div>
     <div id="historyBox" class="card" style="display:none;"></div>
     <div id="fullHistoryBox" class="card" style="display:none;"></div>
+
+    <div id="topTaxPlayers" class="card" style="display:none;"></div>
+
+    <div id="saveNotice" class="card" style="display:none;"></div>
+
     <div id="chartArea" class="card" style="display:none;">
       <canvas id="taxChart"></canvas>
-      <div class="btn-row">
-        <button onclick="changeChart('bar')">Bar</button>
-        <button onclick="changeChart('line')">Line</button>
-        <button onclick="changeChart('pie')">Pie</button>
-        <button onclick="downloadChart()">Export</button>
-        <button onclick="downloadHistory()">Export History</button>
-        <button onclick="exitApp()">Exit</button>
-      </div>
+      <div class="btn-row" style="margin-top:10px;">
+  <button onclick="changeChart('bar')">Bar Chart</button>
+  <button onclick="changeChart('line')">Line Chart</button>
+  <button onclick="changeChart('pie')">Pie Chart</button>
+  <button onclick="downloadChart()">Export Chart</button>
+</div>
+
+
+    <div class="btn-row" id="footerButtons" style="display:none;">
+      <button onclick="showFullHistory()">Full History</button>
+      <button onclick="exitApp()">Exit</button>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    // --- JavaScript Code ---
+    const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
+    const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
+    const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
+    const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
+    const syncTransactionURL = "https://transaction.1987sakshamsingh.workers.dev/";
     const webhookURL = "https://discordapp.com/api/webhooks/1386366777403117620/ioXKz_sPozMCx1DPvTWnJ1d2YyBw9P9oiqoRO_EWJWRZ1YDFEQEK3R64Y5RImfIgTrHR";
-    const transactionURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt";
-    const countdownDays = 7;
 
-    let paymentHistory = {}, paidPlayers = {}, currentPlayer = "", chartType = "bar", chart, dailyData = {}, deadline = null;
+    let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, currentPlayer = "", dailyData = {}, chart;
+  let chartType = localStorage.getItem("chartType") || "line";
 
-    function checkTax() {
-      currentPlayer = document.getElementById("mcid").value.trim();
-      const contact = document.getElementById("contactId").value.trim();
-      if (!currentPlayer || !contact) return alert("Fill in both Minecraft and Discord/Insta name");
+
+    function sumPayments(player) {
+      const history = paymentHistory[player] || [];
+      return history.reduce((sum, entry) => sum + Number(entry.amount), 0);
+    }
+
+    async function checkTax() {
+      currentPlayer = document.getElementById('mcid').value.trim();
+      if (!currentPlayer) return alert("Please enter your Minecraft name");
       document.getElementById("step1").style.display = "none";
       document.getElementById("loading").style.display = "flex";
-      sendDiscordWebhook(currentPlayer, contact);
-      loadTaxData();
-    }
 
-    function sendDiscordWebhook(player, contact) {
-      fetch(webhookURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: `📝 ${player} accessed the portal\n📨 Contact: ${contact}` })
-      });
-    }
-
-    async function loadTaxData() {
       try {
-        const res = await fetch(transactionURL + "?nocache=" + Date.now());
-        const text = await res.text();
-        parseTransactions(text);
+        await fetch(syncTransactionURL, { method: "POST" });
+        await loadOnlineData();
         document.getElementById("loading").style.display = "none";
-        showProfile();
-        startCountdown();
-      } catch {
-        alert("Failed to load tax data.");
-        location.reload();
+        if (!bankAccounts[currentPlayer]) askBankDetails();
+        else askBankLogin();
+      } catch (e) {
+        alert("⚠️ Failed to sync. Please try again later.");
+        document.getElementById("step1").style.display = "block";
+        document.getElementById("loading").style.display = "none";
       }
     }
 
+    async function loadOnlineData() {
+      const [taxRes, bankRes] = await Promise.all([fetch(taxURL), fetch(bankURL)]);
+      const taxData = await taxRes.json();
+      const bankData = await bankRes.json();
+      paidPlayers = taxData.paidPlayers || {};
+      paymentHistory = taxData.paymentHistory || {};
+      bankAccounts = bankData.accounts || {};
+      taxDeadline = taxData.taxDeadline || {};
+    }
+
+    function askBankDetails() {
+      document.getElementById("bankBox").innerHTML = `
+        <h3>Create Bank Account</h3>
+        <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
+        <input id="bankId" placeholder="Bank ID" autocomplete="off" />
+        <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
+        <div class="btn-row">
+          <button onclick="createBankAccount()">Create</button>
+          <button onclick="exitBank()">Exit</button>
+        </div>`;
+      document.getElementById("bankBox").style.display = "block";
+      hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
+    }
+
+    function askBankLogin() {
+      document.getElementById("bankBox").innerHTML = `
+        <h3>Login to Bank</h3>
+        <input id="bankId" placeholder="Bank ID" autocomplete="off" />
+        <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
+        <div class="btn-row">
+          <button onclick="verifyBankLogin()">Login</button>
+          <button onclick="exitBank()">Exit</button>
+        </div>`;
+      document.getElementById("bankBox").style.display = "block";
+      hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
+    }
+
+    function exitBank() {
+      document.getElementById("bankBox").style.display = "none";
+      document.getElementById("step1").style.display = "block";
+      hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
+    }
+
+    function verifyBankLogin() {
+      const id = document.getElementById("bankId").value.trim();
+      const pass = document.getElementById("bankPass").value;
+      const account = bankAccounts[currentPlayer];
+      if (account && account.id === id && account.password === pass) {
+        document.getElementById("bankBox").style.display = "none";
+        loadTax();
+      } else alert("Invalid credentials");
+    }
+
+    function createBankAccount() {
+      const username = document.getElementById("bankUser").value.trim();
+      const id = document.getElementById("bankId").value.trim();
+      const pass = document.getElementById("bankPass").value;
+      if (!username || !id || !pass) return alert("Fill all fields");
+      bankAccounts[currentPlayer] = { username, id, password: pass };
+      syncToCloudflare(syncBankURL, { accounts: bankAccounts });
+      document.getElementById("bankBox").style.display = "none";
+      loadTax();
+    }
+
+    async function loadTax() {
+      document.getElementById("loading").style.display = "flex";
+      hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
+      const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt?nocache=" + Date.now());
+      const text = await res.text();
+      parseTransactions(text);
+      document.getElementById("loading").style.display = "none";
+    }
+
     function parseTransactions(log) {
-      const lines = log.split("\n");
+      const lines = log.split(/\r?\n/);
       let buy = 0, sell = 0;
       dailyData = {};
       lines.forEach(line => {
         if (!line.toLowerCase().includes(currentPlayer.toLowerCase())) return;
-        const matchDate = line.match(/\[(\d{4}-\d{2}-\d{2})/);
-        const day = matchDate ? matchDate[1].slice(5).replace("-", "/") : "";
-        const buyMatch = line.match(/bought.*?\$(\d[\d,.]+)/);
-        const sellMatch = line.match(/sold.*?\$(\d[\d,.]+)/);
+        const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
+        const day = date ? date[1].slice(5).replace('-', '/') : "";
+        const buyMatch = line.match(/bought.*?\$(\d[\d,\.]+)/);
+        const sellMatch = line.match(/sold.*?\$(\d[\d,\.]+)/);
         if (buyMatch) {
           const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
           const tax = +(amt * 0.04).toFixed(2);
@@ -202,97 +352,154 @@
           dailyData[day] = (dailyData[day] || 0) + tax;
         }
       });
-      deadline = Date.now() + countdownDays * 24 * 60 * 60 * 1000;
-    }
 
-    function startCountdown() {
-      const timer = document.getElementById("countdownTimer");
-      timer.style.display = "block";
-      function update() {
-        const now = Date.now();
-        const diff = deadline - now;
-        if (diff <= 0) {
-          timer.textContent = "⚠️ Tax Deadline Missed!";
-          return;
-        }
-        const d = Math.floor(diff / 86400000),
-              h = Math.floor((diff % 86400000) / 3600000),
-              m = Math.floor((diff % 3600000) / 60000);
-        timer.textContent = `⏳ Tax Deadline: ${d}d ${h}h ${m}m left`;
-        setTimeout(update, 60000);
-      }
-      update();
-    }
-
-    function showProfile() {
-      const total = Object.values(dailyData).reduce((a,b)=>a+b,0);
-      const paid = 0;
+      const total = buy + sell;
+      const paid = sumPayments(currentPlayer);
       const due = Math.max(0, total - paid);
-      paymentHistory[currentPlayer] = [];
 
-      document.getElementById("profile").innerHTML = `
+      // Manage deadlines
+      if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        taxDeadline[currentPlayer] = start.getTime();
+        syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+      }
+      if (due <= 0 && taxDeadline[currentPlayer]) {
+        delete taxDeadline[currentPlayer];
+        syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+      }
+
+      const now = Date.now();
+      const startTime = taxDeadline[currentPlayer];
+      const deadline = startTime ? startTime + 7 * 86400000 : null;
+
+      if (deadline && now > deadline && due > 0) sendTaxWebhook(currentPlayer, due);
+      if (startTime && now <= deadline && due > 0) {
+        const left = deadline - now;
+        const d = Math.floor(left / 86400000),
+          h = Math.floor(left % 86400000 / 3600000),
+          m = Math.floor(left % 3600000 / 60000);
+        const saveNotice = document.getElementById("saveNotice");
+        saveNotice.innerText = `⏳ Tax Deadline: ${d}d ${h}h ${m}m left`;
+        saveNotice.style.display = "block";
+      } else {
+        document.getElementById("saveNotice").style.display = "none";
+      }
+
+      showProfile(buy, sell, total, paid, due, paid > total);
+      renderChart();
+      showTopTaxPlayers();
+
+      // Show footer buttons
+      document.getElementById("footerButtons").style.display = "flex";
+    }
+
+    function showProfile(buy, sell, total, paid, due, advanced) {
+      const profile = document.getElementById("profile");
+      profile.innerHTML = `
         <h3>Welcome, ${currentPlayer}</h3>
         <p>Total Tax: $${total.toFixed(2)}</p>
-        <p>Status: <strong>${due === 0 ? "No Tax Due" : "$" + due.toFixed(2) + " Due"}</strong></p>
+        <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
+        <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
         <input type="number" id="payAmt" placeholder="Enter amount to pay" min="1" />
         <div class="btn-row">
           <button onclick="submitTax()">${due > 0 ? "Pay Tax" : "Advance Pay"}</button>
           <button onclick="showFullHistory()">Full History</button>
           <button onclick="exitApp()">Exit</button>
-        </div>`;
-      document.getElementById("profile").style.display = "block";
-      renderChart();
+        </div>
+      `;
+      profile.style.display = "block";
+
+      const history = paymentHistory[currentPlayer] || [];
+      document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
+        ${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+      document.getElementById("historyBox").style.display = "block";
+
+      document.getElementById("chartArea").style.display = "block";
+      document.getElementById("topTaxPlayers").style.display = "block";
     }
 
-    function renderChart() {
-      const ctx = document.getElementById("taxChart").getContext("2d");
-      if (chart) chart.destroy();
-      chart = new Chart(ctx, {
-        type: chartType,
-        data: {
-          labels: Object.keys(dailyData),
-          datasets: [{
-            label: "Tax Per Day",
-            data: Object.values(dailyData),
-            backgroundColor: chartType === "pie" ? ['#ffaa00', '#ff8800', '#ff6600', '#00ffaa'] : '#00ffaa',
-            borderColor: '#00ffaa',
-            borderWidth: 2,
-            fill: chartType !== 'pie',
-            tension: 0,
-            pointRadius: 3,
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { labels: { color: '#fff' } } },
-          scales: chartType === 'pie' ? {} : {
-            x: { ticks: { color: '#ccc' }, grid: { color: '#333' } },
-            y: { beginAtZero: true, ticks: { color: '#ccc' }, grid: { color: '#333' } }
-          }
-        }
-      });
-      document.getElementById("chartArea").style.display = "block";
+    function showFullHistory() {
+      const all = paymentHistory[currentPlayer] || [];
+      const fullBox = document.getElementById("fullHistoryBox");
+      fullBox.innerHTML = `<h3>Full Payment History</h3><ul>
+        ${all.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>
+        <div class="btn-row"><button onclick="hideFullHistory()">Close</button></div>`;
+      fullBox.style.display = "block";
     }
+    function hideFullHistory() {
+      document.getElementById("fullHistoryBox").style.display = "none";
+    }
+
+   function renderChart() {
+  const ctx = document.getElementById('taxChart').getContext('2d');
+  if (chart) chart.destroy();
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+  gradient.addColorStop(0, '#00ffaa');
+  gradient.addColorStop(1, '#0066ff');
+
+  chart = new Chart(ctx, {
+    type: chartType,
+    data: {
+      labels: Object.keys(dailyData),
+      datasets: [{
+        label: 'Tax Per Day',
+        data: Object.values(dailyData),
+        fill: chartType !== 'pie' && chartType !== 'radar',
+        backgroundColor: chartType === 'pie' || chartType === 'radar'
+          ? ['#ffaa00', '#ff8800', '#ff6600', '#00ffaa', '#00ccaa', '#0066ff', '#cc00ff']
+          : gradient,
+        borderColor: '#00ffaa',
+        borderWidth: 3,
+        tension: chartType === 'line' ? 0.5 : 0,
+        pointRadius: 5,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#00ffaa',
+        pointHoverBackgroundColor: '#ff6600',
+      }]
+    },
+    options: {
+      responsive: true,
+      animation: {
+        duration: 1500,
+        easing: 'easeOutQuart'
+      },
+      plugins: {
+        tooltip: {
+          enabled: true,
+          backgroundColor: '#222',
+          titleColor: '#00ffaa',
+          bodyColor: '#fff',
+          borderColor: '#00ffaa',
+          borderWidth: 1
+        },
+        legend: {
+          labels: { color: '#fff' }
+        }
+      },
+      scales: chartType === 'pie' || chartType === 'radar' ? {} : {
+        x: { ticks: { color: '#aaa' }, grid: { color: '#333' } },
+        y: { beginAtZero: true, ticks: { color: '#aaa' }, grid: { color: '#333' } }
+      },
+      maintainAspectRatio: false
+    }
+  });
+
+  document.getElementById("taxChart").style.display = "block";
+}
+
 
     function changeChart(type) {
       chartType = type;
+      localStorage.setItem("chartType", type);
       renderChart();
     }
 
     function downloadChart() {
       const link = document.createElement("a");
       link.download = `${currentPlayer}-tax-chart.png`;
-      link.href = document.getElementById("taxChart").toDataURL("image/png");
-      link.click();
-    }
-
-    function downloadHistory() {
-      const entries = paymentHistory[currentPlayer] || [];
-      const content = `Player: ${currentPlayer}\n` + entries.map(e => `Paid $${e.amount} on ${e.date}`).join("\n");
-      const blob = new Blob([content], { type: "text/plain" });
-      const link = document.createElement("a");
-      link.download = `${currentPlayer}-tax-history.txt`;
-      link.href = URL.createObjectURL(blob);
+      link.href = document.getElementById('taxChart').toDataURL('image/png');
       link.click();
     }
 
@@ -300,30 +507,76 @@
       const amt = parseFloat(document.getElementById("payAmt").value);
       if (!amt || amt <= 0) return alert("Invalid amount");
       const entry = { amount: amt, date: new Date().toLocaleString() };
+      if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
       paymentHistory[currentPlayer].push(entry);
-      alert("✅ Tax submitted successfully!");
+      paidPlayers[currentPlayer] = sumPayments(currentPlayer);
+      syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+      loadTax();
     }
 
-    function showFullHistory() {
-      const all = paymentHistory[currentPlayer] || [];
-      document.getElementById("fullHistoryBox").innerHTML = `<h3>Full Payment History</h3><ul>
-        ${all.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
-      document.getElementById("fullHistoryBox").style.display = "block";
+    function syncToCloudflare(url, data) {
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      }).then(res => res.ok ? console.log("☁️ Synced") : res.text().then(txt => console.warn("Sync Fail", txt)))
+        .catch(err => console.warn("Sync Error:", err));
+    }
+
+    function sendTaxWebhook(player, dueTax) {
+      const bank = bankAccounts[player] || {};
+      const content = {
+        embeds: [{
+          title: "⏰ Tax Deadline Missed",
+          color: 0xff0000,
+          fields: [
+            { name: "Player", value: player, inline: true },
+            { name: "Tax Due", value: `$${dueTax}`, inline: true },
+            { name: "Bank Username", value: bank.username || "N/A", inline: true },
+            { name: "Bank ID", value: bank.id || "N/A", inline: true }
+          ],
+          timestamp: new Date().toISOString()
+        }]
+      };
+
+      fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(content)
+      });
+    }
+
+    function showTopTaxPlayers() {
+      const top = Object.entries(paidPlayers)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5)
+        .map(([name, tax]) => `<li><strong>${name}</strong>: $${tax.toFixed(2)}</li>`)
+        .join('');
+      const container = document.getElementById("topTaxPlayers");
+      if(top) {
+        container.innerHTML = `<h3>Top 5 Tax Payers</h3><ul>${top}</ul>`;
+        container.style.display = "block";
+      } else {
+        container.style.display = "none";
+      }
     }
 
     function exitApp() {
       location.reload();
     }
 
-    document.getElementById("themeToggle").addEventListener("change", e => {
-      if (e.target.checked) {
-        document.body.style.background = "#f4f4f4";
-        document.body.style.color = "#111";
-      } else {
-        document.body.style.background = "linear-gradient(135deg, #0f0f0f, #1e1e1e)";
-        document.body.style.color = "#fff";
-      }
-    });
+    // Helper: Hide multiple elements by IDs
+    function hideElements(ids) {
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "none";
+      });
+    }
+
+    window.onload = () => {
+      // Removed invalid job element code
+      taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
+    };
   </script>
 </body>
 </html>
