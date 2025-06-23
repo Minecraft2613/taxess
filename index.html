@@ -1,57 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>💼 Player Tax Portal</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Tax Portal</title>
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>📃 Player Tax Portal</h1>
-
-    <div id="step1">
-      <input id="mcid" placeholder="Enter your Minecraft Username" />
-      <select id="job"></select>
-      <select id="method">
-        <option value="Discord">Discord</option>
-        <option value="Instagram">Instagram</option>
-      </select>
-      <input id="contact" placeholder="Enter your Discord/Instagram username" />
-      <button onclick="checkTax()">Check Tax</button>
-    </div>
-
-    <div id="novaLoading3D" class="loading-animation" style="display: none;">
-      <div class="cube-container">
-        <div class="small-cube" id="cube1"></div>
-        <div class="small-cube" id="cube2"></div>
-        <div class="small-cube" id="cube3"></div>
-        <div class="small-cube" id="cube4"></div>
-      </div>
-      <div class="loading-text">Loading data...</div>
-    </div>
-
-    <div id="bankBox" class="bank-box" style="display:none;"></div>
-    <div id="topPlayers" class="profile-box" style="display:none;"></div>
-
-    <div id="profile" class="profile-box" style="display:none;"></div>
-    <div id="chartControls" class="chart-controls" style="display:none;">
-      <label for="chartType">Chart Type:</label>
-      <select id="chartType" onchange="changeChartType(this.value)">
-        <option value="line">Line</option>
-        <option value="bar">Bar</option>
-        <option value="pie">Pie</option>
-      </select>
-    </div>
-    <div class="chart-area">
-      <canvas id="taxChart" style="display:none;"></canvas>
-    </div>
-
-    <div id="historyBox" class="history-box" style="display:none;"></div>
-    <button id="exitBtn" onclick="location.reload()" style="display:none;">Exit</button>
-    <div class="countdown" id="saveNotice" style="display:none;"></div>
+  <div id="step1" class="centered">
+    <h2>Enter Your Minecraft Username</h2>
+    <input type="text" id="mcid" placeholder="Minecraft Username">
+    <select id="job"></select>
+    <button onclick="checkTax()">Check Tax</button>
   </div>
+
+  <div id="novaLoading3D" class="centered hidden">
+    <div class="loading-cube">
+      <div></div><div></div><div></div><div></div>
+    </div>
+    <p>Loading data...</p>
+  </div>
+
+  <div id="bankBox" class="centered hidden"></div>
+
+  <div id="profile" class="hidden"></div>
+  <div id="historyBox" class="hidden"></div>
+  <div id="top5Box" class="hidden"></div>
+  <div id="fullHistoryBox" class="hidden"></div>
+  <canvas id="taxChart" class="hidden"></canvas>
+  <div id="saveNotice" class="hidden warning"></div>
+
   <script src="script.js"></script>
 </body>
 </html>
