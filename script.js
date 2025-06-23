@@ -7,12 +7,13 @@ const syncTransactionURL = "https://transaction.1987sakshamsingh.workers.dev/";
 const webhookURL = "https://discordapp.com/api/webhooks/1386366777403117620/ioXKz_sPozMCx1DPvTWnJ1d2YyBw9P9oiqoRO_EWJWRZ1YDFEQEK3R64Y5RImfIgTrHR";
 
 let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {};
-let currentPlayer = '', dailyData = {}, chart, chartType = 'line';
+let currentPlayer = '', dailyData = {}, chart;
+const deadlineDays = 7;
 
 window.onload = () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
-  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"].map(j => `<option>${j}</option>`).join("");
-  document.getElementById("chartTypeSelector").addEventListener('change', changeChartType);
+  document.getElementById("job").innerHTML = ["Farmer", "Miner", "Trader", "Builder"]
+    .map(j => `<option>${j}</option>`).join("");
 };
 
 function sumPayments(player) {
@@ -25,18 +26,19 @@ async function checkTax() {
   if (!currentPlayer) return alert("Please enter your Minecraft name");
 
   document.getElementById("step1").style.display = "none";
-  document.getElementById("loading").style.display = "flex";
+  document.getElementById("novaLoading3D").style.display = "flex";
 
   try {
     await fetch(syncTransactionURL, { method: "POST" });
     await loadOnlineData();
-    document.getElementById("loading").style.display = "none";
+    document.getElementById("novaLoading3D").style.display = "none";
+
     if (!bankAccounts[currentPlayer]) askBankDetails();
     else askBankLogin();
   } catch (e) {
     alert("⚠️ Failed to sync. Please try again later.");
     document.getElementById("step1").style.display = "block";
-    document.getElementById("loading").style.display = "none";
+    document.getElementById("novaLoading3D").style.display = "none";
   }
 }
 
@@ -85,7 +87,7 @@ function createBankAccount() {
   const pass = document.getElementById("bankPass").value;
   if (!username || !id || !pass) return alert("Fill all fields");
   bankAccounts[currentPlayer] = { username, id, password: pass };
-  syncToCloud(syncBankURL, { accounts: bankAccounts });
+  syncToCloudflare(syncBankURL, { accounts: bankAccounts });
   document.getElementById("bankBox").style.display = "none";
   loadTax();
 }
@@ -131,12 +133,20 @@ function parseTransactions(log) {
   if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
     const start = new Date(); start.setHours(0, 0, 0, 0);
     taxDeadline[currentPlayer] = start.getTime();
-    syncToCloud(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+    syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
   }
 
   if (due <= 0 && taxDeadline[currentPlayer]) {
     delete taxDeadline[currentPlayer];
-    syncToCloud(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+    syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+  }
+
+  if (deadline && now > deadline && due > 0) sendTaxWebhook(currentPlayer, due);
+  if (startTime && now <= deadline && due > 0) {
+    const left = deadline - now;
+    const d = Math.floor(left / 86400000), h = Math.floor(left % 86400000 / 3600000), m = Math.floor(left % 3600000 / 60000);
+    document.getElementById("saveNotice").innerText = `⏳ Tax Deadline: ${d}d ${h}h ${m}m left`;
+    document.getElementById("saveNotice").style.display = "block";
   }
 
   showProfile(buy, sell, total, paid, due, paid > total);
@@ -144,20 +154,40 @@ function parseTransactions(log) {
 }
 
 function showProfile(buy, sell, total, paid, due, advanced) {
-  document.getElementById("profile").innerHTML = `
-    <h3>Welcome, ${currentPlayer}</h3>
+  document.getElementById("profile").innerHTML = `<h3>Welcome, ${currentPlayer}</h3>
     <p>Total Tax: $${total.toFixed(2)}</p>
     <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
     <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
     <input type="number" id="payAmt" placeholder="Enter amount to pay">
-    <button onclick="submitTax()">${due > 0 ? "Pay Tax" : "Advance Pay"}</button>`;
-
+    <div class="btn-row">
+      ${due > 0 ? `<button onclick="submitTax()">Pay Tax</button>` : `<button onclick="submitTax()">Advance Pay</button>`}
+    </div>`;
   document.getElementById("profile").style.display = "block";
 
   const history = paymentHistory[currentPlayer] || [];
   document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
     ${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
   document.getElementById("historyBox").style.display = "block";
+}
+
+function renderChart() {
+  const ctx = document.getElementById('taxChart').getContext('2d');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(dailyData),
+      datasets: [{
+        label: 'Tax Per Day',
+        data: Object.values(dailyData),
+        backgroundColor: '#ffaa00'
+      }]
+    },
+    options: {
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+  document.getElementById("taxChart").style.display = "block";
 }
 
 function submitTax() {
@@ -168,42 +198,38 @@ function submitTax() {
   paymentHistory[currentPlayer].push(entry);
   paidPlayers[currentPlayer] = sumPayments(currentPlayer);
   document.getElementById("payAmt").value = "";
-  syncToCloud(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+  syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
   loadTax();
 }
 
-function syncToCloud(url, data) {
+function syncToCloudflare(url, data) {
   fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  }).then(res => res.ok ? console.log("☁️ Synced") : res.text().then(txt => console.warn("⚠️ Sync Failed", txt)))
-    .catch(err => console.warn("☁️ Error Syncing", err));
+  }).then(res => res.ok ? console.log("☁️ Sync OK") : res.text().then(txt => console.warn("☁️ Sync Fail", txt)))
+    .catch(err => console.warn("☁️ Sync Error:", err));
 }
 
-function changeChartType() {
-  chartType = document.getElementById("chartTypeSelector").value;
-  renderChart();
-}
+function sendTaxWebhook(player, dueTax) {
+  const bank = bankAccounts[player] || {};
+  const content = {
+    embeds: [{
+      title: "⏰ Tax Deadline Missed",
+      color: 0xff0000,
+      fields: [
+        { name: "Player", value: player, inline: true },
+        { name: "Tax Due", value: `$${dueTax}`, inline: true },
+        { name: "Bank Username", value: bank.username || "N/A", inline: true },
+        { name: "Bank ID", value: bank.id || "N/A", inline: true }
+      ],
+      timestamp: new Date().toISOString()
+    }]
+  };
 
-function renderChart() {
-  const ctx = document.getElementById('taxChart').getContext('2d');
-  if (chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type: chartType === 'curved' ? 'line' : chartType,
-    data: {
-      labels: Object.keys(dailyData),
-      datasets: [{
-        label: 'Tax Per Day',
-        data: Object.values(dailyData),
-        borderColor: '#ffaa00',
-        backgroundColor: chartType === 'bar' ? '#ffaa00' : 'transparent',
-        tension: chartType === 'curved' ? 0.4 : 0
-      }]
-    },
-    options: {
-      scales: { y: { beginAtZero: true } },
-      responsive: true
-    }
-  });
+  fetch(webhookURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(content)
+  }).then(res => res.ok ? console.log("✅ Webhook sent.") : console.warn("⚠️ Webhook failed."));
 }
