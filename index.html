@@ -291,36 +291,18 @@
       taxDeadline = taxData.taxDeadline || {};
     }
 
-    function askBankDetails() {
+   function askBankLogin() {
       document.getElementById("bankBox").innerHTML = `
-        <h3>Create Bank Account</h3>
-        <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
+        <h3>Login to Bank</h3>
         <input id="bankId" placeholder="Bank ID" autocomplete="off" />
         <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
         <div class="btn-row">
-          <button onclick="createBankAccount()">Create</button>
+          <button onclick="verifyBankLogin()">Login</button>
           <button onclick="exitBank()">Exit</button>
         </div>`;
       document.getElementById("bankBox").style.display = "block";
       hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
     }
-function askBankDetails() {
-  const randomId = "BANK" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
-  document.getElementById("bankBox").innerHTML = `
-    <h3>Create Bank Account</h3>
-    <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
-    <input id="bankId" value="${randomId}" readonly />
-    <p style="color: #ff6666; font-size: 14px; margin: 5px 0;">
-      ⚠️ Remember this Bank ID: <b>${randomId}</b><br>You'll need it to login later!
-    </p>
-    <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
-    <div class="btn-row">
-      <button onclick="createBankAccount()">Create</button>
-      <button onclick="exitBank()">Exit</button>
-    </div>`;
-  document.getElementById("bankBox").style.display = "block";
-  hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
-}
 
     function verifyBankLogin() {
       const id = document.getElementById("bankId").value.trim();
