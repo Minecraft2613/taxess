@@ -291,7 +291,7 @@
       taxDeadline = taxData.taxDeadline || {};
     }
 
-   function askBankLogin() {
+  function askBankLogin() {
       document.getElementById("bankBox").innerHTML = `
         <h3>Login to Bank</h3>
         <input id="bankId" placeholder="Bank ID" autocomplete="off" />
@@ -303,6 +303,13 @@
       document.getElementById("bankBox").style.display = "block";
       hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
     }
+
+    function exitBank() {
+      document.getElementById("bankBox").style.display = "none";
+      document.getElementById("step1").style.display = "block";
+      hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
+    }
+
 
     function verifyBankLogin() {
       const id = document.getElementById("bankId").value.trim();
