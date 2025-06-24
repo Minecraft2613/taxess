@@ -181,6 +181,21 @@
     flex: 1 1 100%;
     max-width: 100%;
   }
+      #chartContainer {
+  text-align: center;
+  padding: 10px;
+  background: #1a1a1a;
+  border-radius: 10px;
+  margin: 20px auto;
+  max-width: 700px;
+  box-shadow: 0 0 10px #ffaa00;
+}
+#weekDropdown {
+  padding: 6px;
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 6px;
 }
 
   </style>
@@ -250,11 +265,6 @@
     <button onclick="showFullHistory()">Full History</button>
     <button onclick="exitApp()">Exit</button>
   </div>
-</div>
-    <!-- After profile, historyBox, etc. -->
-<div id="chartContainer" style="display: none;">
-  <select id="weekDropdown" onchange="changeWeek(this.value)" style="display: none;"></select>
-  <canvas id="taxChart" width="600" height="300"></canvas>
 </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -485,6 +495,7 @@ populateWeekDropdown();
   // ...continues with showProfile, renderChart, syncToCloudflare, etc.
     function showProfile(buy, sell, total, paid, due, advanced) {
       const profile = document.getElementById("profile");
+    }
       profile.innerHTML = `
         <h3>Welcome, ${currentPlayer}</h3>
         <p>Total Tax: $${total.toFixed(2)}</p>
@@ -577,37 +588,39 @@ function renderChart() {
   });
   
 document.getElementById("weekDropdown").style.display = "block";
-document.getElementById("taxChart").style.display = "block";
   document.getElementById("chartContainer").style.display = "block";
 }
 
-function populateWeekDropdown() {
+   function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
   dropdown.innerHTML = "";
 
   const weeks = Object.keys(weekData).sort().reverse();
+
   if (weeks.length > 0) {
-    currentWeek = weeks[0];
+    currentWeek = weeks[0]; // set currentWeek to the latest week
+
+    weeks.forEach(weekStart => {
+      const option = document.createElement("option");
+      option.value = weekStart;
+      option.textContent = `Week of ${weekStart}`;
+      dropdown.appendChild(option);
+    });
+
+    dropdown.style.display = "block";
+    document.getElementById("chartContainer").style.display = "block";
+    renderChart(); // render chart for the default week
+  } else {
+    // No data available
+    document.getElementById("chartContainer").style.display = "none";
   }
-
-  weeks.forEach(weekStart => {
-    const option = document.createElement("option");
-    option.value = weekStart;
-    option.textContent = `Week of ${weekStart}`;
-    dropdown.appendChild(option);
-  });
-
-  document.getElementById("weekDropdown").style.display = "block";
-}
+} // ✅ this closing brace is the fix
 
 
 function changeWeek(week) {
   currentWeek = week;
   renderChart();
-}
-
-  document.getElementById("taxChart").style.display = "block";
 }
 
      function changeChart(type) {
@@ -713,63 +726,65 @@ const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
     }
 
     function sendTaxWebhook(player, dueTax) {
-      const bank = bankAccounts[player] || {};
-      const content = {
-        embeds: [{
-          title: "⏰ Tax Deadline Missed",
-          color: 0xff0000,
-          fields: [
-            { name: "Player", value: player, inline: true },
-            { name: "Tax Due", value: `$${dueTax}`, inline: true },
-            { name: "Bank Username", value: bank.username || "N/A", inline: true },
-            { name: "Bank ID", value: bank.id || "N/A", inline: true }
-          ],
-          timestamp: new Date().toISOString()
-        }]
-      };
+  const bank = bankAccounts[player] || {};
+  const content = {
+    embeds: [{
+      title: "⏰ Tax Deadline Missed",
+      color: 0xff0000,
+      fields: [
+        { name: "Player", value: player, inline: true },
+        { name: "Tax Due", value: `$${dueTax}`, inline: true },
+        { name: "Bank Username", value: bank.username || "N/A", inline: true },
+        { name: "Bank ID", value: bank.id || "N/A", inline: true }
+      ],
+      timestamp: new Date().toISOString()
+    }]
+  };
 
-      fetch(webhookURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(content)
-      });
-    }
+  fetch(webhookURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(content)
+  });
+}
 
-      function showTopTaxPlayers() {
-      const top = Object.entries(paidPlayers)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 5)
-        .map(([name, tax]) => `<li><strong>${name}</strong>: $${tax.toFixed(2)}</li>`)
-        .join('');
-      const container = document.getElementById("topTaxPlayers");
-      if(top) {
-        container.innerHTML = `<h3>Top 5 Tax Payers</h3><ul>${top}</ul>`;
-        container.style.display = "block";
-      } else {
-        container.style.display = "none";
-      }
-    }
+function showTopTaxPlayers() {
+  const top = Object.entries(paidPlayers)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5)
+    .map(([name, tax]) => `<li><strong>${name}</strong>: $${tax.toFixed(2)}</li>`)
+    .join('');
+  const container = document.getElementById("topTaxPlayers");
+  if (top) {
+    container.innerHTML = `<h3>Top 5 Tax Payers</h3><ul>${top}</ul>`;
+    container.style.display = "block";
+  } else {
+    container.style.display = "none";
+  }
+}
 
-    function exitApp() {
-      location.reload();
-    }
+function exitApp() {
+  location.reload();
+}
 
-    // Helper: Hide multiple elements by IDs
-    function hideElements(ids) {
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = "none";
-      });
-    }
+// ✅ Keep only ONE hideElements function
+function hideElements(ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+}
 
-    function copyBankId() {
-      const bankId = document.getElementById("bankId").value;
-      navigator.clipboard.writeText(bankId).then(() => {
-        alert("📋 Bank ID copied to clipboard!");
-      }).catch(() => {
-        alert("❌ Copy failed.");
-      });
-    }
+function copyBankId() {
+  const bankId = document.getElementById("bankId").value;
+  navigator.clipboard.writeText(bankId).then(() => {
+    alert("📋 Bank ID copied to clipboard!");
+  }).catch(() => {
+    alert("❌ Copy failed.");
+  });
+}
+
+// ✅ DOM Ready logic — now correctly closed
 window.addEventListener("DOMContentLoaded", () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
 
@@ -787,10 +802,8 @@ window.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("userContact", contact.value);
     });
   }
-});
-
-
+}); // ✅ closed DOMContentLoaded
 </script>
-
 </body>
 </html>
+
