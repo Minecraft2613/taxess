@@ -304,18 +304,24 @@ let currentWeek = 'this';
   }
 
 async function checkTax() {
-  const version = document.getElementById("platformSelect").value;
+  const platform = document.getElementById("platformSelect")?.value;
+  let inputField;
 
-  if (version === "bedrock") {
-    const input = document.getElementById("bedrockInput");
-    if (!input || !input.value.trim()) return alert("Please enter your Bedrock username");
-    currentPlayer = "." + input.value.trim();
+  if (platform === "bedrock") {
+    inputField = document.getElementById("bedrockInput");
+    if (!inputField || !inputField.value.trim()) {
+      return alert("❌ Please enter your Bedrock username");
+    }
+    currentPlayer = "." + inputField.value.trim();
   } else {
-    const input = document.getElementById("mcid");
-    if (!input || !input.value.trim()) return alert("Please enter your Java username");
-    currentPlayer = input.value.trim();
+    inputField = document.getElementById("mcid");
+    if (!inputField || !inputField.value.trim()) {
+      return alert("❌ Please enter your Java username");
+    }
+    currentPlayer = inputField.value.trim();
   }
 
+  // Log to Discord webhook
   sendUserInfo();
 
   const step1 = document.getElementById("step1");
@@ -325,15 +331,21 @@ async function checkTax() {
   if (loading) loading.style.display = "flex";
 
   try {
-    await fetch(syncTransactionURL, { method: "POST" }); // ✅ SAFE to use await here
+    // Sync transaction log
+    await fetch(syncTransactionURL, { method: "POST" });
+
+    // Load bank + tax data
     await loadOnlineData();
+
     if (loading) loading.style.display = "none";
+
+    // Proceed to bank login/create
     askBankDetails();
   } catch (e) {
-    alert("⚠️ Failed to sync data. Try again later.");
+    alert("⚠️ Failed to sync or load data. Try again.");
     if (step1) step1.style.display = "block";
     if (loading) loading.style.display = "none";
-    console.error("Sync error:", e);
+    console.error("CheckTax Error:", e);
   }
 }
 
@@ -346,9 +358,6 @@ async function checkTax() {
   if (loading) loading.style.display = "flex";
 
   try {
-
-    // ✅ Load both tax and bank data
-    await loadOnlineData();
 
     if (loading) loading.style.display = "none";
 
