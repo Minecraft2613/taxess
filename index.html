@@ -577,12 +577,11 @@ function changeWeek(week) {
 
 function changeTension(isSmooth) {
   chartType = "line";
-  const tensionValue = isSmooth ? 0.4 : 0;
+  const tensionValue = isSmooth ? 0.4 : 0;  // ✅ define tension correctly
   localStorage.setItem("chartType", "line");
-  localStorage.setItem("lineTension", tensionValue);
-  renderChart();
+  localStorage.setItem("lineTension", tensionValue);  // ✅ save to localStorage
+  renderChart();  // ✅ re-render chart with new tension
 }
-
 
 function handleChartOption(value) {
   if (value === "bar" || value === "pie") {
