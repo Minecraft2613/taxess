@@ -216,8 +216,8 @@
     <option value="Instagram">Instagram</option>
   </select>
 
-  <label id="contactLabel" for="contact">Discord Username:</label>
-  <input id="contact" type="text" placeholder="e.g. Ansh_2613" />
+  <label id="contactLabel" for="contact">Contact Username:</label>
+  <input id="contact" type="text" placeholder="Username " />
 
   <label for="mcid">Minecraft Username:</label>
   <input id="mcid" type="text" placeholder="e.g. Steve or .Atharva" />
@@ -305,7 +305,7 @@ let currentWeek = 'this';
   currentPlayer = input.value.trim();
   if (!currentPlayer) return alert("Please enter your Minecraft name");
 
-  sendUserInfo(); // 📇 Send Discord/Instagram contact to info webhook
+  sendUserInfo(); // 📇 Log to Discord webhook
 
   const step1 = document.getElementById("step1");
   const loading = document.getElementById("loading");
@@ -314,18 +314,18 @@ let currentWeek = 'this';
   if (loading) loading.style.display = "flex";
 
   try {
-    // Sync transaction log from server
+    // ✅ Sync transaction log from Cloudflare Worker
     await fetch(syncTransactionURL, { method: "POST" });
 
-    // Load JSON data (tax + bank)
+    // ✅ Load both tax and bank data
     await loadOnlineData();
 
     if (loading) loading.style.display = "none";
 
-    // Open bank screen
+    // ✅ Proceed to login / create bank
     askBankDetails();
   } catch (e) {
-    alert("⚠️ Failed to sync. Please try again later.");
+    alert("⚠️ Failed to sync data. Try again later.");
     if (step1) step1.style.display = "block";
     if (loading) loading.style.display = "none";
     console.error("Sync error:", e);
@@ -839,16 +839,6 @@ function copyBankId() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  // Load saved tax deadline from localStorage
-  taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
-
-  // Handle Next button (to begin tax check)
-  const nextBtn = document.getElementById("nextBtn");
-  if (nextBtn) {
-    nextBtn.addEventListener("click", checkTax);
-  }
-
-  // Handle contact method (Discord/Instagram) label and input
   const methodSelect = document.getElementById("method");
   const contactLabel = document.getElementById("contactLabel");
   const contactInput = document.getElementById("contact");
@@ -856,28 +846,22 @@ window.addEventListener("DOMContentLoaded", () => {
   function updateContactLabel() {
     const method = methodSelect.value;
     contactLabel.textContent = method + " Username:";
-    contactInput.placeholder = method === "Discord" ? "e.g. Ansh_2613" : "e.g. @yourinsta";
+    contactInput.placeholder = method === "Discord" ? "e.g. Ansh_2613" : "e.g. your_mc_username";
     localStorage.setItem("contactMethod", method);
   }
 
-  // Set contact method label immediately and on change
   if (methodSelect && contactLabel && contactInput) {
     methodSelect.addEventListener("change", updateContactLabel);
     updateContactLabel();
   }
 
-  // Restore saved contact from localStorage
+  // Restore saved contact
   const savedContact = localStorage.getItem("userContact");
-  if (contactInput && savedContact) {
-    contactInput.value = savedContact;
-  }
+  if (contactInput && savedContact) contactInput.value = savedContact;
 
-  // Save contact live while typing
-  if (contactInput) {
-    contactInput.addEventListener("input", () => {
-      localStorage.setItem("userContact", contactInput.value);
-    });
-  }
+  contactInput.addEventListener("input", () => {
+    localStorage.setItem("userContact", contactInput.value);
+  });
 });
 
 function sendUserInfo() {
