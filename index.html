@@ -251,6 +251,12 @@
     <button onclick="exitApp()">Exit</button>
   </div>
 </div>
+    <!-- After profile, historyBox, etc. -->
+<div id="chartContainer" style="display: none;">
+  <select id="weekDropdown" onchange="changeWeek(this.value)" style="display: none;"></select>
+  <canvas id="taxChart" width="600" height="300"></canvas>
+</div>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
@@ -526,6 +532,9 @@ document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
     const weekStart = new Date(dateObj);
     weekStart.setDate(weekStart.getDate() - weekStart.getDay());
     const key = weekStart.toISOString().split('T')[0];
+const [month, day] = date.split('/').map(Number);
+if (!month || !day || isNaN(month) || isNaN(day)) return;  // ✅ Skip malformed entries
+const dateObj = new Date(today.getFullYear(), month - 1, day);
 
     if (!weeks[key]) weeks[key] = {};
     weeks[key][date] = value;
@@ -570,18 +579,20 @@ function renderChart() {
   
 document.getElementById("weekDropdown").style.display = "block";
 document.getElementById("taxChart").style.display = "block";
+  document.getElementById("chartContainer").style.display = "block";
 }
 
 function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
   dropdown.innerHTML = "";
-  Object.keys(weekData).sort().reverse().forEach(weekStart => {
-    const option = document.createElement("option");
-    option.value = weekStart;
-    option.textContent = `Week of ${weekStart}`;
-    dropdown.appendChild(option);
-  });
+ const weeks = Object.keys(weekData).sort().reverse();
+if (weeks.length > 0) {
+  currentWeek = weeks[0];
+}
+weeks.forEach(weekStart => {
+  ...
+});
 
   document.getElementById("taxChart").style.display = "block";
 }
@@ -754,17 +765,14 @@ const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
         alert("❌ Copy failed.");
       });
     }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
-
-      const nextBtn = document.getElementById("nextBtn");
-      if (nextBtn) {
-        nextBtn.addEventListener("click", checkTax);
-      }
-    });
-  // Automatically load and store contact input from login screen
 window.addEventListener("DOMContentLoaded", () => {
+  taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
+
+  const nextBtn = document.getElementById("nextBtn");
+  if (nextBtn) {
+    nextBtn.addEventListener("click", checkTax);
+  }
+
   const contact = document.getElementById("contact");
   if (contact) {
     const saved = localStorage.getItem("userContact");
@@ -775,6 +783,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
 
 </script>
 
