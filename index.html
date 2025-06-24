@@ -540,29 +540,33 @@ if (left < 43200000) {
     function showProfile(buy, sell, total, paid, due, advanced) {
       const profile = document.getElementById("profile");
     }
-      profile.innerHTML = `
-        <h3>Welcome, ${currentPlayer}</h3>
-        <p>Total Tax: $${total.toFixed(2)}</p>
-        <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
-        <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
-        <input type="number" id="payAmt" placeholder="Enter amount to pay" min="1" />
+     
+function showProfile(buy, sell, total, paid, due, advanced) {
+  const profile = document.getElementById("profile");
 
-        <div class="btn-row">
-          <button onclick="submitTax()">${due > 0 ? "Pay Tax" : "Advance Pay"}</button>
-          <button onclick="showFullHistory()">Full History</button>
-          <button onclick="exitApp()">Exit</button>
-        </div>
-      `;
-      profile.style.display = "block";
+  profile.innerHTML = `
+    <h3>Welcome, ${currentPlayer}</h3>
+    <p>Total Tax: $${total.toFixed(2)}</p>
+    <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
+    <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
+    <input type="number" id="payAmt" placeholder="Enter amount to pay" min="1" />
 
-const history = (paymentHistory[currentPlayer] || []).slice().reverse();
-document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
-  ${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+    <div class="btn-row">
+      <button onclick="submitTax()">${due > 0 ? "Pay Tax" : "Advance Pay"}</button>
+      <button onclick="showFullHistory()">Full History</button>
+      <button onclick="exitApp()">Exit</button>
+    </div>
+  `;
 
-      document.getElementById("historyBox").style.display = "block";
+  profile.style.display = "block";
 
-      document.getElementById("topTaxPlayers").style.display = "block";
-    
+  const history = (paymentHistory[currentPlayer] || []).slice().reverse();
+  document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
+    ${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+
+  document.getElementById("historyBox").style.display = "block";
+  document.getElementById("topTaxPlayers").style.display = "block";
+}
 
     function showFullHistory() {
       const all = paymentHistory[currentPlayer] || [];
