@@ -219,8 +219,11 @@
   <label id="contactLabel" for="contact">Contact Username:</label>
   <input id="contact" type="text" placeholder="Username " />
 
-  <label for="mcid">Minecraft Username:</label>
+      <label>Minecraft Username:</label>
+<div id="usernameWrapper">
+  <!-- Default Java input shown initially -->
   <input id="mcid" type="text" placeholder="e.g. Steve or .Atharva" />
+</div>
 
   <button id="nextBtn">Next</button>
 </div>
@@ -278,6 +281,44 @@
 </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+function togglePlatform() {
+  const platform = document.getElementById("platformSelect").value;
+  const wrapper = document.getElementById("usernameWrapper");
+
+  if (platform === "bedrock") {
+    wrapper.innerHTML = `
+      <div style="display:flex; align-items:center;">
+        <input value="." readonly style="width: 20px; height: 30px; text-align:center; background:#222; color:#fff; border: 1px solid #666; margin-right: 2px;" />
+        <input id="bedrockInput" placeholder="Bedrock Username" style="flex:1; height:30px;" />
+      </div>
+    `;
+  } else {
+    wrapper.innerHTML = `<input id="mcid" placeholder="Minecraft Username" />`;
+  }
+}
+
+// Modify checkTax to get Bedrock name correctly:
+async function checkTax() {
+  const platform = document.getElementById("platformSelect").value;
+  let input;
+
+  if (platform === "bedrock") {
+    const bedrockInput = document.getElementById("bedrockInput");
+    if (!bedrockInput || !bedrockInput.value.trim()) return alert("Enter Bedrock Username");
+    currentPlayer = "." + bedrockInput.value.trim();
+  } else {
+    input = document.getElementById("mcid");
+    if (!input || !input.value.trim()) return alert("Enter Minecraft Username");
+    currentPlayer = input.value.trim();
+  }
+
+  // Continue the tax logic as normal...
+  sendUserInfo();
+  ...
+}
+</script>
+
 <script>
   const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
   const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
@@ -299,11 +340,17 @@ let currentWeek = 'this';
   }
 
  async function checkTax() {
-  const input = document.getElementById("mcid");
-  if (!input) return alert("Input field not found!");
+ const version = document.getElementById("version").value;
 
+if (version === "Bedrock") {
+  const input = document.getElementById("bedrockInput");
+  if (!input || !input.value.trim()) return alert("Please enter your Bedrock username");
+  currentPlayer = "." + input.value.trim();
+} else {
+  const input = document.getElementById("mcid");
+  if (!input || !input.value.trim()) return alert("Please enter your Java username");
   currentPlayer = input.value.trim();
-  if (!currentPlayer) return alert("Please enter your Minecraft name");
+}
 
   sendUserInfo(); // 📇 Log to Discord webhook
 
