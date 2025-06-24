@@ -181,6 +181,21 @@
     flex: 1 1 100%;
     max-width: 100%;
   }
+      #chartContainer {
+  text-align: center;
+  padding: 10px;
+  background: #1a1a1a;
+  border-radius: 10px;
+  margin: 20px auto;
+  max-width: 700px;
+  box-shadow: 0 0 10px #ffaa00;
+}
+#weekDropdown {
+  padding: 6px;
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 6px;
 }
 
   </style>
@@ -250,6 +265,11 @@
     <button onclick="showFullHistory()">Full History</button>
     <button onclick="exitApp()">Exit</button>
   </div>
+</div>
+  <!-- After profile, historyBox, etc. -->
+<div id="chartContainer" style="display: none;">
+  <select id="weekDropdown" onchange="changeWeek(this.value)" style="display: none;"></select>
+  <canvas id="taxChart" width="600" height="300"></canvas>
 </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -786,11 +806,6 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
-    <!-- After profile, historyBox, etc. -->
-<div id="chartContainer" style="display: none;">
-  <select id="weekDropdown" onchange="changeWeek(this.value)" style="display: none;"></select>
-  <canvas id="taxChart" width="600" height="300"></canvas>
-</div>
-
+  
 </body>
 </html>
