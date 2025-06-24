@@ -310,16 +310,22 @@ let currentWeek = 'this';
 
   function askBankDetails() {
     const existing = bankAccounts[currentPlayer];
-    if (existing) {
-      document.getElementById("bankBox").innerHTML = `
-        <h3>🔐 Login to Bank</h3>
-        <input id="bankId" placeholder="Enter your Bank ID" value="${existing.id}" />
-        <input id="bankPass" placeholder="Bank Password" type="password" />
-        <div class="btn-row">
-          <button onclick="verifyBankLogin()">Login</button>
-          <button onclick="exitBank()">Exit</button>
-        </div>`;
-    } else {
+   if (existing) {
+  document.getElementById("bankBox").innerHTML = `
+    <h3>🔐 Login to Bank</h3>
+    <label>Bank Username:</label>
+    <input id="bankUser" value="${existing.username}" readonly
+           style="background: #333; color: #ccc; font-weight: bold; border: 1px solid #888;" />
+    <label>Bank ID:</label>
+    <input id="bankId" placeholder="Enter your Bank ID" />
+    <label>Bank Password:</label>
+    <input id="bankPass" placeholder="Bank Password" type="password" />
+    <div class="btn-row">
+      <button onclick="verifyBankLogin()">Login</button>
+      <button onclick="exitBank()">Exit</button>
+    </div>`;
+}
+ else {
       const randomId = "BANK" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
       document.getElementById("bankBox").innerHTML = `
         <h3>🏦 Create Bank Account</h3>
