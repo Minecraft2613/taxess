@@ -714,9 +714,10 @@ function handleChartOption(value) {
 
 function showWeek(weekType) {
   currentWeek = weekType;
-  renderChart()
+  renderChart();
+}
 
-  function downloadChart() {
+function downloadChart() {
   const canvas = document.getElementById('taxChart');
   const ctx = canvas.getContext('2d');
 
