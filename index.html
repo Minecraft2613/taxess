@@ -712,7 +712,7 @@ const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
       });
     }
 
-    function showTopTaxPlayers() {
+      function showTopTaxPlayers() {
       const top = Object.entries(paidPlayers)
         .sort(([, a], [, b]) => b - a)
         .slice(0, 5)
@@ -739,25 +739,24 @@ const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
       });
     }
 
-    window.onload = () => {
-      // Removed invalid job element code
-      taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
-    };
-function copyBankId() {
-  const bankId = document.getElementById("bankId").value;
-  navigator.clipboard.writeText(bankId).then(() => {
-    alert("📋 Bank ID copied to clipboard!");
-  }).catch(() => {
-    alert("❌ Copy failed.");
-  });
-}
-  // Attach the event listener when the DOM is fully loaded
-  window.addEventListener("DOMContentLoaded", () => {
-    const nextBtn = document.getElementById("nextBtn");
-    if (nextBtn) {
-      nextBtn.addEventListener("click", checkTax);
+    function copyBankId() {
+      const bankId = document.getElementById("bankId").value;
+      navigator.clipboard.writeText(bankId).then(() => {
+        alert("📋 Bank ID copied to clipboard!");
+      }).catch(() => {
+        alert("❌ Copy failed.");
+      });
     }
-  });
-  </script>
+
+    window.addEventListener("DOMContentLoaded", () => {
+      taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
+
+      const nextBtn = document.getElementById("nextBtn");
+      if (nextBtn) {
+        nextBtn.addEventListener("click", checkTax);
+      }
+    });
+</script>
+
 </body>
 </html>
