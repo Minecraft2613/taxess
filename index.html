@@ -596,7 +596,7 @@ document.getElementById("taxChart").style.display = "block";
   document.getElementById("chartContainer").style.display = "block";
 }
 
-    function populateWeekDropdown() {
+function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
   dropdown.innerHTML = "";
@@ -620,7 +620,7 @@ document.getElementById("taxChart").style.display = "block";
     // No data available
     document.getElementById("chartContainer").style.display = "none";
   }
-} // ✅ THIS WAS MISSING
+
 
 function changeWeek(week) {
   currentWeek = week;
@@ -730,48 +730,64 @@ const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
     }
 
     function sendTaxWebhook(player, dueTax) {
-  const bank = bankAccounts[player] || {};
-  const content = {
-    embeds: [{
-      title: "⏰ Tax Deadline Missed",
-      color: 0xff0000,
-      fields: [
-        { name: "Player", value: player, inline: true },
-        { name: "Tax Due", value: `$${dueTax}`, inline: true },
-        { name: "Bank Username", value: bank.username || "N/A", inline: true },
-        { name: "Bank ID", value: bank.id || "N/A", inline: true }
-      ],
-      timestamp: new Date().toISOString()
-    }]
-  };
+      const bank = bankAccounts[player] || {};
+      const content = {
+        embeds: [{
+          title: "⏰ Tax Deadline Missed",
+          color: 0xff0000,
+          fields: [
+            { name: "Player", value: player, inline: true },
+            { name: "Tax Due", value: `$${dueTax}`, inline: true },
+            { name: "Bank Username", value: bank.username || "N/A", inline: true },
+            { name: "Bank ID", value: bank.id || "N/A", inline: true }
+          ],
+          timestamp: new Date().toISOString()
+        }]
+      };
 
-  fetch(webhookURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(content)
+      fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(content)
+      });
+    }
+
+      function showTopTaxPlayers() {
+      const top = Object.entries(paidPlayers)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 5)
+        .map(([name, tax]) => `<li><strong>${name}</strong>: $${tax.toFixed(2)}</li>`)
+        .join('');
+      const container = document.getElementById("topTaxPlayers");
+      if(top) {
+        container.innerHTML = `<h3>Top 5 Tax Payers</h3><ul>${top}</ul>`;
+        container.style.display = "block";
+      } else {
+        container.style.display = "none";
+      }
+    }
+
+    function exitApp() {
+      location.reload();
+    }
+
+    // Helper: Hide multiple elements by IDs
+    function hideElements(ids) {
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "none";
+      });
+    }
+
+// Helper: Hide multiple elements by IDs
+function hideElements(ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
   });
 }
 
-function showTopTaxPlayers() {
-  const top = Object.entries(paidPlayers)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 5)
-    .map(([name, tax]) => `<li><strong>${name}</strong>: $${tax.toFixed(2)}</li>`)
-    .join('');
-  const container = document.getElementById("topTaxPlayers");
-  if (top) {
-    container.innerHTML = `<h3>Top 5 Tax Payers</h3><ul>${top}</ul>`;
-    container.style.display = "block";
-  } else {
-    container.style.display = "none";
-  }
-}
-
-function exitApp() {
-  location.reload();
-}
-
-// ✅ Keep only ONE hideElements function
+// Helper: Hide multiple elements by IDs
 function hideElements(ids) {
   ids.forEach(id => {
     const el = document.getElementById(id);
@@ -788,7 +804,7 @@ function copyBankId() {
   });
 }
 
-// ✅ DOM Ready logic — now correctly closed
+// DOM Ready logic
 window.addEventListener("DOMContentLoaded", () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
 
@@ -805,8 +821,7 @@ window.addEventListener("DOMContentLoaded", () => {
     contact.addEventListener("input", () => {
       localStorage.setItem("userContact", contact.value);
     });
-  }
-}); // ✅ closed DOMContentLoaded
+  
 </script>
 </body>
 </html>
