@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>🔐 Admin Tax Panel</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #eee; padding: 20px; }
+    .hidden { display: none; }
+    .card { background: #222; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; }
+    input, button, textarea { margin: 5px 0; padding: 6px; }
+    textarea { width: 100%; resize: vertical; }
+  </style>
+</head>
+<body>
+  <h2>🔐 Admin Login</h2>
+  <div id="loginForm">
+    <input id="adminId" placeholder="Bank ID (e.g., BANK631095)" /><br>
+    <input id="adminPass" type="password" placeholder="Password" /><br>
+    <button onclick="verifyAdmin()">Login</button>
+    <p id="loginMsg" style="color: red;"></p>
+  </div>
+
+  <div id="adminPanel" class="hidden">
+    <h2>📊 All Players Tax Summary</h2>
+    <div id="playerList"></div>
+    <div id="playerDetails" class="hidden"></div>
+  </div>
+
+<script>
+const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
+const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
+const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
+const paymentHookURL = "https://discordapp.com/api/webhooks/1387003883947032596/BkLzoSlQk6wLaPP4voI2mAshDTfXRaGkFf0mbK1Y0xfvU2XytWazF3MFjpvgugHnkKuR";
+
+let accounts = {}, admin = {}, paidPlayers = {}, paymentHistory = {};
+
+async function verifyAdmin() {
+  const id = document.getElementById("adminId").value.trim();
+  const pass = document.getElementById("adminPass").value;
+  const res = await fetch(bankURL);
+  const data = await res.json();
+  admin = data.admin;
+  accounts = data.accounts;
+  if (admin && id === admin.id && pass === admin.pass) {
+    document.getElementById("loginForm").classList.add("hidden");
+    document.getElementById("adminPanel").classList.remove("hidden");
+    loadTaxData();
+  } else {
+    document.getElementById("loginMsg").textContent = "❌ Invalid admin credentials.";
+  }
+}
+
+async function loadTaxData() {
+  const res = await fetch(taxURL);
+  const data = await res.json();
+  paidPlayers = data.paidPlayers || {};
+  paymentHistory = data.paymentHistory || {};
+
+  const list = document.getElementById("playerList");
+  list.innerHTML = "";
+
+  Object.keys(accounts).forEach(player => {
+    const paid = paidPlayers[player] || 0;
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<b>${player}</b> — Paid Tax: $${paid.toFixed(2)}
+      <button onclick="viewPlayer('${player}')">View</button>`;
+    list.appendChild(card);
+  });
+}
+
+function viewPlayer(player) {
+  const box = document.getElementById("playerDetails");
+  const paid = paidPlayers[player] || 0;
+  const history = (paymentHistory[player] || []).map(e => {
+    return `<li>$${e.amount} on ${e.date}${e.by ? ` — <i>${e.by}</i>` : ""}${e.note ? ` — ${e.note}` : ""}</li>`;
+  }).join('');
+
+  box.classList.remove("hidden");
+  box.innerHTML = `
+    <h3>👤 ${player}</h3>
+    <p>Paid Tax: $${paid.toFixed(2)}</p>
+    <label>Amount to Pay:</label><br>
+    <input type="number" id="payAmt" placeholder="Amount" /><br>
+    <label>Explanation:</label><br>
+    <textarea id="reason" rows="3" placeholder="e.g. Paid from public welfare fund"></textarea><br>
+    <button onclick="payFor('${player}')">✅ Pay on Behalf</button>
+    <button onclick="box.classList.add('hidden')">❌ Close</button>
+    <h4>🧾 Payment History:</h4>
+    <ul>${history || "<i>No payments yet</i>"}</ul>
+  `;
+}
+
+function payFor(player) {
+  const amt = parseFloat(document.getElementById("payAmt").value);
+  const reason = document.getElementById("reason").value.trim();
+  if (!amt || amt <= 0) return alert("Enter valid amount");
+
+  const entry = {
+    amount: amt,
+    date: new Date().toLocaleString(),
+    by: "Government",
+    note: reason
+  };
+
+  if (!paymentHistory[player]) paymentHistory[player] = [];
+  paymentHistory[player].unshift(entry);
+  paidPlayers[player] = (paidPlayers[player] || 0) + amt;
+
+  // Send to Discord webhook
+  fetch(paymentHookURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      content: `🏛️ **Govt Paid Tax**\nPlayer: \`${player}\`\nAmount: $${amt}\nReason: ${reason || "N/A"}`
+    })
+  });
+
+  // Sync tax changes to Cloudflare
+  syncToCloudflare(syncTaxURL, {
+    paidPlayers,
+    paymentHistory
+  });
+
+  alert("✅ Paid successfully on behalf of " + player);
+  document.getElementById("playerDetails").classList.add("hidden");
+  loadTaxData();
+}
+
+function syncToCloudflare(url, data) {
+  fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  }).then(r => r.ok ? console.log("☁️ Synced to Cloudflare") : r.text().then(console.warn));
+}
+</script>
+</body>
+</html>
