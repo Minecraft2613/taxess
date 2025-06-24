@@ -519,9 +519,9 @@ populateWeekDropdown();
   return weeks;
 }
 
- function renderChart() {
+function renderChart() {
   const weekData = groupDataByWeek();
-  const selectedWeek = currentWeek; // global variable
+  const selectedWeek = currentWeek;
   const data = weekData[selectedWeek];
 
   if (!data) return;
@@ -531,6 +531,8 @@ populateWeekDropdown();
 
   const labels = Object.keys(data);
   const values = Object.values(data);
+
+  const tensionValue = chartType === "line" ? (parseFloat(localStorage.getItem("lineTension")) || 0.4) : 0;
 
   chart = new Chart(ctx, {
     type: chartType,
@@ -542,7 +544,7 @@ populateWeekDropdown();
         fill: false,
         borderColor: "#ffee00",
         backgroundColor: "#ffaa00",
-      const tensionValue = chartType === "line" ? (parseFloat(localStorage.getItem("lineTension")) || 0.4) : 0;
+        tension: tensionValue // ✅ Now this works!
       }]
     },
     options: {
@@ -556,7 +558,7 @@ populateWeekDropdown();
 
   document.getElementById("weekSelector").style.display = "block";
 }
-  
+
 function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
