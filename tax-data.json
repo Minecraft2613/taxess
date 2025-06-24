@@ -1,5 +1,87 @@
 {
-  "paidPlayers": {},
-  "paymentHistory": {},
-  "taxDeadline": {}
+  "paidPlayers": {
+    "ansh": 135,
+    "Saksham": 1000
+  },
+  "paymentHistory": {
+    "ansh": [
+      {
+        "amount": 2,
+        "date": "6/24/2025, 11:36:57 AM"
+      },
+      {
+        "amount": 1,
+        "date": "6/22/2025, 12:51:04 PM"
+      },
+      {
+        "amount": 1,
+        "date": "6/22/2025, 12:56:28 PM"
+      },
+      {
+        "amount": 1,
+        "date": "6/22/2025, 1:01:49 PM"
+      },
+      {
+        "amount": 1,
+        "date": "6/22/2025, 1:23:26 PM"
+      },
+      {
+        "amount": 5,
+        "date": "6/22/2025, 1:44:34 PM"
+      },
+      {
+        "amount": 2,
+        "date": "6/22/2025, 1:47:06 PM"
+      },
+      {
+        "amount": 100,
+        "date": "6/22/2025, 8:34:43 PM"
+      },
+      {
+        "amount": 10,
+        "date": "6/22/2025, 11:14:18 PM"
+      },
+      {
+        "amount": 2,
+        "date": "6/23/2025, 10:46:12 AM"
+      },
+      {
+        "amount": 1,
+        "date": "6/23/2025, 12:41:22 PM"
+      },
+      {
+        "amount": 1,
+        "date": "6/23/2025, 1:03:31 PM"
+      },
+      {
+        "amount": 1,
+        "date": "6/23/2025, 3:19:03 PM"
+      },
+      {
+        "amount": 1,
+        "date": "6/23/2025, 7:30:44 PM"
+      },
+      {
+        "amount": 2,
+        "date": "6/23/2025, 8:09:21 PM"
+      },
+      {
+        "amount": 2,
+        "date": "6/23/2025, 11:10:55 PM"
+      },
+      {
+        "amount": 2,
+        "date": "6/24/2025, 10:28:02 AM"
+      }
+    ],
+    "Saksham": [
+      {
+        "amount": 1000,
+        "date": "6/23/2025, 10:42:56 AM"
+      }
+    ]
+  },
+  "taxDeadline": {
+    "ansh": 1750703400000
+  }
 }
