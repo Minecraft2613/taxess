@@ -369,7 +369,6 @@ async function checkTax() {
     if (loading) loading.style.display = "none";
     console.error("Sync error:", e);
   }
-}
 
   async function loadOnlineData() {
     const [taxRes, bankRes] = await Promise.all([fetch(taxURL), fetch(bankURL)]);
