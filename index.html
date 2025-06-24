@@ -552,7 +552,6 @@ document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
   return weeks;
 }
 
-
 function renderChart() {
   const weekData = groupDataByWeek();
   const selectedWeek = currentWeek;
@@ -586,26 +585,24 @@ function renderChart() {
       }
     }
   });
-  
-const dropdown = document.getElementById("weekDropdown");
-const chart = document.getElementById("taxChart");
-const container = document.getElementById("chartContainer");
 
-if (dropdown) dropdown.style.display = "block";
-if (chart) chart.style.display = "block";
-if (container) container.style.display = "block";
+  const dropdown = document.getElementById("weekDropdown");
+  const chartCanvas = document.getElementById("taxChart");
+  const container = document.getElementById("chartContainer");
 
+  if (dropdown) dropdown.style.display = "block";
+  if (chartCanvas) chartCanvas.style.display = "block";
+  if (container) container.style.display = "block";
+} // ✅ closes renderChart()
 
-   function populateWeekDropdown() {
+function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
   dropdown.innerHTML = "";
 
   const weeks = Object.keys(weekData).sort().reverse();
-
   if (weeks.length > 0) {
-    currentWeek = weeks[0]; // set currentWeek to the latest week
-
+    currentWeek = weeks[0];
     weeks.forEach(weekStart => {
       const option = document.createElement("option");
       option.value = weekStart;
@@ -613,15 +610,16 @@ if (container) container.style.display = "block";
       dropdown.appendChild(option);
     });
 
-     if (dropdown) dropdown.style.display = "block";
-  const container = document.getElementById("chartContainer");
-  if (container) {
-    container.style.display = "block";
-    renderChart(); // render chart for the default week
+    if (dropdown) dropdown.style.display = "block";
+    const container = document.getElementById("chartContainer");
+    if (container) {
+      container.style.display = "block";
+      renderChart();
+    }
+  } else {
+    const container = document.getElementById("chartContainer");
+    if (container) container.style.display = "none";
   }
-} else {
-  const container = document.getElementById("chartContainer");
-  if (container) container.style.display = "none";
 }
 
 function changeWeek(week) {
