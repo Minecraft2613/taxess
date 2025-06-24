@@ -585,16 +585,22 @@ function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
   dropdown.innerHTML = "";
- const weeks = Object.keys(weekData).sort().reverse();
-if (weeks.length > 0) {
-  currentWeek = weeks[0];
-}
-weeks.forEach(weekStart => {
-  ...
-});
 
-  document.getElementById("taxChart").style.display = "block";
+  const weeks = Object.keys(weekData).sort().reverse();
+  if (weeks.length > 0) {
+    currentWeek = weeks[0];
+  }
+
+  weeks.forEach(weekStart => {
+    const option = document.createElement("option");
+    option.value = weekStart;
+    option.textContent = `Week of ${weekStart}`;
+    dropdown.appendChild(option);
+  });
+
+  document.getElementById("weekDropdown").style.display = "block";
 }
+
 
 function changeWeek(week) {
   currentWeek = week;
