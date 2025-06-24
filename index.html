@@ -509,19 +509,19 @@ function parseTransactions(log) {
           h = Math.floor((left % 86400000) / 3600000),
           m = Math.floor((left % 3600000) / 60000);
 
-    const saveNotice = document.getElementById(\"saveNotice\");
-    saveNotice.innerText = `⏳ Tax Deadline: ${d}d ${h}h ${m}m left`;
+   const saveNotice = document.getElementById("saveNotice");
+saveNotice.innerText = `⏳ Tax Deadline: ${d}d ${h}h ${m}m left`;
 
-    if (left < 43200000) {
-      saveNotice.style.color = \"#ff4444\";
-      saveNotice.style.background = \"#330000\";
-      saveNotice.innerText += \" ⚠️ LAST 12 HOURS!\";
-      document.getElementById(\"profile\").style.border = \"2px solid red\";
-    } else {
-      saveNotice.style.color = \"#ffee00\";
-      saveNotice.style.background = \"#111\";
-      document.getElementById(\"profile\").style.border = \"none\";
-    }
+if (left < 43200000) {
+  saveNotice.style.color = "#ff4444";
+  saveNotice.style.background = "#330000";
+  saveNotice.innerText += " ⚠️ LAST 12 HOURS!";
+  document.getElementById("profile").style.border = "2px solid red";
+} else {
+  saveNotice.style.color = "#ffee00";
+  saveNotice.style.background = "#111";
+  document.getElementById("profile").style.border = "none";
+}
 
     saveNotice.style.display = \"block\";
   }
