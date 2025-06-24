@@ -324,36 +324,37 @@ let currentWeek = 'this';
     taxDeadline = taxData.taxDeadline || {};
   }
 
-  function askBankDetails() {
-  const existing = bankAccounts[currentPlayer];
+ function askBankDetails() {
+  const allAccounts = bankAccounts || {};
+  const playerKey = Object.keys(allAccounts).find(key => key.toLowerCase() === currentPlayer.toLowerCase());
+  const existing = playerKey ? allAccounts[playerKey] : null;
+
   if (existing) {
+    // Show login form (ask only for number)
     document.getElementById("bankBox").innerHTML = `
       <h3>🔐 Login to Bank</h3>
       <label>Bank Username:</label>
       <input id="bankUser" value="${existing.username}" readonly style="background: #222; font-weight: bold; border: 1px solid #888;" />
-      <label>Bank ID:</label>
-   <div style="display: flex; align-items: center;">
-  <span style="color: #fff; font-weight: bold; margin-right: 5px;">BANK</span>
-  <input id="bankId" placeholder="123456" style="flex: 1;" />
-</div>
+      <label>Bank ID (only number):</label>
+      <input id="bankId" placeholder="123456" maxlength="6" />
       <label>Bank Password:</label>
       <input id="bankPass" type="password" placeholder="Password" />
-     <input id="contactInfo" type="hidden" value="${localStorage.getItem('userContact') || ''}" />
+      <input id="contactInfo" type="hidden" value="${localStorage.getItem('userContact') || ''}" />
       <div class="btn-row">
         <button onclick="verifyBankLogin()">Login</button>
         <button onclick="exitBank()">Exit</button>
       </div>`;
   } else {
-    const randomId = "BANK" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
+    // Show create form with auto-generated ID
+    const randomNum = Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
+    const fullBankId = "BANK" + randomNum;
+
     document.getElementById("bankBox").innerHTML = `
       <h3>🏦 Create Bank Account</h3>
       <label>Bank Username (autofilled):</label>
       <input id="bankUser" value="${currentPlayer}" readonly style="background: #222; font-weight: bold;" />
-    <label>Bank ID:</label>
-<div style="display: flex; align-items: center;">
-  <span style="font-weight: bold; font-size: 16px; color: #ff0;">BANK</span>
-  <input id="bankId" placeholder="Enter 6 digit number" maxlength="6" style="margin-left: 5px; flex: 1;" />
-</div>
+      <label>Your Bank ID:</label>
+      <input id="bankId" value="${randomNum}" readonly />
       <button onclick="copyBankId()">📋 Copy</button>
       <label>Bank Password:</label>
       <input id="bankPass" type="password" />
@@ -363,6 +364,9 @@ let currentWeek = 'this';
         <button onclick="createBankAccount()">Create</button>
         <button onclick="exitBank()">Exit</button>
       </div>`;
+
+    // Pre-store full ID on input element for use in createBankAccount
+    document.getElementById("bankId").dataset.fullId = fullBankId;
   }
 
   document.getElementById("bankBox").style.display = "block";
