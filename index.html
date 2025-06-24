@@ -535,23 +535,25 @@ if (left < 43200000) {
 
   populateWeekDropdown();
 
-const total = buy + sell;
-const paid = sumPayments(currentPlayer);
-const due = Math.max(0, total - paid);
+function parseTransactions(log) {
+  const lines = log.split(/\r?\n/);
+  let buy = 0, sell = 0;
 
-// 🗓️ Set new deadline if needed
-if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  taxDeadline[currentPlayer] = start.getTime();
-  syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
-}
+  lines.forEach(line => {
+    // update buy & sell
+  });
 
-// ✅ Clear deadline if fully paid
-if (due <= 0 && taxDeadline[currentPlayer]) {
-  delete taxDeadline[currentPlayer];
-  syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
-}
+  // ✅ THIS is where you place your full logic:
+  const total = buy + sell;
+  const paid = sumPayments(currentPlayer);
+  const due = Math.max(0, total - paid);
+
+  if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    taxDeadline[currentPlayer] = start.getTime();
+    syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+  }
 
 // ⏰ Time-based handling
 const now = Date.now();
