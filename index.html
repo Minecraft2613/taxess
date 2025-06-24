@@ -266,9 +266,14 @@
     <button onclick="exitApp()">Exit</button>
   </div>
 </div>
+  <!-- After profile, historyBox, etc. -->
+<div id="chartContainer" style="display: none;">
+  <select id="weekDropdown" onchange="changeWeek(this.value)" style="display: none;"></select>
+  <canvas id="taxChart" width="600" height="300"></canvas>
+</div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
+<script>
   const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
   const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
   const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
@@ -591,7 +596,7 @@ document.getElementById("taxChart").style.display = "block";
   document.getElementById("chartContainer").style.display = "block";
 }
 
-   function populateWeekDropdown() {
+    function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
   dropdown.innerHTML = "";
@@ -615,8 +620,7 @@ document.getElementById("taxChart").style.display = "block";
     // No data available
     document.getElementById("chartContainer").style.display = "none";
   }
-} // ✅ this closing brace is the fix
-
+} // ✅ THIS WAS MISSING
 
 function changeWeek(week) {
   currentWeek = week;
@@ -803,7 +807,6 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 }); // ✅ closed DOMContentLoaded
-    </script>
+</script>
 </body>
 </html>
-
