@@ -779,14 +779,32 @@ const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
       });
     }
 
-    function copyBankId() {
-      const bankId = document.getElementById("bankId").value;
-      navigator.clipboard.writeText(bankId).then(() => {
-        alert("📋 Bank ID copied to clipboard!");
-      }).catch(() => {
-        alert("❌ Copy failed.");
-      });
-    }
+// Helper: Hide multiple elements by IDs
+function hideElements(ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+}
+
+// Helper: Hide multiple elements by IDs
+function hideElements(ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+}
+
+function copyBankId() {
+  const bankId = document.getElementById("bankId").value;
+  navigator.clipboard.writeText(bankId).then(() => {
+    alert("📋 Bank ID copied to clipboard!");
+  }).catch(() => {
+    alert("❌ Copy failed.");
+  });
+}
+
+// DOM Ready logic
 window.addEventListener("DOMContentLoaded", () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
 
@@ -805,6 +823,10 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+</script>
+
+</script>
+
 </script>
   
 </body>
