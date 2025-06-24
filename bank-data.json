@@ -3,7 +3,10 @@
     "ansh": {
       "username": "ansh",
       "id": "BANK006443",
-      "password": "261377189"
-    }
+  }
+  },
+  "admin": {
+    "id": "BANK631095",
+    "pass": "36372613"
   }
 }
