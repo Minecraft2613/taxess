@@ -535,12 +535,6 @@ if (left < 43200000) {
 
   populateWeekDropdown();
 
-
-  // ...continues with showProfile, renderChart, syncToCloudflare, etc.
-    function showProfile(buy, sell, total, paid, due, advanced) {
-      const profile = document.getElementById("profile");
-    }
-     
 function showProfile(buy, sell, total, paid, due, advanced) {
   const profile = document.getElementById("profile");
 
@@ -884,27 +878,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-function sendTaxWebhook(player, dueTax) {
-  const bank = bankAccounts[player] || {};
 
-  fetch(taxHookURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      embeds: [{
-        title: "⏰ Weekly Tax Auto-Deduction",
-        color: 0xff0000,
-        fields: [
-          { name: "Player", value: player, inline: true },
-          { name: "Due Tax", value: `$${dueTax}`, inline: true },
-          { name: "Bank Username", value: bank.username || "N/A", inline: true },
-          { name: "Bank ID", value: bank.id || "N/A", inline: true }
-        ],
-        timestamp: new Date().toISOString()
-      }]
-    })
-  });
-}
 function sendUserInfo() {
   const method = localStorage.getItem("contactMethod") || "Discord";
   const value = localStorage.getItem("userContact") || "Unknown";
