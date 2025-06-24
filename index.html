@@ -526,15 +526,13 @@ document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
   const today = new Date();
 
   Object.entries(dailyData).forEach(([date, value]) => {
-    const [month, day] = date.split('/').map(Number);
-    const dateObj = new Date(today.getFullYear(), month - 1, day);
+    const [mon, day] = date.split('/').map(Number);
+    if (!mon || !day || isNaN(mon) || isNaN(day)) return;  // ✅ Skip malformed entries
 
+    const dateObj = new Date(today.getFullYear(), mon - 1, day);
     const weekStart = new Date(dateObj);
     weekStart.setDate(weekStart.getDate() - weekStart.getDay());
     const key = weekStart.toISOString().split('T')[0];
-const [month, day] = date.split('/').map(Number);
-if (!month || !day || isNaN(month) || isNaN(day)) return;  // ✅ Skip malformed entries
-const dateObj = new Date(today.getFullYear(), month - 1, day);
 
     if (!weeks[key]) weeks[key] = {};
     weeks[key][date] = value;
@@ -542,6 +540,7 @@ const dateObj = new Date(today.getFullYear(), month - 1, day);
 
   return weeks;
 }
+
 
 function renderChart() {
   const weekData = groupDataByWeek();
