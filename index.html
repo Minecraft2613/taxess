@@ -581,6 +581,27 @@ if (left < 43200000) {
   document.getElementById("footerButtons").style.display = "flex";
 }
 
+  function populateWeekDropdown() {
+  const dropdown = document.getElementById("weekDropdown");
+  dropdown.innerHTML = "";
+
+  const weeks = Object.keys(groupDataByWeek());
+  if (!weeks.length) {
+    dropdown.style.display = "none";
+    return;
+  }
+
+  weeks.reverse().forEach(week => {
+    const option = document.createElement("option");
+    option.value = week;
+    option.textContent = week;
+    dropdown.appendChild(option);
+  });
+
+  dropdown.value = currentWeek;
+  dropdown.style.display = "block";
+}
+
 function showProfile(buy, sell, total, paid, due, advanced) {
   const profile = document.getElementById("profile");
 
