@@ -332,16 +332,6 @@ let currentWeek = 'this';
   }
 }
 
-    // Check for bank account
-   askBankDetails();
-  } catch (e) {
-    alert("⚠️ Failed to sync. Please try again later.");
-    if (step1) step1.style.display = "block";
-    if (loading) loading.style.display = "none";
-    console.error("Sync error:", e);
-  }
-}
-
   async function loadOnlineData() {
     const [taxRes, bankRes] = await Promise.all([fetch(taxURL), fetch(bankURL)]);
     const taxData = await taxRes.json();
