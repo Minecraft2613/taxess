@@ -1,6 +1,6 @@
 {
   "paidPlayers": {
-    "ansh": 131,
+    "ansh": 133,
     "Saksham": 1000
   },
   "paymentHistory": {
@@ -64,6 +64,10 @@
       {
         "amount": 2,
         "date": "6/23/2025, 11:10:55 PM"
+      },
+      {
+        "amount": 2,
+        "date": "6/24/2025, 10:28:02 AM"
       }
     ],
     "Saksham": [
