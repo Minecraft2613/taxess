@@ -596,7 +596,7 @@ document.getElementById("taxChart").style.display = "block";
   document.getElementById("chartContainer").style.display = "block";
 }
 
-function populateWeekDropdown() {
+    function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
   dropdown.innerHTML = "";
@@ -620,7 +620,7 @@ function populateWeekDropdown() {
     // No data available
     document.getElementById("chartContainer").style.display = "none";
   }
-
+} // ✅ THIS WAS MISSING
 
 function changeWeek(week) {
   currentWeek = week;
