@@ -163,9 +163,9 @@
 }
 
 #taxChart {
-  height: 100% !important;
-  max-height: 100% !important;
   width: 100% !important;
+  max-width: 100%;
+  height: auto !important;
 }
 
     }
@@ -213,7 +213,17 @@
         <option>Discord</option>
         <option>Instagram</option>
       </select>
-      <input id="mcid" type="text" placeholder="e.g. Steve or .Atharva" autocomplete="off" />
+    <select id="method">
+  <option value="Discord">Discord</option>
+  <option value="Instagram">Instagram</option>
+</select>
+
+<label id="contactLabel">Discord Username:</label>
+<input id="contact" placeholder="e.g. Ansh_2613" />
+
+<label>Minecraft Username:</label>
+<input id="mcid" type="text" placeholder="e.g. Steve or .Atharva" />
+
       <!-- ✅ Modern way -->
 <button id="nextBtn">Next</button>
 
@@ -258,7 +268,11 @@
   </select>
 </div>
 
-<canvas id="taxChart" width="800" height="400" style="width: 100%; background: #111;"></canvas>
+<div id="chartContainer" class="card" style="display:none; overflow-x: auto;">
+  <div style="min-width: 600px;">
+    <canvas id="taxChart"></canvas>
+  </div>
+</div>
 
   <!-- Footer Buttons -->
   <div class="btn-row" id="footerButtons" style="display:none;">
@@ -396,21 +410,27 @@ let currentWeek = 'this';
     }
   }
 
-  function createBankAccount() {
-    const username = document.getElementById("bankUser").value.trim();
-   const id = "BANK" + document.getElementById("bankId").value.trim();
-    const pass = document.getElementById("bankPass").value;
-    if (!username || !id || !pass) return alert("Fill all fields");
-    if (bankAccounts[currentPlayer]) {
-      alert("Account already exists. Please login.");
-      askBankDetails();
-      return;
-    }
- syncToCloudflare(syncBankURL, { accounts: bankAccounts });
-document.getElementById("bankBox").style.display = "none";
-verifyBankLogin();
-    });
+function createBankAccount() {
+  const username = document.getElementById("bankUser").value.trim();
+  const pass = document.getElementById("bankPass").value;
+const contact = localStorage.getItem("userContact") || "";
+const contactMethod = localStorage.getItem("contactMethod") || "Discord";
+  const fullId = document.getElementById("bankId").dataset.fullId;
+
+  if (!username || !fullId || !pass || !contact) return alert("Fill all fields");
+
+  if (bankAccounts[currentPlayer]) {
+    alert("Account already exists. Please login.");
+    askBankDetails();
+    return;
   }
+
+  bankAccounts[currentPlayer] = { username, id: fullId, password: pass, contact };
+  syncToCloudflare(syncBankURL, { accounts: bankAccounts });
+  document.getElementById("bankBox").style.display = "none";
+  verifyBankLogin();
+}
+
 
   async function loadTax() {
     document.getElementById("loading").style.display = "flex";
@@ -791,25 +811,48 @@ function copyBankId() {
   });
 }
 
-// ✅ DOM Ready logic — now correctly closed
 window.addEventListener("DOMContentLoaded", () => {
+  // Load saved tax deadline from localStorage
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
 
+  // Handle Next button (to begin tax check)
   const nextBtn = document.getElementById("nextBtn");
   if (nextBtn) {
     nextBtn.addEventListener("click", checkTax);
   }
 
-  const contact = document.getElementById("contact");
-  if (contact) {
-    const saved = localStorage.getItem("userContact");
-    if (saved) contact.value = saved;
+  // Handle contact method (Discord/Instagram) label and input
+  const methodSelect = document.getElementById("method");
+  const contactLabel = document.getElementById("contactLabel");
+  const contactInput = document.getElementById("contact");
 
-    contact.addEventListener("input", () => {
-      localStorage.setItem("userContact", contact.value);
+  function updateContactLabel() {
+    const method = methodSelect.value;
+    contactLabel.textContent = method + " Username:";
+    contactInput.placeholder = method === "Discord" ? "e.g. Ansh_2613" : "e.g. @yourinsta";
+    localStorage.setItem("contactMethod", method);
+  }
+
+  // Set contact method label immediately and on change
+  if (methodSelect && contactLabel && contactInput) {
+    methodSelect.addEventListener("change", updateContactLabel);
+    updateContactLabel();
+  }
+
+  // Restore saved contact from localStorage
+  const savedContact = localStorage.getItem("userContact");
+  if (contactInput && savedContact) {
+    contactInput.value = savedContact;
+  }
+
+  // Save contact live while typing
+  if (contactInput) {
+    contactInput.addEventListener("input", () => {
+      localStorage.setItem("userContact", contactInput.value);
     });
   }
-}); // ✅ closed DOMContentLoaded
+});
+
 </script>
 </body>
 </html>
