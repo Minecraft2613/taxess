@@ -845,20 +845,28 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function updateContactLabel() {
     const method = methodSelect.value;
-    contactLabel.textContent = method + " Username:";
-    contactInput.placeholder = method === "Discord" ? "e.g. Ansh_2613" : "e.g. your_mc_username";
+    if (method === "Discord") {
+      contactLabel.textContent = "Discord Username:";
+      contactInput.placeholder = "e.g. @your_Username";
+    } else if (method === "Instagram") {
+      contactLabel.textContent = "Instagram Username:";
+      contactInput.placeholder = "e.g. @your_instagram";
+    }
+
     localStorage.setItem("contactMethod", method);
   }
 
-  if (methodSelect && contactLabel && contactInput) {
-    methodSelect.addEventListener("change", updateContactLabel);
-    updateContactLabel();
-  }
+  // On page load
+  updateContactLabel();
 
-  // Restore saved contact
+  // When method changes
+  methodSelect.addEventListener("change", updateContactLabel);
+
+  // Restore contact input
   const savedContact = localStorage.getItem("userContact");
-  if (contactInput && savedContact) contactInput.value = savedContact;
+  if (savedContact) contactInput.value = savedContact;
 
+  // Save contact as user types
   contactInput.addEventListener("input", () => {
     localStorage.setItem("userContact", contactInput.value);
   });
