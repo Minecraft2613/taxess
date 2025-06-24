@@ -638,33 +638,11 @@ function renderChart() {
   if (container) container.style.display = "block";
 } // ✅ closes renderChart()
 
-function populateWeekDropdown() {
-  const weekData = groupDataByWeek();
-  const dropdown = document.getElementById("weekDropdown");
-  dropdown.innerHTML = "";
-
-  const weeks = Object.keys(weekData).sort().reverse();
-  if (weeks.length > 0) {
-    currentWeek = weeks[0];
-    weeks.forEach(weekStart => {
-      const option = document.createElement("option");
-      option.value = weekStart;
-      option.textContent = `Week of ${weekStart}`;
-      dropdown.appendChild(option);
-    });
-
-    if (dropdown) dropdown.style.display = "block";
-    const container = document.getElementById("chartContainer");
-    if (container) {
-      container.style.display = "block";
-      renderChart();
-    }
-  } else {
-    const container = document.getElementById("chartContainer");
-    if (container) container.style.display = "none";
-  }
+{
+  "paidPlayers": {},
+  "paymentHistory": {},
+  "taxDeadline": {}
 }
-
 function changeWeek(week) {
   currentWeek = week;
   renderChart();
@@ -676,6 +654,11 @@ function changeWeek(week) {
   renderChart();
 }
 
+  chartType = "line";
+localStorage.setItem("chartType", "line");
+localStorage.setItem("lineTension", 0.4);
+
+
 function changeTension(isSmooth) {
   chartType = "line";
   const tensionValue = isSmooth ? 0.4 : 0;  // ✅ define tension correctly
@@ -685,67 +668,34 @@ function changeTension(isSmooth) {
 }
 
 function handleChartOption(value) {
-  if (value === "bar" || value === "pie") {
-    changeChart(value);
-  } else if (value === "smooth") {
-    changeTension(true);
-  } else if (value === "line") {
-    changeTension(false);
-  } else if (value === "export") {
+  if (value === "export") {
     downloadChart();
+  } else {
+    alert("⚠️ Only smooth line chart is supported.");
   }
 }
 
 function showWeek(weekType) {
   currentWeek = weekType;
-  renderChart();
-}
+  renderChart()
 
-    function downloadChart() {
+  function downloadChart() {
   const canvas = document.getElementById('taxChart');
   const ctx = canvas.getContext('2d');
 
-  // Get original chart image
-  const original = canvas.toDataURL('image/png');
-
-  // Add extra details (payment history)
-  const payments = paymentHistory[currentPlayer] || [];
-  const textLines = payments.map((e, i) => `${i + 1}. $${e.amount} on ${e.date}`);
-  
-  // Draw payment history on canvas
+  // Optional: Add watermark or footer
   ctx.fillStyle = "#000";
-  ctx.fillRect(0, canvas.height - 100, canvas.width, 100); // background box
-  ctx.fillStyle = "#ffcc00";
-  ctx.font = "14px Arial";
-  ctx.textAlign = "left";
+  ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+  ctx.fillStyle = "#ffee00";
+  ctx.font = "bold 14px Arial";
+  ctx.fillText(`📊 ${currentPlayer}'s Weekly Tax | ${currentWeek}`, 10, canvas.height - 10);
 
-const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
-
-  const x = 10;
-  let y = canvas.height - 80;
-  
-  if (payments.length === 0) {
-    ctx.fillText("No payment history available.", x, y);
-  } else {
-    ctx.fillText("Payment History:", x, y);
-    y += 18;
-    for (let i = 0; i < Math.min(payments.length, maxLines); i++) {
-      ctx.fillText(textLines[i], x, y);
-      y += 18;
-    }
-    if (payments.length > maxLines) {
-      ctx.fillText("...and more", x, y);
-    }
-  }
-
-  // Now download
   const link = document.createElement("a");
-  link.download = `${currentPlayer}-tax-chart.png`;
+  link.download = `${currentPlayer}-${currentWeek}-tax-chart.png`;
   link.href = canvas.toDataURL("image/png");
   link.click();
 
-  // Re-render chart to remove the added text (cleanup)
-  renderChart();
+  renderChart(); // cleanup
 }
 
 function submitTax() {
