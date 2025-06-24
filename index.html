@@ -587,9 +587,14 @@ function renderChart() {
     }
   });
   
-document.getElementById("weekDropdown").style.display = "block";
-  document.getElementById("chartContainer").style.display = "block";
-}
+const dropdown = document.getElementById("weekDropdown");
+const chart = document.getElementById("taxChart");
+const container = document.getElementById("chartContainer");
+
+if (dropdown) dropdown.style.display = "block";
+if (chart) chart.style.display = "block";
+if (container) container.style.display = "block";
+
 
    function populateWeekDropdown() {
   const weekData = groupDataByWeek();
@@ -608,15 +613,16 @@ document.getElementById("weekDropdown").style.display = "block";
       dropdown.appendChild(option);
     });
 
-    dropdown.style.display = "block";
-    document.getElementById("chartContainer").style.display = "block";
+     if (dropdown) dropdown.style.display = "block";
+  const container = document.getElementById("chartContainer");
+  if (container) {
+    container.style.display = "block";
     renderChart(); // render chart for the default week
-  } else {
-    // No data available
-    document.getElementById("chartContainer").style.display = "none";
   }
-} // ✅ this closing brace is the fix
-
+} else {
+  const container = document.getElementById("chartContainer");
+  if (container) container.style.display = "none";
+}
 
 function changeWeek(week) {
   currentWeek = week;
