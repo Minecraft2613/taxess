@@ -533,37 +533,47 @@ if (left < 43200000) {
   document.getElementById("footerButtons").style.display = "flex";
 }
 
-populateWeekDropdown();
+  populateWeekDropdown();
 
-    const total = buy + sell;
-    const paid = sumPayments(currentPlayer);
-    const due = Math.max(0, total - paid);
+const total = buy + sell;
+const paid = sumPayments(currentPlayer);
+const due = Math.max(0, total - paid);
 
-    if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
-      taxDeadline[currentPlayer] = start.getTime();
-      syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
-    }
-    if (due <= 0 && taxDeadline[currentPlayer]) {
-      delete taxDeadline[currentPlayer];
-      syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
-    }
+// 🗓️ Set new deadline if needed
+if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  taxDeadline[currentPlayer] = start.getTime();
+  syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+}
 
-    const now = Date.now();
-    const startTime = taxDeadline[currentPlayer];
-    const deadline = startTime ? startTime + 7 * 86400000 : null;
+// ✅ Clear deadline if fully paid
+if (due <= 0 && taxDeadline[currentPlayer]) {
+  delete taxDeadline[currentPlayer];
+  syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+}
 
-    if (deadline && now > deadline && due > 0) sendTaxWebhook(currentPlayer, due);
-    if (startTime && now <= deadline && due > 0) {
-     const left = deadline - now;
+// ⏰ Time-based handling
+const now = Date.now();
+const startTime = taxDeadline[currentPlayer];
+const deadline = startTime ? startTime + 7 * 86400000 : null;
+
+// ❌ Missed deadline → send webhook
+if (deadline && now > deadline && due > 0) {
+  sendTaxWebhook(currentPlayer, due);
+}
+
+// ⌛ Show countdown if within deadline
+if (startTime && now <= deadline && due > 0) {
+  const left = deadline - now;
   const d = Math.floor(left / 86400000),
         h = Math.floor((left % 86400000) / 3600000),
         m = Math.floor((left % 3600000) / 60000);
+
   const saveNotice = document.getElementById("saveNotice");
   saveNotice.innerText = `⏳ Tax Deadline: ${d}d ${h}h ${m}m left`;
 
-  if (left < 43200000) { // <12h left
+  if (left < 43200000) { // < 12 hours
     saveNotice.style.color = "#ff4444";
     saveNotice.style.background = "#330000";
     saveNotice.innerText += " ⚠️ LAST 12 HOURS!";
@@ -575,13 +585,14 @@ populateWeekDropdown();
   }
 
   saveNotice.style.display = "block";
+}
 
-
-    showProfile(buy, sell, total, paid, due, paid > total);
-    renderChart();
-    showTopTaxPlayers();
-    document.getElementById("footerButtons").style.display = "flex";
-  }
+// ✅ Final UI updates
+populateWeekDropdown();
+showProfile(buy, sell, total, paid, due, paid > total);
+renderChart();
+showTopTaxPlayers();
+document.getElementById("footerButtons").style.display = "flex";
 
   // ...continues with showProfile, renderChart, syncToCloudflare, etc.
     function showProfile(buy, sell, total, paid, due, advanced) {
