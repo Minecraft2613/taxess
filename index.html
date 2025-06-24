@@ -585,13 +585,27 @@ function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
   dropdown.innerHTML = "";
- const weeks = Object.keys(weekData).sort().reverse();
-if (weeks.length > 0) {
-  currentWeek = weeks[0];
+
+  const weeks = Object.keys(weekData).sort().reverse();
+
+  if (weeks.length > 0) {
+    currentWeek = weeks[0]; // set currentWeek to the latest week
+
+    weeks.forEach(weekStart => {
+      const option = document.createElement("option");
+      option.value = weekStart;
+      option.textContent = `Week of ${weekStart}`;
+      dropdown.appendChild(option);
+    });
+
+    dropdown.style.display = "block";
+    document.getElementById("chartContainer").style.display = "block";
+    renderChart(); // render chart for the default week
+  } else {
+    // No data available
+    document.getElementById("chartContainer").style.display = "none";
+  }
 }
-weeks.forEach(weekStart => {
-  ...
-});
 
   document.getElementById("taxChart").style.display = "block";
 }
