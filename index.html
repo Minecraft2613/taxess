@@ -331,8 +331,11 @@ let currentWeek = 'this';
       <h3>🏦 Create Bank Account</h3>
       <label>Bank Username (autofilled):</label>
       <input id="bankUser" value="${currentPlayer}" readonly style="background: #222; font-weight: bold;" />
-      <label>Bank ID:</label>
-      <input id="bankId" value="${randomId}" readonly style="font-weight: bold; background: #111; color: #ff0;" />
+    <label>Bank ID:</label>
+<div style="display: flex; align-items: center;">
+  <span style="font-weight: bold; font-size: 16px; color: #ff0;">BANK</span>
+  <input id="bankId" placeholder="Enter 6 digit number" maxlength="6" style="margin-left: 5px; flex: 1;" />
+</div>
       <button onclick="copyBankId()">📋 Copy</button>
       <label>Bank Password:</label>
       <input id="bankPass" type="password" />
@@ -373,7 +376,7 @@ let currentWeek = 'this';
 
   function createBankAccount() {
     const username = document.getElementById("bankUser").value.trim();
-    const id = document.getElementById("bankId").value.trim();
+   const id = "BANK" + document.getElementById("bankId").value.trim();
     const pass = document.getElementById("bankPass").value;
     if (!username || !id || !pass) return alert("Fill all fields");
     if (bankAccounts[currentPlayer]) {
@@ -495,7 +498,6 @@ document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
 
       document.getElementById("historyBox").style.display = "block";
 
-      document.getElementById("chartArea").style.display = "block";
       document.getElementById("topTaxPlayers").style.display = "block";
     }
 
