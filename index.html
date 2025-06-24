@@ -457,8 +457,9 @@ function parseTransactions(log) {
 
     const date = line.match(/\[(\d{4}-\d{2}-\d{2})/);
     const day = date ? date[1].slice(5).replace('-', '/') : "";
-    const buyMatch = line.match(/bought.*?\\$(\\d[\\d,\\.]+)/);
-    const sellMatch = line.match(/sold.*?\\$(\\d[\\d,\\.]+)/);
+   const buyMatch = line.match(/bought.*?\$([\d,\.]+)/);
+const sellMatch = line.match(/sold.*?\$([\d,\.]+)/);
+
 
     if (buyMatch) {
       const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
