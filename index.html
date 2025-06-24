@@ -577,6 +577,10 @@ function populateWeekDropdown() {
     option.textContent = `Week of ${weekStart}`;
     dropdown.appendChild(option);
   });
+
+  document.getElementById("taxChart").style.display = "block";
+}
+
 function changeWeek(week) {
   currentWeek = week;
   renderChart();
