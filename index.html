@@ -302,6 +302,26 @@ let currentWeek = 'this';
     const history = paymentHistory[player] || [];
     return history.reduce((sum, entry) => sum + Number(entry.amount), 0);
   }
+  
+async function loadOnlineData() {
+  try {
+    const [taxRes, bankRes] = await Promise.all([
+      fetch(taxURL),
+      fetch(bankURL)
+    ]);
+
+    const taxData = await taxRes.json();
+    const bankData = await bankRes.json();
+
+    paidPlayers = taxData.paidPlayers || {};
+    paymentHistory = taxData.paymentHistory || {};
+    bankAccounts = bankData.accounts || {};
+    taxDeadline = taxData.taxDeadline || {};
+  } catch (error) {
+    console.error("❌ Failed to load data:", error);
+    throw error; // Re-throw so checkTax() catch block is triggered
+  }
+}
 
 async function checkTax() {
   const platform = document.getElementById("platformSelect")?.value;
@@ -348,7 +368,6 @@ async function checkTax() {
     console.error("CheckTax Error:", e);
   }
 }
-
 
  function askBankDetails() {
   const allAccounts = bankAccounts || {};
