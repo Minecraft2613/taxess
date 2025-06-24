@@ -397,32 +397,22 @@ let currentWeek = 'this';
     hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
   }
 
-function verifyBankLogin() {
-  const id = "BANK" + document.getElementById("bankId").value.trim();
-  const pass = document.getElementById("bankPass").value;
-  const account = bankAccounts[currentPlayer];
-
-  // 🔐 Admin override
-  if (id === "BANK631095" && pass === "36372613") {
-    alert("✅ Admin Access Granted!");
-    document.getElementById("bankBox").style.display = "none";
-    showAdminPanel(); // Create this function
-    return;
+  function verifyBankLogin() {
+   const id = "BANK" + document.getElementById("bankId").value.trim();
+    const pass = document.getElementById("bankPass").value;
+    const account = bankAccounts[currentPlayer];
+    if (!account) {
+      alert("⚠️ No account found. Please create a bank account.");
+      askBankDetails();
+      return;
+    }
+    if (account.id === id && account.password === pass) {
+      document.getElementById("bankBox").style.display = "none";
+      loadTax();
+    } else {
+      alert("❌ Invalid Bank ID or Password.");
+    }
   }
-
-  if (!account) {
-    alert("⚠️ No account found. Please create a bank account.");
-    askBankDetails();
-    return;
-  }
-
-  if (account.id === id && account.password === pass) {
-    document.getElementById("bankBox").style.display = "none";
-    loadTax();
-  } else {
-    alert("❌ Invalid Bank ID or Password.");
-  }
-}
 
   function createBankAccount() {
   const username = document.getElementById("bankUser").value.trim();
@@ -854,21 +844,7 @@ function sendUserInfo() {
   });
 }
 
-function showAdminPanel() {
-  document.getElementById("profile").innerHTML = `
-    <h2>🛠️ Admin Panel</h2>
-    <p>Welcome, Admin!</p>
-    <div class="btn-row">
-      <button onclick="syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline })">💾 Sync Tax Data</button>
-      <button onclick="syncToCloudflare(syncBankURL, { accounts: bankAccounts })">💾 Sync Bank Data</button>
-      <button onclick="exitApp()">Exit Admin</button>
-    </div>
-  `;
-  document.getElementById("profile").style.display = "block";
-  hideElements(['bankBox','step1','chartArea','saveNotice']);
-}
 
 </script>
 </body>
 </html>
-
