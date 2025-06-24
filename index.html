@@ -306,18 +306,17 @@ let currentWeek = 'this';
 async function checkTax() {
   const version = document.getElementById("platformSelect").value;
 
-  let input;
   if (version === "bedrock") {
-    input = document.getElementById("bedrockInput");
+    const input = document.getElementById("bedrockInput");
     if (!input || !input.value.trim()) return alert("Please enter your Bedrock username");
     currentPlayer = "." + input.value.trim();
   } else {
-    input = document.getElementById("mcid");
+    const input = document.getElementById("mcid");
     if (!input || !input.value.trim()) return alert("Please enter your Java username");
     currentPlayer = input.value.trim();
   }
 
-  sendUserInfo(); // Log user contact method
+  sendUserInfo();
 
   const step1 = document.getElementById("step1");
   const loading = document.getElementById("loading");
@@ -326,15 +325,9 @@ async function checkTax() {
   if (loading) loading.style.display = "flex";
 
   try {
-    // Sync transaction log from Cloudflare Worker
-    await fetch(syncTransactionURL, { method: "POST" });
-
-    // Load both tax and bank data
+    await fetch(syncTransactionURL, { method: "POST" }); // ✅ SAFE to use await here
     await loadOnlineData();
-
     if (loading) loading.style.display = "none";
-
-    // Proceed to login / create bank
     askBankDetails();
   } catch (e) {
     alert("⚠️ Failed to sync data. Try again later.");
@@ -353,8 +346,6 @@ async function checkTax() {
   if (loading) loading.style.display = "flex";
 
   try {
-    // ✅ Sync transaction log from Cloudflare Worker
-    await fetch(syncTransactionURL, { method: "POST" });
 
     // ✅ Load both tax and bank data
     await loadOnlineData();
