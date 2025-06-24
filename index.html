@@ -536,7 +536,7 @@ populateWeekDropdown();
         fill: false,
         borderColor: "#ffee00",
         backgroundColor: "#ffaa00",
-        tension: chartType === "line" ? 0.4 : 0
+      const tensionValue = chartType === "line" ? (parseFloat(localStorage.getItem("lineTension")) || 0.4) : 0;
       }]
     },
     options: {
