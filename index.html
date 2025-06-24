@@ -181,21 +181,6 @@
     flex: 1 1 100%;
     max-width: 100%;
   }
-      #chartContainer {
-  text-align: center;
-  padding: 10px;
-  background: #1a1a1a;
-  border-radius: 10px;
-  margin: 20px auto;
-  max-width: 700px;
-  box-shadow: 0 0 10px #ffaa00;
-}
-#weekDropdown {
-  padding: 6px;
-  background: #222;
-  color: #fff;
-  border: 1px solid #555;
-  border-radius: 6px;
 }
 
   </style>
@@ -266,7 +251,7 @@
     <button onclick="exitApp()">Exit</button>
   </div>
 </div>
-  <!-- After profile, historyBox, etc. -->
+    <!-- After profile, historyBox, etc. -->
 <div id="chartContainer" style="display: none;">
   <select id="weekDropdown" onchange="changeWeek(this.value)" style="display: none;"></select>
   <canvas id="taxChart" width="600" height="300"></canvas>
@@ -600,31 +585,23 @@ function populateWeekDropdown() {
   const weekData = groupDataByWeek();
   const dropdown = document.getElementById("weekDropdown");
   dropdown.innerHTML = "";
+ const weeks = Object.keys(weekData).sort().reverse();
+if (weeks.length > 0) {
+  currentWeek = weeks[0];
+}
+weeks.forEach(weekStart => {
+  ...
+});
 
-  const weeks = Object.keys(weekData).sort().reverse();
-
-  if (weeks.length > 0) {
-    currentWeek = weeks[0]; // set currentWeek to the latest week
-
-    weeks.forEach(weekStart => {
-      const option = document.createElement("option");
-      option.value = weekStart;
-      option.textContent = `Week of ${weekStart}`;
-      dropdown.appendChild(option);
-    });
-
-    dropdown.style.display = "block";
-    document.getElementById("chartContainer").style.display = "block";
-    renderChart(); // render chart for the default week
-  } else {
-    // No data available
-    document.getElementById("chartContainer").style.display = "none";
-  }
-
+  document.getElementById("taxChart").style.display = "block";
+}
 
 function changeWeek(week) {
   currentWeek = week;
   renderChart();
+}
+
+  document.getElementById("taxChart").style.display = "block";
 }
 
      function changeChart(type) {
@@ -779,32 +756,14 @@ const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
       });
     }
 
-// Helper: Hide multiple elements by IDs
-function hideElements(ids) {
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = "none";
-  });
-}
-
-// Helper: Hide multiple elements by IDs
-function hideElements(ids) {
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = "none";
-  });
-}
-
-function copyBankId() {
-  const bankId = document.getElementById("bankId").value;
-  navigator.clipboard.writeText(bankId).then(() => {
-    alert("📋 Bank ID copied to clipboard!");
-  }).catch(() => {
-    alert("❌ Copy failed.");
-  });
-}
-
-// DOM Ready logic
+    function copyBankId() {
+      const bankId = document.getElementById("bankId").value;
+      navigator.clipboard.writeText(bankId).then(() => {
+        alert("📋 Bank ID copied to clipboard!");
+      }).catch(() => {
+        alert("❌ Copy failed.");
+      });
+    }
 window.addEventListener("DOMContentLoaded", () => {
   taxDeadline = JSON.parse(localStorage.getItem("taxDeadline") || "{}");
 
@@ -821,7 +780,11 @@ window.addEventListener("DOMContentLoaded", () => {
     contact.addEventListener("input", () => {
       localStorage.setItem("userContact", contact.value);
     });
-  
+  }
+});
+
+
 </script>
+
 </body>
 </html>
