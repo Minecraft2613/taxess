@@ -535,66 +535,6 @@ if (left < 43200000) {
 
   populateWeekDropdown();
 
-function parseTransactions(log) {
-  const lines = log.split(/\r?\n/);
-  let buy = 0, sell = 0;
-
-  lines.forEach(line => {
-    // update buy & sell
-  });
-
-  // ✅ THIS is where you place your full logic:
-  const total = buy + sell;
-  const paid = sumPayments(currentPlayer);
-  const due = Math.max(0, total - paid);
-
-  if (due >= 4000 && bankAccounts[currentPlayer] && !taxDeadline[currentPlayer]) {
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-    taxDeadline[currentPlayer] = start.getTime();
-    syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
-  }
-
-// ⏰ Time-based handling
-const now = Date.now();
-const startTime = taxDeadline[currentPlayer];
-const deadline = startTime ? startTime + 7 * 86400000 : null;
-
-// ❌ Missed deadline → send webhook
-if (deadline && now > deadline && due > 0) {
-  sendTaxWebhook(currentPlayer, due);
-}
-
-// ⌛ Show countdown if within deadline
-if (startTime && now <= deadline && due > 0) {
-  const left = deadline - now;
-  const d = Math.floor(left / 86400000),
-        h = Math.floor((left % 86400000) / 3600000),
-        m = Math.floor((left % 3600000) / 60000);
-
-  const saveNotice = document.getElementById("saveNotice");
-  saveNotice.innerText = `⏳ Tax Deadline: ${d}d ${h}h ${m}m left`;
-
-  if (left < 43200000) { // < 12 hours
-    saveNotice.style.color = "#ff4444";
-    saveNotice.style.background = "#330000";
-    saveNotice.innerText += " ⚠️ LAST 12 HOURS!";
-    document.getElementById("profile").style.border = "2px solid red";
-  } else {
-    saveNotice.style.color = "#ffee00";
-    saveNotice.style.background = "#111";
-    document.getElementById("profile").style.border = "none";
-  }
-
-  saveNotice.style.display = "block";
-}
-
-// ✅ Final UI updates
-populateWeekDropdown();
-showProfile(buy, sell, total, paid, due, paid > total);
-renderChart();
-showTopTaxPlayers();
-document.getElementById("footerButtons").style.display = "flex";
 
   // ...continues with showProfile, renderChart, syncToCloudflare, etc.
     function showProfile(buy, sell, total, paid, due, advanced) {
@@ -983,13 +923,6 @@ function sendUserInfo() {
   });
 }
 
-function checkTax() {
-  currentPlayer = document.getElementById("mcid").value.trim();
-  if (!currentPlayer) return alert("Enter username");
-
-  sendUserInfo(); // ✅ safe here
-  // rest of checkTax logic...
-}
 
 </script>
 </body>
