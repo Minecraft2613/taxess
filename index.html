@@ -322,8 +322,7 @@ let currentWeek = 'this';
 </div>
       <label>Bank Password:</label>
       <input id="bankPass" type="password" placeholder="Password" />
-      <label>Contact (Discord or Instagram):</label>
-      <input id="contactInfo" placeholder="Enter your Discord or Instagram" />
+     <input id="contactInfo" type="hidden" value="${localStorage.getItem('userContact') || ''}" />
       <div class="btn-row">
         <button onclick="verifyBankLogin()">Login</button>
         <button onclick="exitBank()">Exit</button>
@@ -568,8 +567,9 @@ function renderChart() {
       }
     }
   });
-
-  document.getElementById("weekSelector").style.display = "block";
+  
+document.getElementById("weekDropdown").style.display = "block";
+document.getElementById("taxChart").style.display = "block";
 }
 
 function populateWeekDropdown() {
@@ -763,6 +763,19 @@ const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
         nextBtn.addEventListener("click", checkTax);
       }
     });
+  // Automatically load and store contact input from login screen
+window.addEventListener("DOMContentLoaded", () => {
+  const contact = document.getElementById("contact");
+  if (contact) {
+    const saved = localStorage.getItem("userContact");
+    if (saved) contact.value = saved;
+
+    contact.addEventListener("input", () => {
+      localStorage.setItem("userContact", contact.value);
+    });
+  }
+});
+
 </script>
 
 </body>
