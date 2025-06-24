@@ -309,44 +309,44 @@ let currentWeek = 'this';
   }
 
   function askBankDetails() {
-    const existing = bankAccounts[currentPlayer];
-   if (existing) {
-  document.getElementById("bankBox").innerHTML = `
-    <h3>🔐 Login to Bank</h3>
-    <label>Bank Username:</label>
-    <input id="bankUser" value="${existing.username}" readonly
-           style="background: #333; color: #ccc; font-weight: bold; border: 1px solid #888;" />
-    <label>Bank ID:</label>
-    <input id="bankId" placeholder="Enter your Bank ID" />
-    <label>Bank Password:</label>
-    <input id="bankPass" placeholder="Bank Password" type="password" />
-    <div class="btn-row">
-      <button onclick="verifyBankLogin()">Login</button>
-      <button onclick="exitBank()">Exit</button>
-    </div>`;
-}
- else {
-      const randomId = "BANK" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
-      document.getElementById("bankBox").innerHTML = `
-        <h3>🏦 Create Bank Account</h3>
-        <input id="bankUser" placeholder="Bank Username" autocomplete="off" />
-        <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
-          <input id="bankId" value="${randomId}" readonly
-                 style="flex: 1; font-size: 18px; font-weight: bold; background: #222; color: #ffee00; padding: 5px; border: 2px solid #ffaa00;" />
-          <button onclick="copyBankId()" style="padding: 6px 12px; background: #ffaa00; border: none; color: #000; font-weight: bold; border-radius: 6px;">📋</button>
-        </div>
-        <p style="color: #ff6666; font-size: 14px; margin-top: 5px;">
-          ⚠️ Remember your Bank ID: <b>${randomId}</b>. You'll need it to login later.
-        </p>
-        <input id="bankPass" placeholder="Bank Password" type="password" autocomplete="off" />
-        <div class="btn-row">
-          <button onclick="createBankAccount()">Create</button>
-          <button onclick="exitBank()">Exit</button>
-        </div>`;
-    }
-    document.getElementById("bankBox").style.display = "block";
-    hideElements(['profile', 'historyBox', 'fullHistoryBox', 'chartArea', 'topTaxPlayers', 'saveNotice', 'footerButtons']);
+  const existing = bankAccounts[currentPlayer];
+  if (existing) {
+    document.getElementById("bankBox").innerHTML = `
+      <h3>🔐 Login to Bank</h3>
+      <label>Bank Username:</label>
+      <input id="bankUser" value="${existing.username}" readonly style="background: #222; font-weight: bold; border: 1px solid #888;" />
+      <label>Bank ID:</label>
+      <input id="bankId" placeholder="Enter your Bank ID" />
+      <label>Bank Password:</label>
+      <input id="bankPass" type="password" placeholder="Password" />
+      <label>Contact (Discord or Instagram):</label>
+      <input id="contactInfo" placeholder="Enter your Discord or Instagram" />
+      <div class="btn-row">
+        <button onclick="verifyBankLogin()">Login</button>
+        <button onclick="exitBank()">Exit</button>
+      </div>`;
+  } else {
+    const randomId = "BANK" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
+    document.getElementById("bankBox").innerHTML = `
+      <h3>🏦 Create Bank Account</h3>
+      <label>Bank Username (autofilled):</label>
+      <input id="bankUser" value="${currentPlayer}" readonly style="background: #222; font-weight: bold;" />
+      <label>Bank ID:</label>
+      <input id="bankId" value="${randomId}" readonly style="font-weight: bold; background: #111; color: #ff0;" />
+      <button onclick="copyBankId()">📋 Copy</button>
+      <label>Bank Password:</label>
+      <input id="bankPass" type="password" />
+      <label>Contact (Discord or Instagram):</label>
+      <input id="contactInfo" placeholder="Your Discord or Instagram" />
+      <div class="btn-row">
+        <button onclick="createBankAccount()">Create</button>
+        <button onclick="exitBank()">Exit</button>
+      </div>`;
   }
+
+  document.getElementById("bankBox").style.display = "block";
+  hideElements(['profile', 'historyBox', 'fullHistoryBox', 'chartArea', 'topTaxPlayers', 'saveNotice', 'footerButtons']);
+}
 
   function exitBank() {
     document.getElementById("bankBox").style.display = "none";
@@ -444,16 +444,26 @@ populateWeekDropdown();
 
     if (deadline && now > deadline && due > 0) sendTaxWebhook(currentPlayer, due);
     if (startTime && now <= deadline && due > 0) {
-      const left = deadline - now;
-      const d = Math.floor(left / 86400000),
-        h = Math.floor(left % 86400000 / 3600000),
-        m = Math.floor(left % 3600000 / 60000);
-      const saveNotice = document.getElementById("saveNotice");
-      saveNotice.innerText = `⏳ Tax Deadline: ${d}d ${h}h ${m}m left`;
-      saveNotice.style.display = "block";
-    } else {
-      document.getElementById("saveNotice").style.display = "none";
-    }
+     const left = deadline - now;
+  const d = Math.floor(left / 86400000),
+        h = Math.floor((left % 86400000) / 3600000),
+        m = Math.floor((left % 3600000) / 60000);
+  const saveNotice = document.getElementById("saveNotice");
+  saveNotice.innerText = `⏳ Tax Deadline: ${d}d ${h}h ${m}m left`;
+
+  if (left < 43200000) { // <12h left
+    saveNotice.style.color = "#ff4444";
+    saveNotice.style.background = "#330000";
+    saveNotice.innerText += " ⚠️ LAST 12 HOURS!";
+    document.getElementById("profile").style.border = "2px solid red";
+  } else {
+    saveNotice.style.color = "#ffee00";
+    saveNotice.style.background = "#111";
+    document.getElementById("profile").style.border = "none";
+  }
+
+  saveNotice.style.display = "block";
+
 
     showProfile(buy, sell, total, paid, due, paid > total);
     renderChart();
@@ -479,9 +489,10 @@ populateWeekDropdown();
       `;
       profile.style.display = "block";
 
-      const history = paymentHistory[currentPlayer] || [];
-      document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
-        ${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+const history = (paymentHistory[currentPlayer] || []).slice().reverse();
+document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
+  ${history.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>`;
+
       document.getElementById("historyBox").style.display = "block";
 
       document.getElementById("chartArea").style.display = "block";
@@ -531,7 +542,6 @@ function renderChart() {
 
   const labels = Object.keys(data);
   const values = Object.values(data);
-
   const tensionValue = chartType === "line" ? (parseFloat(localStorage.getItem("lineTension")) || 0.4) : 0;
 
   chart = new Chart(ctx, {
@@ -544,7 +554,7 @@ function renderChart() {
         fill: false,
         borderColor: "#ffee00",
         backgroundColor: "#ffaa00",
-        tension: tensionValue // ✅ Now this works!
+        tension: tensionValue
       }]
     },
     options: {
@@ -655,16 +665,20 @@ const maxLines = Math.floor((canvas.height - 100) / 18) - 1;
   renderChart();
 }
 
-    function submitTax() {
-      const amt = parseFloat(document.getElementById("payAmt").value);
-      if (!amt || amt <= 0) return alert("Invalid amount");
-      const entry = { amount: amt, date: new Date().toLocaleString() };
-      if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
-      paymentHistory[currentPlayer].push(entry);
-      paidPlayers[currentPlayer] = sumPayments(currentPlayer);
-      syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
-      loadTax();
-    }
+ function submitTax() {
+  const amt = parseFloat(document.getElementById("payAmt").value);
+  if (!amt || amt <= 0) return alert("❌ Invalid amount");
+
+  const confirmSave = confirm("✅ Your tax and payment history will be saved within 5 minutes if sync is successful.");
+  if (!confirmSave) return;
+
+  const entry = { amount: amt, date: new Date().toLocaleString() };
+  if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
+  paymentHistory[currentPlayer].unshift(entry); // latest on top
+  paidPlayers[currentPlayer] = sumPayments(currentPlayer);
+  syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
+  loadTax();
+}
 
     function syncToCloudflare(url, data) {
       fetch(url, {
