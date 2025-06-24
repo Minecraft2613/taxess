@@ -406,10 +406,9 @@ let currentWeek = 'this';
       askBankDetails();
       return;
     }
-    bankAccounts[currentPlayer] = { username, id, password: pass };
-    return syncToCloudflare(syncBankURL, { accounts: bankAccounts }).then(() => {
-      document.getElementById("bankBox").style.display = "none";
-      verifyBankLogin();
+ syncToCloudflare(syncBankURL, { accounts: bankAccounts });
+document.getElementById("bankBox").style.display = "none";
+verifyBankLogin();
     });
   }
 
