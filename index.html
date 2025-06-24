@@ -534,7 +534,6 @@ function renderChart() {
   const weekData = groupDataByWeek();
   const selectedWeek = currentWeek;
   const data = weekData[selectedWeek];
-
   if (!data) return;
 
   const ctx = document.getElementById("taxChart").getContext("2d");
@@ -542,7 +541,6 @@ function renderChart() {
 
   const labels = Object.keys(data);
   const values = Object.values(data);
-  const tensionValue = chartType === "line" ? (parseFloat(localStorage.getItem("lineTension")) || 0.4) : 0;
 
   chart = new Chart(ctx, {
     type: chartType,
@@ -554,7 +552,7 @@ function renderChart() {
         fill: false,
         borderColor: "#ffee00",
         backgroundColor: "#ffaa00",
-        tension: tensionValue
+        tension: chartType === "line" ? (parseFloat(localStorage.getItem("lineTension")) || 0.4) : 0
       }]
     },
     options: {
