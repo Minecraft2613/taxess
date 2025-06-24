@@ -205,11 +205,17 @@
     <h1>📄 <span class="glow">Player Tax Portal</span></h1>
 
     <div id="step1" class="card">
-      <select id="version" title="Select Minecraft version">
-        <option>Java</option>
-        <option>Bedrock</option>
-      </select>
-      </select>
+     
+    <label for="platformSelect">Platform:</label>
+<select id="platformSelect" onchange="togglePlatform()">
+  <option value="java">Java</option>
+  <option value="bedrock">Bedrock</option>
+</select>
+
+<div id="usernameWrapper">
+  <input id="mcid" placeholder="Minecraft Username" />
+</div>
+
   <label for="method">Choose Contact Method:</label>
   <select id="method">
     <option value="Discord">Discord</option>
@@ -218,12 +224,6 @@
 
   <label id="contactLabel" for="contact">Contact Username:</label>
   <input id="contact" type="text" placeholder="Username " />
-
-      <label>Minecraft Username:</label>
-<div id="usernameWrapper">
-  <!-- Default Java input shown initially -->
-  <input id="mcid" type="text" placeholder="e.g. Steve or .Atharva" />
-</div>
 
   <button id="nextBtn">Next</button>
 </div>
@@ -298,25 +298,6 @@ function togglePlatform() {
   }
 }
 
-// Modify checkTax to get Bedrock name correctly:
-async function checkTax() {
-  const platform = document.getElementById("platformSelect").value;
-  let input;
-
-  if (platform === "bedrock") {
-    const bedrockInput = document.getElementById("bedrockInput");
-    if (!bedrockInput || !bedrockInput.value.trim()) return alert("Enter Bedrock Username");
-    currentPlayer = "." + bedrockInput.value.trim();
-  } else {
-    input = document.getElementById("mcid");
-    if (!input || !input.value.trim()) return alert("Enter Minecraft Username");
-    currentPlayer = input.value.trim();
-  }
-
-  // Continue the tax logic as normal...
-  sendUserInfo();
-  ...
-}
 </script>
 
 <script>
