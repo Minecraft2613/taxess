@@ -206,14 +206,15 @@
 
     <div id="step1" class="card">
      
-    <label for="platformSelect">Platform:</label>
+<label for="platformSelect">Platform:</label>
 <select id="platformSelect" onchange="togglePlatform()">
   <option value="java">Java</option>
   <option value="bedrock">Bedrock</option>
 </select>
 
-<div id="usernameWrapper">
-  <input id="mcid" placeholder="Minecraft Username" />
+<div id="usernameWrapper" style="margin-top: 10px;">
+  <label for="mcid">Minecraft Username:</label>
+  <input id="mcid" type="text" placeholder="e.g. Steve or .YourName" />
 </div>
 
   <label for="method">Choose Contact Method:</label>
@@ -923,7 +924,25 @@ function showAdminPanel() {
   document.getElementById("profile").style.display = "block";
   hideElements(['bankBox','step1','chartArea','saveNotice']);
 }
+function togglePlatform() {
+  const platform = document.getElementById("platformSelect").value;
+  const wrapper = document.getElementById("usernameWrapper");
 
+  if (platform === "bedrock") {
+    wrapper.innerHTML = `
+      <label for="bedrockInput">Minecraft Username:</label>
+      <div style="display:flex; align-items:center;">
+        <span style="padding: 7px 10px; background: #222; border: 1px solid #555; border-right: none; color: #ccc;">.</span>
+        <input id="bedrockInput" type="text" placeholder="Bedrock Username" style="flex:1; height: 35px; border: 1px solid #555; border-left: none;" />
+      </div>
+    `;
+  } else {
+    wrapper.innerHTML = `
+      <label for="mcid">Minecraft Username:</label>
+      <input id="mcid" type="text" placeholder="Java Username" />
+    `;
+  }
+}
 </script>
 </body>
 </html>
