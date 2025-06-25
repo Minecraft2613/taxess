@@ -4,72 +4,69 @@
   <meta charset="UTF-8" />
   <title>🛠️ Admin Panel</title>
   <style>
+    /* Basic styling */
     body {
       background: #000;
       color: #fff;
       font-family: Arial, sans-serif;
+      margin: 0;
       padding: 20px;
     }
+
     h2, h3 {
       color: orange;
-      text-shadow: 0 0 5px orange;
+      text-shadow: 0 0 6px orange;
     }
-    input, button {
+
+    button, input {
       padding: 8px;
-      margin: 6px;
-      border-radius: 5px;
+      margin: 5px 0;
+      border-radius: 6px;
       border: none;
+      font-weight: bold;
     }
+
     input {
       background: #111;
-      color: #fff;
+      color: white;
     }
+
     button {
       background: orange;
       color: black;
       cursor: pointer;
-      font-weight: bold;
     }
+
     button:hover {
       background: gold;
     }
-    .section {
-      margin: 20px 0;
-      padding: 10px;
-      border: 1px solid #444;
-      border-radius: 6px;
-      background: #111;
-      box-shadow: 0 0 10px orange;
-    }
+
     .hidden {
       display: none;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #333;
-      text-align: left;
-    }
-    .player-box {
-      margin: 10px 0;
-      padding: 10px;
-      border: 1px solid #666;
+
+    .section {
       background: #111;
-      box-shadow: 0 0 5px orange;
+      padding: 15px;
+      border: 1px solid #444;
+      border-radius: 10px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px orange;
     }
+
+    .player-box {
+      border: 1px solid #333;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      background: #111;
+      box-shadow: 0 0 8px orange;
+    }
+
     label {
       display: block;
-      margin-top: 8px;
+      margin-top: 5px;
       font-size: 14px;
-    }
-    #footer {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 13px;
-      color: #888;
     }
   </style>
 </head>
@@ -77,32 +74,30 @@
   <div id="loginBox">
     <h2>🔐 Admin Login</h2>
     <label for="adminId">Admin ID</label>
-    <input id="adminId" name="adminId" placeholder="Admin ID" />
+    <input id="adminId" placeholder="Enter Admin ID">
     <label for="adminPass">Password</label>
-    <input id="adminPass" name="adminPass" type="password" placeholder="Password" />
+    <input type="password" id="adminPass" placeholder="Enter Password">
     <button onclick="adminLogin()">Login</button>
   </div>
 
   <div id="adminPanel" class="hidden">
     <h2>🛠️ Admin Panel</h2>
-    <button onclick="showSection('taxPayments')">1️⃣ Player Tax Payment</button>
-    <button onclick="showSection('bankInfo')">2️⃣ Bank Information</button>
-    <button onclick="syncData('tax')">3️⃣ Sync Tax</button>
-    <button onclick="syncData('bank')">4️⃣ Sync Bank</button>
-    <button onclick="location.reload()">5️⃣ Exit</button>
+    <button onclick="showSection('playerTax')">Player Tax Payment</button>
+    <button onclick="showSection('bankInfo')">Bank Info</button>
+    <button onclick="syncData('tax')">Sync Tax</button>
+    <button onclick="syncData('bank')">Sync Bank</button>
+    <button onclick="location.reload()">Exit</button>
 
-    <div id="taxPayments" class="section hidden">
-      <h3>📋 All Players (Tax Summary)</h3>
+    <div id="playerTax" class="section hidden">
+      <h3>All Players</h3>
       <div id="playerList"></div>
     </div>
 
     <div id="bankInfo" class="section hidden">
-      <h3>🏦 Bank Information</h3>
+      <h3>Bank Accounts</h3>
       <div id="bankList"></div>
     </div>
   </div>
-
-  <div id="footer">Tax Admin Panel - Synced with GitHub JSON - Powered by Saksham Singh</div>
 
   <script>
     const adminJsonURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json";
@@ -111,7 +106,7 @@
     const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
     const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
 
-    let taxData = {}, bankData = {}, currentPlayer = "";
+    let taxData = {}, bankData = {}, currentAdminPass = "";
 
     async function adminLogin() {
       const id = document.getElementById("adminId").value.trim();
@@ -119,10 +114,13 @@
       const res = await fetch(adminJsonURL);
       const admin = await res.json();
       if (id === admin.id && pass === admin.pass) {
+        currentAdminPass = pass;
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("adminPanel").classList.remove("hidden");
         loadData();
-      } else alert("❌ Invalid Admin Credentials");
+      } else {
+        alert("❌ Invalid Admin Credentials");
+      }
     }
 
     async function loadData() {
@@ -137,24 +135,23 @@
       const container = document.getElementById("playerList");
       container.innerHTML = "";
       const players = Array.from(new Set([...Object.keys(taxData.paidPlayers || {}), ...Object.keys(bankData.accounts || {})]));
-
       players.forEach(player => {
         const paid = (taxData.paymentHistory?.[player] || []).reduce((sum, e) => sum + e.amount, 0);
         const total = taxData.paidPlayers?.[player] || 0;
         const due = Math.max(0, total - paid);
         const platform = player.includes('.') ? "Bedrock" : "Java";
-        const status = due === 0 ? "✅ No Due" : `❌ Due $${due.toFixed(2)}`;
+        const status = due === 0 ? "✅ No Due" : `❌ Due: $${due.toFixed(2)}`;
 
         container.innerHTML += `
           <div class="player-box">
             <strong>${player}</strong> (${platform})<br>
-            Status: ${status}<br>
-            <label for="amt_${player}">Amount</label>
-            <input id="amt_${player}" type="number" placeholder="Govt Pay Amount" />
-            <label for="reason_${player}">Reason</label>
-            <input id="reason_${player}" placeholder="Reason (optional)" />
-            <label for="pass_${player}">Admin Password</label>
-            <input id="pass_${player}" type="password" placeholder="Confirm Admin Pass to Reset" />
+            Status: ${status}
+            <label>Amount</label>
+            <input id="amt_${player}" type="number" placeholder="Govt Pay Amount">
+            <label>Reason</label>
+            <input id="reason_${player}" placeholder="Optional Reason">
+            <label>Admin Pass (for reset)</label>
+            <input id="pass_${player}" type="password" placeholder="Confirm Admin Pass">
             <button onclick="payGovt('${player}')">💸 Pay as Govt</button>
             <button onclick="resetTax('${player}')">🗑 Reset Tax</button>
             <button onclick="resetDeadline('${player}')">⏱ Reset Deadline</button>
@@ -165,22 +162,16 @@
     function renderBankList() {
       const container = document.getElementById("bankList");
       container.innerHTML = "";
-      const players = Array.from(new Set([...Object.keys(taxData.paidPlayers || {}), ...Object.keys(bankData.accounts || {})]));
-
+      const players = Object.keys(bankData.accounts || {});
       players.forEach(player => {
-        const acc = bankData.accounts?.[player] || {};
-        const username = acc.username || "N/A";
-        const id = acc.id || "N/A";
-        const pass = acc.password || "N/A";
-        const contact = acc.contact || "N/A";
-
+        const acc = bankData.accounts[player] || {};
         container.innerHTML += `
           <div class="player-box">
             <strong>${player}</strong><br>
-            Username: ${username}<br>
-            ID: ${id}<br>
-            Password: ${pass}<br>
-            Contact: ${contact}<br>
+            Username: ${acc.username || "N/A"}<br>
+            ID: ${acc.id || "N/A"}<br>
+            Password: ${acc.password || "N/A"}<br>
+            Contact: ${acc.contact || "N/A"}
           </div>`;
       });
     }
@@ -194,14 +185,14 @@
       taxData.paymentHistory[player] = taxData.paymentHistory[player] || [];
       taxData.paymentHistory[player].unshift(entry);
       taxData.paidPlayers[player] = (taxData.paidPlayers[player] || 0) + amt;
+
       alert("✅ Govt Payment Applied");
       renderPlayerList();
     }
 
     function resetTax(player) {
-      const pass = document.getElementById(`pass_${player}`).value.trim();
-      if (!pass) return alert("❌ Admin password required");
-      if (pass !== document.getElementById("adminPass").value.trim()) return alert("❌ Incorrect Admin Password");
+      const pass = document.getElementById(`pass_${player}`).value;
+      if (pass !== currentAdminPass) return alert("❌ Incorrect Password");
 
       taxData.paymentHistory[player] = [];
       taxData.paidPlayers[player] = 0;
@@ -210,28 +201,33 @@
     }
 
     function resetDeadline(player) {
-      delete taxData.taxDeadline?.[player];
+      if (taxData.taxDeadline && taxData.taxDeadline[player]) delete taxData.taxDeadline[player];
       alert("✅ Deadline Reset");
     }
 
     function syncData(type) {
       const url = type === "tax" ? syncTaxURL : syncBankURL;
-      const data = type === "tax"
-        ? { paidPlayers: taxData.paidPlayers, paymentHistory: taxData.paymentHistory, taxDeadline: taxData.taxDeadline }
-        : { accounts: bankData.accounts };
+      const data = type === "tax" ? {
+        paidPlayers: taxData.paidPlayers,
+        paymentHistory: taxData.paymentHistory,
+        taxDeadline: taxData.taxDeadline || {}
+      } : {
+        accounts: bankData.accounts
+      };
 
       fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
-      }).then(r => {
-        if (r.ok) alert(`✅ ${type.toUpperCase()} Synced`);
-        else r.text().then(t => alert("❌ Failed: " + t));
+      }).then(res => {
+        if (res.ok) alert(`✅ ${type.toUpperCase()} Synced`);
+        else res.text().then(txt => alert("❌ Sync Failed: " + txt));
       });
     }
 
     function showSection(id) {
-      ["taxPayments", "bankInfo"].forEach(s => document.getElementById(s).classList.add("hidden"));
+      document.getElementById("playerTax").classList.add("hidden");
+      document.getElementById("bankInfo").classList.add("hidden");
       document.getElementById(id).classList.remove("hidden");
     }
   </script>
