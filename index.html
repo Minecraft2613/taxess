@@ -702,11 +702,12 @@ function showProfile(buy, sell, total, paid, due, advanced) {
   due === 0
     ? (advanced
       ? "Advance Paid"
-      : paymentHistory[currentPlayer]?.[0]?.adminNote === "Paid by Govt"
+      : (paymentHistory[currentPlayer]?.some(p => p.adminNote || p.method === "Paid by Govt"))
         ? `Paid by Govt <button onclick="showGovtNote()" style="margin-left:5px;font-size:12px;padding:2px 5px;">💬 See Description</button>`
         : "No Tax Due")
     : "$" + due.toFixed(2) + " Due"
 }</strong></p>
+
 
     <div class="btn-row">
       <button onclick="submitTax()">${due > 0 ? "Pay Tax" : "Advance Pay"}</button>
@@ -733,7 +734,19 @@ function showProfile(buy, sell, total, paid, due, advanced) {
   </ul>
         <div class="btn-row"><button onclick="hideFullHistory()">Close</button></div>`;
       fullBox.style.display = "block";
+      document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
+  ${history.map(e => `<li>$${e.amount} on ${e.date}${e.adminNote ? ` — ${e.adminNote}` : ''}</li>`).join('')}</ul>`;
+
     }
+  function showGovtNote() {
+  const note = (paymentHistory[currentPlayer] || []).find(p => p.adminNote || p.method === "Paid by Govt");
+  if (note) {
+    alert("📌 Govt Note:\n" + (note.adminNote || note.method));
+  } else {
+    alert("No government note found.");
+  }
+}
+
     function hideFullHistory() {
       document.getElementById("fullHistoryBox").style.display = "none";
     }
