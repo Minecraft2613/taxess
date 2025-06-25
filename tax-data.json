@@ -1,5 +1,7 @@
 {
   "paidPlayers": {},
   "paymentHistory": {},
-  "taxDeadline": {}
+  "taxDeadline": {
+    "ansh": 1750789800000
+  }
 }
