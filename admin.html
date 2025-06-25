@@ -231,9 +231,6 @@
     <textarea id="bankEditor" class="editor-area"></textarea>
     <button onclick="saveBank()">Save Bank JSON</button>
   </section>
-<input id="govtAmount" type="number" placeholder="Enter Amount">
-<input id="govtDesc" placeholder="Description (optional)">
-<button onclick="markGovtPaid()">Pay as Govt</button>
 
   <script>
     // Data
@@ -344,7 +341,8 @@
       const totalTax = buyTax + sellTax;
       const paidRaw = taxData.paidPlayers?.[name];
       // If marked PAID_BY_GOVT or description, count total paid as totalTax
-      const totalPaid = paidRaw && paidRaw !== "❌ Not Paid" ? totalTax : 0;
+const totalPaid = getPaidAmount(name);
+
       const due = Math.max(0, totalTax - totalPaid);
 
       return { buyTax, sellTax, totalTax, due, totalPaid, dailyData };
