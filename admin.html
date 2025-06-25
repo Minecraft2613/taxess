@@ -4,18 +4,18 @@
   <meta charset="UTF-8" />
   <title>🛠️ Admin Panel</title>
   <style>
-    body { background: #000; color: #fff; font-family: Arial; padding: 20px; }
+    body { background: #000; color: #fff; font-family: Arial; margin: 0; padding: 20px; }
     h2, h3 { color: orange; text-shadow: 0 0 5px orange; }
     input, button { padding: 8px; margin: 6px; border-radius: 5px; border: none; }
     input { background: #111; color: #fff; }
     button { background: orange; color: black; cursor: pointer; font-weight: bold; }
     button:hover { background: gold; }
-    .section { margin: 20px 0; padding: 10px; border: 1px solid #444; border-radius: 6px; background: #111; }
+    .section { margin: 20px 0; padding: 10px; border: 1px solid #444; border-radius: 6px; background: #111; box-shadow: 0 0 10px orange; }
     .hidden { display: none; }
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 10px; border-bottom: 1px solid #333; }
-    .btn-small { font-size: 12px; padding: 4px 8px; margin: 2px; }
-    label { display: block; margin-top: 10px; font-size: 14px; }
+    th, td { padding: 10px; border-bottom: 1px solid #333; text-align: left; }
+    .player-box { margin: 10px 0; padding: 10px; border: 1px solid #666; background: #111; box-shadow: 0 0 5px orange; }
+    label { display: block; margin-top: 8px; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -23,53 +23,27 @@
     <h2>🔐 Admin Login</h2>
     <label for="adminId">Admin ID</label>
     <input id="adminId" name="adminId" placeholder="Admin ID" />
-    
     <label for="adminPass">Password</label>
     <input id="adminPass" name="adminPass" type="password" placeholder="Password" />
-    
     <button onclick="adminLogin()">Login</button>
   </div>
 
   <div id="adminPanel" class="hidden">
     <h2>🛠️ Admin Panel</h2>
-    <button onclick="showSection('taxSection')">📊 View Taxes</button>
-    <button onclick="showSection('bankSection')">🏦 View Banks</button>
-    <button onclick="syncData('tax')">💾 Sync Tax</button>
-    <button onclick="syncData('bank')">💾 Sync Bank</button>
-    <button onclick="location.reload()">🚪 Exit</button>
+    <button onclick="showSection('taxPayments')">1️⃣ Player Tax Payment</button>
+    <button onclick="showSection('bankInfo')">2️⃣ Bank Information</button>
+    <button onclick="syncData('tax')">3️⃣ Sync Tax</button>
+    <button onclick="syncData('bank')">4️⃣ Sync Bank</button>
+    <button onclick="location.reload()">5️⃣ Exit</button>
 
-    <div id="taxSection" class="section hidden">
-      <h3>📋 Player Taxes</h3>
-      <table>
-        <thead>
-          <tr><th>Player</th><th>Platform</th><th>Paid</th><th>Due</th><th>Actions</th></tr>
-        </thead>
-        <tbody id="taxTable"></tbody>
-      </table>
+    <div id="taxPayments" class="section hidden">
+      <h3>📋 All Players (Tax Summary)</h3>
+      <div id="playerList"></div>
     </div>
 
-    <div id="bankSection" class="section hidden">
-      <h3>🏦 Bank Accounts</h3>
-      <table>
-        <thead><tr><th>Player</th><th>Username</th><th>ID</th><th>Password</th><th>Contact</th></tr></thead>
-        <tbody id="bankTable"></tbody>
-      </table>
-    </div>
-
-    <div id="viewPanel" class="section hidden">
-      <h3 id="viewPlayer">👤 Viewing Player</h3>
-      <p id="viewStats"></p>
-      
-      <label for="govAmt">Amount to pay as Govt</label>
-      <input id="govAmt" name="govAmt" type="number" placeholder="Amount to pay as Govt" />
-      
-      <label for="govReason">Reason (optional)</label>
-      <input id="govReason" name="govReason" placeholder="Reason (optional)" />
-      
-      <button onclick="govPay()">💸 Govt Pay</button>
-      <button onclick="resetHistory()">🗑 Reset History</button>
-      <button onclick="resetDeadline()">⏱ Reset Deadline</button>
-      <button onclick="hideSection('viewPanel')">❌ Close</button>
+    <div id="bankInfo" class="section hidden">
+      <h3>🏦 Bank Information</h3>
+      <div id="bankList"></div>
     </div>
   </div>
 
@@ -79,129 +53,107 @@
     const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
     const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
     const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
-    const webhookURL = "https://tax-hook.1987sakshamsingh.workers.dev/?type=pay";
 
     let taxData = {}, bankData = {}, currentPlayer = "";
 
     async function adminLogin() {
       const id = document.getElementById("adminId").value.trim();
       const pass = document.getElementById("adminPass").value.trim();
-      try {
-        const res = await fetch(adminJsonURL);
-        const admin = await res.json();
-        if (id === admin.id && pass === admin.pass) {
-          document.getElementById("loginBox").style.display = "none";
-          document.getElementById("adminPanel").classList.remove("hidden");
-          loadData();
-        } else {
-          alert("❌ Invalid Admin Credentials");
-        }
-      } catch {
-        alert("❌ Failed to load admin.json");
-      }
+      const res = await fetch(adminJsonURL);
+      const admin = await res.json();
+      if (id === admin.id && pass === admin.pass) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("adminPanel").classList.remove("hidden");
+        loadData();
+      } else alert("❌ Invalid Admin Credentials");
     }
 
     async function loadData() {
       const [taxRes, bankRes] = await Promise.all([fetch(taxURL), fetch(bankURL)]);
       taxData = await taxRes.json();
       bankData = await bankRes.json();
-      renderTaxTable();
-      renderBankTable();
+      renderPlayerList();
+      renderBankList();
     }
 
-    function renderTaxTable() {
-      const table = document.getElementById("taxTable");
-      table.innerHTML = "";
-      const players = Array.from(new Set([
-        ...Object.keys(taxData.paidPlayers || {}),
-        ...Object.keys(taxData.paymentHistory || {}),
-        ...Object.keys(bankData.accounts || {})
-      ]));
+    function renderPlayerList() {
+      const container = document.getElementById("playerList");
+      container.innerHTML = "";
+      const players = Array.from(new Set([...Object.keys(taxData.paidPlayers || {}), ...Object.keys(bankData.accounts || {})]));
 
       players.forEach(player => {
-        const paid = (taxData.paymentHistory[player] || []).reduce((sum, e) => sum + e.amount, 0);
-        const total = taxData.paidPlayers[player] || 0;
+        const paid = (taxData.paymentHistory?.[player] || []).reduce((sum, e) => sum + e.amount, 0);
+        const total = taxData.paidPlayers?.[player] || 0;
         const due = Math.max(0, total - paid);
         const platform = player.includes('.') ? "Bedrock" : "Java";
+        const status = due === 0 ? "✅ No Due" : `❌ Due $${due.toFixed(2)}`;
 
-        table.innerHTML += `
-          <tr>
-            <td>${player}</td>
-            <td>${platform}</td>
-            <td>$${paid.toFixed(2)}</td>
-            <td>$${due.toFixed(2)}</td>
-            <td><button class="btn-small" onclick="viewPlayer('${player}')">👁 View</button></td>
-          </tr>`;
+        container.innerHTML += `
+          <div class="player-box">
+            <strong>${player}</strong> (${platform})<br>
+            Status: ${status}<br>
+            <label for="amt_${player}">Amount</label>
+            <input id="amt_${player}" type="number" placeholder="Govt Pay Amount" />
+            <label for="reason_${player}">Reason</label>
+            <input id="reason_${player}" placeholder="Reason (optional)" />
+            <label for="pass_${player}">Admin Password</label>
+            <input id="pass_${player}" type="password" placeholder="Confirm Admin Pass to Reset" />
+            <button onclick="payGovt('${player}')">💸 Pay as Govt</button>
+            <button onclick="resetTax('${player}')">🗑 Reset Tax</button>
+            <button onclick="resetDeadline('${player}')">⏱ Reset Deadline</button>
+          </div>`;
       });
     }
 
-    function renderBankTable() {
-      const table = document.getElementById("bankTable");
-      table.innerHTML = "";
-      const players = Array.from(new Set([
-        ...Object.keys(taxData.paidPlayers || {}),
-        ...Object.keys(taxData.paymentHistory || {}),
-        ...Object.keys(bankData.accounts || {})
-      ]));
+    function renderBankList() {
+      const container = document.getElementById("bankList");
+      container.innerHTML = "";
+      const players = Array.from(new Set([...Object.keys(taxData.paidPlayers || {}), ...Object.keys(bankData.accounts || {})]));
 
       players.forEach(player => {
         const acc = bankData.accounts?.[player] || {};
-        table.innerHTML += `
-          <tr>
-            <td>${player}</td>
-            <td>${acc.username || "N/A"}</td>
-            <td>${acc.id || "N/A"}</td>
-            <td>${acc.password || "N/A"}</td>
-            <td>${acc.contact || "N/A"}</td>
-          </tr>`;
+        const username = acc.username || "N/A";
+        const id = acc.id || "N/A";
+        const pass = acc.password || "N/A";
+        const contact = acc.contact || "N/A";
+
+        container.innerHTML += `
+          <div class="player-box">
+            <strong>${player}</strong><br>
+            Username: ${username}<br>
+            ID: ${id}<br>
+            Password: ${pass}<br>
+            Contact: ${contact}<br>
+          </div>`;
       });
     }
 
-    function viewPlayer(player) {
-      currentPlayer = player;
-      const paid = (taxData.paymentHistory[player] || []).reduce((s, e) => s + e.amount, 0);
-      const total = taxData.paidPlayers[player] || 0;
-      const due = Math.max(0, total - paid);
-      document.getElementById("viewPlayer").innerText = `👤 Viewing ${player}`;
-      document.getElementById("viewStats").innerText = `Total: $${total.toFixed(2)}, Paid: $${paid.toFixed(2)}, Due: $${due.toFixed(2)}`;
-      showSection("viewPanel");
-    }
-
-    function govPay() {
-      const amt = parseFloat(document.getElementById("govAmt").value);
-      const reason = document.getElementById("govReason").value || "No reason";
-      if (!amt || amt <= 0) return alert("❌ Enter valid amount");
+    function payGovt(player) {
+      const amt = parseFloat(document.getElementById(`amt_${player}`).value);
+      const reason = document.getElementById(`reason_${player}`).value || "No reason";
+      if (!amt || amt <= 0) return alert("❌ Invalid amount");
 
       const entry = { amount: amt, date: new Date().toLocaleString(), adminNote: reason };
-      taxData.paymentHistory[currentPlayer] = taxData.paymentHistory[currentPlayer] || [];
-      taxData.paymentHistory[currentPlayer].unshift(entry);
-      taxData.paidPlayers[currentPlayer] = (taxData.paidPlayers[currentPlayer] || 0) + amt;
-
-      fetch(webhookURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: `🏛️ **Govt Payment**\nPlayer: \`${currentPlayer}\`\nAmount: $${amt}\nReason: ${reason}`
-        })
-      });
-
-      alert("✅ Payment Sent as Govt");
-      renderTaxTable();
-      viewPlayer(currentPlayer);
+      taxData.paymentHistory[player] = taxData.paymentHistory[player] || [];
+      taxData.paymentHistory[player].unshift(entry);
+      taxData.paidPlayers[player] = (taxData.paidPlayers[player] || 0) + amt;
+      alert("✅ Govt Payment Applied");
+      renderPlayerList();
     }
 
-    function resetHistory() {
-      if (confirm(`Reset payment history for ${currentPlayer}?`)) {
-        taxData.paymentHistory[currentPlayer] = [];
-        taxData.paidPlayers[currentPlayer] = 0;
-        alert("✅ History Reset");
-        renderTaxTable();
-        viewPlayer(currentPlayer);
-      }
+    function resetTax(player) {
+      const pass = document.getElementById(`pass_${player}`).value.trim();
+      if (!pass) return alert("❌ Admin password required");
+      if (pass !== document.getElementById("adminPass").value.trim()) return alert("❌ Incorrect Admin Password");
+
+      taxData.paymentHistory[player] = [];
+      taxData.paidPlayers[player] = 0;
+      alert("✅ Tax Reset");
+      renderPlayerList();
     }
 
-    function resetDeadline() {
-      delete taxData.taxDeadline?.[currentPlayer];
+    function resetDeadline(player) {
+      delete taxData.taxDeadline?.[player];
       alert("✅ Deadline Reset");
     }
 
@@ -222,12 +174,8 @@
     }
 
     function showSection(id) {
-      ["taxSection", "bankSection", "viewPanel"].forEach(s => document.getElementById(s).classList.add("hidden"));
+      ["taxPayments", "bankInfo"].forEach(s => document.getElementById(s).classList.add("hidden"));
       document.getElementById(id).classList.remove("hidden");
-    }
-
-    function hideSection(id) {
-      document.getElementById(id).classList.add("hidden");
     }
   </script>
 </body>
