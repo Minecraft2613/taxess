@@ -62,9 +62,10 @@ async function adminLogin() {
   try {
     const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
     const admin = await res.json();
+    const discord = prompt("Enter your Discord username (e.g. Ansh_2613)");
+    if (!admin.allowedDiscords.includes(discord)) return alert("❌ Discord not allowed.");
     if (id !== admin.id || pass !== admin.pass) return alert("❌ Invalid credentials");
     alert("✅ Admin Logged In");
-
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("adminMenu").classList.remove("hidden");
     await loadData();
@@ -130,7 +131,7 @@ function renderBankList() {
     } else {
       div.innerHTML = `
         👤 <b>${player}</b><br>
-        ❌ No bank account found.
+        ❌ Bank account not created.
       `;
     }
     list.appendChild(div);
@@ -139,7 +140,9 @@ function renderBankList() {
 
 function syncData(type) {
   const url = type === "tax" ? syncTaxURL : syncBankURL;
-  const body = type === "tax" ? { paidPlayers, paymentHistory, taxDeadline } : { accounts: bankAccounts };
+  const body = type === "tax"
+    ? { paidPlayers, paymentHistory, taxDeadline }
+    : { accounts: bankAccounts };
   fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -155,9 +158,10 @@ function viewPlayer(player, total, paid) {
   const win = window.open("", "_blank");
   win.document.write(`
     <html><head><title>${player} Payment</title>
-    <style>body { font-family: Arial; background: #111; color: #eee; padding: 20px; }
-    input, button { padding: 6px; margin: 6px; background: #222; color: #fff; border: none; }
-    button { background: gold; color: black; }
+    <style>
+      body { font-family: Arial; background: #111; color: #eee; padding: 20px; }
+      input, button { padding: 6px; margin: 6px; background: #222; color: #fff; border: none; border-radius: 4px; }
+      button { background: gold; color: black; }
     </style></head><body>
     <h2>👤 ${player}</h2>
     <p>💰 Total Tax: $${total.toFixed(2)}</p>
