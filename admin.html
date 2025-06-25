@@ -1,183 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Panel | Tax Dashboard</title>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | Player Tax Portal</title>
   <style>
     body { font-family: Arial; background: #111; color: #eee; padding: 20px; }
     h2 { color: gold; }
-    input, textarea, button {
-      margin: 5px; padding: 6px;
-      font-size: 14px; border-radius: 4px; border: none;
+    button, input, textarea {
+      padding: 6px; margin: 5px; border-radius: 4px; font-family: inherit;
     }
-    input, textarea {
-      background: #222; color: #fff; width: 250px;
-    }
-    button {
-      background: gold; color: #000; cursor: pointer;
-    }
+    input, textarea { width: 250px; background: #222; color: #fff; border: 1px solid #555; }
+    button { background: gold; border: none; cursor: pointer; }
     button:hover { background: orange; }
-    .player {
-      margin: 10px 0; padding: 10px;
-      background: #1a1a1a; border: 1px solid #444; border-radius: 5px;
-    }
-    #detailsModal {
-      position: fixed; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      background: #222; color: #fff; padding: 20px;
-      border: 2px solid gold; display: none; z-index: 1000;
-    }
-    #overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7); display: none; z-index: 999;
-    }
+    .section { margin-top: 20px; }
+    .player { background: #1c1c1c; padding: 12px; border-radius: 6px; border: 1px solid #444; margin-bottom: 15px; }
   </style>
 </head>
 <body>
-  <h2>🔐 Admin Login</h2>
-  <input id="adminId" placeholder="Admin Bank ID">
-  <input id="adminPass" placeholder="Admin Password" type="password">
-  <button onclick="adminLogin()">Login</button>
 
-  <div id="adminPanel" style="display:none;">
-    <h2>📋 Player List</h2>
-    <div id="playerList"></div>
-  </div>
+<h2>🔐 Admin Login</h2>
+<input id="adminId" placeholder="Admin Bank ID">
+<input id="adminPass" placeholder="Password" type="password">
+<button onclick="adminLogin()">Login</button>
 
-  <div id="overlay" onclick="closeModal()"></div>
-  <div id="detailsModal">
-    <div id="modalContent"></div>
-    <button onclick="closeModal()">Close</button>
+<div id="adminPanel" style="display:none;">
+  <h2>🧾 Admin Panel</h2>
+  <button onclick="showSection('bank')">🏦 Player Accounts</button>
+  <button onclick="showSection('tax')">💸 Tax Panel</button>
+  <button onclick="showSection('json')">📁 JSON Tools</button>
+  <div id="bankSection" class="section"></div>
+  <div id="taxSection" class="section" style="display:none;"></div>
+  <div id="jsonSection" class="section" style="display:none;">
+    <button onclick="downloadJSON('bank')">⬇️ Bank JSON</button>
+    <button onclick="downloadJSON('tax')">⬇️ Tax JSON</button>
   </div>
+</div>
 
 <script>
 const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
 const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
-const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
-const paymentHookURL = "https://discordapp.com/api/webhooks/1387003883947032596/BkLzoSlQk6wLaPP4voI2mAshDTfXRaGkFf0mbK1Y0xfvU2XytWazF3MFjpvgugHnkKuR";
+const hookBase = "https://tax-hook.1987sakshamsingh.workers.dev";
 
-let paidPlayers = {}, paymentHistory = {}, taxDeadline = {}, bankAccounts = {};
+let bankAccounts = {}, paidPlayers = {}, paymentHistory = {};
 
 async function adminLogin() {
-  const id = document.getElementById("adminId").value.trim();
-  const pass = document.getElementById("adminPass").value.trim();
-  try {
-    const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
-    const admin = await res.json();
-    const ip = await fetch("https://api64.ipify.org?format=json").then(r => r.json()).then(d => d.ip);
-    const discord = prompt("Enter your Discord username (e.g. Ansh_2613)");
+  const id = document.getElementById("adminId").value;
+  const pass = document.getElementById("adminPass").value;
+  const discord = prompt("Enter your Discord username");
 
-    if (!admin.allowedIps.includes(ip) || !admin.allowedDiscords.includes(discord)) {
-      return alert(`❌ Unauthorized access.\nYour IP or Discord is not allowed.`);
-    }
+  const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
+  const data = await res.json();
+  const ip = await (await fetch("https://api64.ipify.org?format=json")).json();
 
-    if (id === admin.id && pass === admin.pass) {
-      alert("✅ Admin Logged In");
-      loadAllData();
-    } else {
-      alert("❌ Incorrect credentials");
-    }
-  } catch (e) {
-    console.error(e);
-    alert("⚠️ Error loading admin data.");
+  if (data.id === id && data.pass === pass && data.allowedDiscords.includes(discord) && data.allowedIps.includes(ip.ip)) {
+    alert("✅ Logged in");
+    document.getElementById("adminPanel").style.display = "block";
+    loadAll();
+  } else {
+    alert("❌ Access Denied");
   }
 }
 
-async function loadAllData() {
-  const [tax, bank] = await Promise.all([
-    fetch(taxURL).then(r => r.json()),
-    fetch(bankURL).then(r => r.json())
-  ]);
-  paidPlayers = tax.paidPlayers || {};
-  paymentHistory = tax.paymentHistory || {};
-  taxDeadline = tax.taxDeadline || {};
-  bankAccounts = bank.accounts || {};
-
-  document.getElementById("adminPanel").style.display = "block";
-  displayPlayers();
+async function loadAll() {
+  const [bankRes, taxRes] = await Promise.all([fetch(bankURL), fetch(taxURL)]);
+  bankAccounts = (await bankRes.json()).accounts || {};
+  const taxData = await taxRes.json();
+  paidPlayers = taxData.paidPlayers || {};
+  paymentHistory = taxData.paymentHistory || {};
+  showPlayerAccounts();
+  showTaxPanel();
 }
 
-function displayPlayers() {
-  const container = document.getElementById("playerList");
-  container.innerHTML = "";
+function showSection(name) {
+  document.getElementById("bankSection").style.display = name === "bank" ? "block" : "none";
+  document.getElementById("taxSection").style.display = name === "tax" ? "block" : "none";
+  document.getElementById("jsonSection").style.display = name === "json" ? "block" : "none";
+}
 
-  const allPlayers = Object.keys({...paidPlayers, ...bankAccounts});
-  if (allPlayers.length === 0) {
-    container.innerHTML = "No player data found.";
-    return;
+function showPlayerAccounts() {
+  const box = document.getElementById("bankSection");
+  box.innerHTML = `<h3>🏦 Player Bank Accounts</h3>`;
+  for (let player in bankAccounts) {
+    const acc = bankAccounts[player];
+    box.innerHTML += `
+      <div class="player">
+        👤 <b>${player}</b><br>
+        🆔 ID: <code>${acc.id}</code><br>
+        🔐 Password: <code>${acc.password}</code><br>
+        📛 Username: ${acc.username}<br>
+        📞 Contact: ${acc.contact || "N/A"}
+      </div>`;
   }
-
-  allPlayers.forEach(player => {
-    const bank = bankAccounts[player];
-    const paid = (paymentHistory[player] || []).reduce((sum, e) => sum + Number(e.amount), 0);
-    const due = Math.max(0, (paidPlayers[player] || 0) - paid);
-
-    const div = document.createElement("div");
-    div.className = "player";
-    div.innerHTML = `
-      <b>👤 ${player}</b><br>
-      🏦 Bank: ${bank ? "✅ Created" : "❌ Not Created"}<br>
-      ☎️ Contact: ${bank?.contact || "N/A"}<br>
-      💰 Paid: $${paid.toFixed(2)}<br>
-      ❗ Due: $${due.toFixed(2)}<br>
-      <button onclick="showDetails('${player}')">🔍 View Details</button>
-    `;
-    container.appendChild(div);
-  });
 }
 
-function showDetails(player) {
-  const modal = document.getElementById("modalContent");
-  const paid = (paymentHistory[player] || []);
-  const bank = bankAccounts[player];
-
-  modal.innerHTML = `
-    <h3>Details for ${player}</h3>
-    <p>Bank: ${bank ? "✅ Created" : "❌ Not Created"}</p>
-    ${bank ? `<p>Bank ID: ${bank.id}<br>Username: ${bank.username}<br>Contact: ${bank.contact}</p>` : ""}
-    <p><strong>Payment History:</strong></p>
-    <ul>${paid.length ? paid.map(e => `<li>$${e.amount} on ${e.date}</li>`).join("") : "<li>No payments</li>"}</ul>
-    <input id="amt-${player}" type="number" placeholder="Amount">
-    <textarea id="desc-${player}" placeholder="Reason for payment (required)"></textarea><br>
-    <button onclick="payAsGovt('${player}')">💸 Pay as Govt</button>
-  `;
-  document.getElementById("overlay").style.display = "block";
-  document.getElementById("detailsModal").style.display = "block";
+function showTaxPanel() {
+  const box = document.getElementById("taxSection");
+  box.innerHTML = `<h3>💰 Tax Overview</h3>`;
+  for (let player in paidPlayers) {
+    const paid = paidPlayers[player] || 0;
+    const history = paymentHistory[player] || [];
+    const total = history.reduce((sum, e) => sum + e.amount, 0);
+    const due = Math.max(0, total - paid);
+    box.innerHTML += `
+      <div class="player">
+        👤 <b>${player}</b><br>
+        ✅ Paid: $${paid.toFixed(2)}<br>
+        ❗ Due: $${due.toFixed(2)}<br>
+        <button onclick="showPlayerHistory('${player}')">📖 View Payments</button>
+        <br>
+        <input id="amt-${player}" type="number" placeholder="Govt Pay Amount">
+        <textarea id="desc-${player}" placeholder="Description (Reason)"></textarea><br>
+        <button onclick="govtPay('${player}')">💸 Govt Pay</button>
+      </div>`;
+  }
 }
 
-function closeModal() {
-  document.getElementById("overlay").style.display = "none";
-  document.getElementById("detailsModal").style.display = "none";
+function showPlayerHistory(player) {
+  const history = paymentHistory[player] || [];
+  alert(`📜 History for ${player}:\n\n` + history.map(e => `$${e.amount} on ${e.date}`).join("\n"));
 }
 
-function payAsGovt(player) {
+function govtPay(player) {
   const amt = parseFloat(document.getElementById(`amt-${player}`).value);
-  const desc = document.getElementById(`desc-${player}`).value.trim();
-  if (!amt || amt <= 0) return alert("❌ Invalid amount");
-  if (!desc) return alert("❌ Reason required");
+  const desc = document.getElementById(`desc-${player}`).value;
+  if (!amt || !desc) return alert("❌ Fill amount and reason");
 
-  const entry = { amount: amt, date: new Date().toLocaleString(), adminNote: desc };
+  const entry = { amount: amt, date: new Date().toLocaleString(), admin: true, note: desc };
   if (!paymentHistory[player]) paymentHistory[player] = [];
   paymentHistory[player].unshift(entry);
   paidPlayers[player] = (paidPlayers[player] || 0) + amt;
 
-  fetch(paymentHookURL, {
+  fetch(`${hookBase}?type=pay`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      content: `🏛️ **Govt Payment**\nPlayer: \`${player}\`\nAmount: $${amt}\nReason: ${desc}`
+      content: `🏛️ **Govt Paid Tax**\n👤 Player: \`${player}\`\n💸 Amount: $${amt}\n📋 Reason: ${desc}`
     })
   });
 
-  fetch(syncTaxURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ paidPlayers, paymentHistory, taxDeadline })
-  }).then(() => {
-    alert("✅ Payment synced");
-    closeModal();
-    displayPlayers();
-  }).catch(() => alert("❌ Sync failed"));
+  alert("✅ Paid as Government");
+  showTaxPanel();
+}
+
+function downloadJSON(type) {
+  const url = type === "bank" ? bankURL : taxURL;
+  window.open(url, "_blank");
 }
 </script>
 </body>
