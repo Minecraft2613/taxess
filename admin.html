@@ -10,8 +10,12 @@
       margin: 6px; padding: 6px; border-radius: 4px; border: none;
       font-family: inherit; font-size: 14px;
     }
-    input, textarea { background: #222; color: #fff; width: 250px; }
-    button { background: gold; color: #000; cursor: pointer; }
+    input, textarea {
+      background: #222; color: #fff; width: 250px;
+    }
+    button {
+      background: gold; color: #000; cursor: pointer;
+    }
     button:hover { background: orange; }
     .section, .player {
       margin: 16px 0;
@@ -54,21 +58,20 @@
 const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
 const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
 const logURL  = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt";
+const adminURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json";
 const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
 const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
 const webhookURL = "https://tax-hook.1987sakshamsingh.workers.dev/?type=pay";
 
-let paidPlayers = {}, paymentHistory = {}, taxDeadline = {}, bankAccounts = {}, transactionLog = [];
+let paidPlayers = {}, paymentHistory = {}, taxDeadline = {}, bankAccounts = {};
+let transactionLog = "";
 
 async function adminLogin() {
   const id = document.getElementById("adminId").value.trim();
   const pass = document.getElementById("adminPass").value.trim();
-
   try {
-    const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
-    const admin = await res.json();
+    const admin = await fetch(adminURL).then(r => r.json());
     const discord = prompt("Enter your Discord username (e.g. Ansh_2613)");
-
     if (!admin.allowedDiscords.includes(discord)) return alert("❌ Discord not allowed.");
     if (id !== admin.id || pass !== admin.pass) return alert("❌ Invalid credentials");
 
@@ -84,43 +87,43 @@ async function adminLogin() {
 }
 
 async function loadData() {
-  const [taxRes, bankRes, logRes] = await Promise.all([
-    fetch(taxURL), fetch(bankURL), fetch(logURL)
-  ]);
-
-  paidPlayers = (await taxRes.json()).paidPlayers || {};
-  paymentHistory = (await taxRes.json()).paymentHistory || {};
-  taxDeadline = (await taxRes.json()).taxDeadline || {};
-  bankAccounts = (await bankRes.json()).accounts || {};
-  transactionLog = (await logRes.text()).split(/\r?\n/);
+  try {
+    const [tax, bank, logText] = await Promise.all([
+      fetch(taxURL).then(r => r.json()),
+      fetch(bankURL).then(r => r.json()),
+      fetch(logURL).then(r => r.text())
+    ]);
+    paidPlayers = tax.paidPlayers || {};
+    paymentHistory = tax.paymentHistory || {};
+    taxDeadline = tax.taxDeadline || {};
+    bankAccounts = bank.accounts || {};
+    transactionLog = logText;
+  } catch (e) {
+    alert("❌ Failed to load data");
+    console.error(e);
+  }
 }
 
 function showSection(id) {
   document.getElementById("taxSection").classList.add("hidden");
   document.getElementById("bankSection").classList.add("hidden");
-
   if (id === "taxSection") renderTaxList();
   if (id === "bankSection") renderBankList();
-
   document.getElementById(id).classList.remove("hidden");
 }
 
-function calculateTaxFromLog(player) {
+function calculateDue(player) {
+  const lines = transactionLog.split(/\r?\n/);
   let buy = 0, sell = 0;
-  transactionLog.forEach(line => {
+
+  lines.forEach(line => {
     if (!line.toLowerCase().includes(player.toLowerCase())) return;
     const buyMatch = line.match(/bought.*?\$([\d,\.]+)/);
     const sellMatch = line.match(/sold.*?\$([\d,\.]+)/);
-
-    if (buyMatch) {
-      const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
-      buy += +(amt * 0.04).toFixed(2);
-    }
-    if (sellMatch) {
-      const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
-      sell += +(amt * 0.10).toFixed(2);
-    }
+    if (buyMatch) buy += parseFloat(buyMatch[1].replace(/,/g, "")) * 0.04;
+    if (sellMatch) sell += parseFloat(sellMatch[1].replace(/,/g, "")) * 0.10;
   });
+
   return +(buy + sell).toFixed(2);
 }
 
@@ -128,10 +131,15 @@ function renderTaxList() {
   const list = document.getElementById("taxList");
   list.innerHTML = "";
 
-  const players = new Set([...Object.keys(paidPlayers), ...Object.keys(bankAccounts)]);
+  const players = [...new Set([
+    ...Object.keys(paidPlayers),
+    ...Object.keys(paymentHistory),
+    ...Object.keys(bankAccounts)
+  ])];
+
   players.forEach(player => {
-    const total = calculateTaxFromLog(player);
-    const paid = (paymentHistory[player] || []).reduce((s, e) => s + e.amount, 0);
+    const paid = (paymentHistory[player] || []).reduce((s, e) => s + Number(e.amount), 0);
+    const total = calculateDue(player);
     const due = Math.max(0, total - paid);
 
     const div = document.createElement("div");
@@ -141,18 +149,62 @@ function renderTaxList() {
       💰 Total Tax: $${total.toFixed(2)}<br>
       ✅ Paid: $${paid.toFixed(2)}<br>
       ❗ Due: $${due.toFixed(2)}<br>
-      <input id="amt-${player}" type="number" placeholder="Amount" />
-      <input id="desc-${player}" placeholder="Reason" />
-      <button onclick="govtPay('${player}')">💸 Pay as Govt</button>
+      <input type="number" id="amt-${player}" placeholder="Amount" />
+      <input type="text" id="desc-${player}" placeholder="Reason" />
+      <button onclick="payAsGovt('${player}', ${due})">💸 Pay</button>
     `;
     list.appendChild(div);
   });
 }
 
-function govtPay(player) {
+function renderBankList() {
+  const list = document.getElementById("bankList");
+  list.innerHTML = "";
+
+  const players = [...new Set([
+    ...Object.keys(paidPlayers),
+    ...Object.keys(bankAccounts)
+  ])];
+
+  players.forEach(player => {
+    const acc = bankAccounts[player];
+    const div = document.createElement("div");
+    div.className = "player";
+
+    if (acc) {
+      div.innerHTML = `
+        👤 <b>${player}</b><br>
+        🏦 Username: ${acc.username}<br>
+        🆔 ID: ${acc.id}<br>
+        🔑 Password: ${acc.password}<br>
+        📞 Contact: ${acc.contact || "N/A"}
+      `;
+    } else {
+      div.innerHTML = `
+        👤 <b>${player}</b><br>
+        ❌ Bank Account Not Created
+      `;
+    }
+
+    list.appendChild(div);
+  });
+}
+
+function payAsGovt(player, maxDue) {
   const amt = parseFloat(document.getElementById(`amt-${player}`).value);
   const desc = document.getElementById(`desc-${player}`).value.trim();
-  if (!amt || !desc) return alert("❌ Fill valid amount and reason");
+  if (!amt || amt <= 0 || amt > maxDue) return alert("❌ Invalid amount");
+  if (!desc) return alert("❌ Reason required");
+
+  const entry = {
+    amount: amt,
+    date: new Date().toLocaleString(),
+    adminNote: `Govt Paid - Reason: ${desc}`
+  };
+
+  if (!paymentHistory[player]) paymentHistory[player] = [];
+  paymentHistory[player].unshift(entry);
+  paidPlayers[player] = paymentHistory[player].reduce((s, e) => s + e.amount, 0);
 
   fetch(webhookURL, {
     method: "POST",
@@ -160,29 +212,9 @@ function govtPay(player) {
     body: JSON.stringify({
       content: `🏛️ **Govt Payment**\nPlayer: \`${player}\`\nAmount: $${amt}\nReason: ${desc}`
     })
-  }).then(() => alert("✅ Payment Sent")).catch(() => alert("❌ Webhook Error"));
-}
-
-function renderBankList() {
-  const list = document.getElementById("bankList");
-  list.innerHTML = "";
-
-  const allPlayers = new Set([...Object.keys(paidPlayers), ...Object.keys(bankAccounts)]);
-  allPlayers.forEach(player => {
-    const acc = bankAccounts[player];
-    const div = document.createElement("div");
-    div.className = "player";
-    div.innerHTML = `
-      👤 <b>${player}</b><br>
-      ${acc ? `
-        🏦 Username: ${acc.username}<br>
-        🆔 ID: ${acc.id}<br>
-        🔑 Password: ${acc.password}<br>
-        📞 Contact: ${acc.contact || "N/A"}<br>
-      ` : `<span style="color:red">❌ No Bank Account Found</span>`}
-    `;
-    list.appendChild(div);
   });
+
+  syncTax();
 }
 
 function syncTax() {
