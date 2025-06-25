@@ -1,208 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>🛠️ Admin Panel</title>
   <style>
-    body { background: #111; color: #eee; font-family: Arial; padding: 20px; }
-    input, button, textarea {
-      background: #222; color: #fff; border: none; border-radius: 4px; padding: 8px;
-      margin: 5px 0; font-family: inherit;
+    body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 20px; }
+    h2, h3 { color: #ffaa00; }
+    button {
+      background: #ffaa00; color: #000; padding: 6px 12px; margin: 4px;
+      border: none; border-radius: 4px; cursor: pointer;
     }
-    button { background: gold; color: #111; cursor: pointer; }
-    button:hover { background: orange; }
-    .section { margin-top: 20px; }
-    .player-box {
-      background: #1c1c1c; padding: 15px; border: 1px solid #444; margin: 10px 0;
-      border-radius: 6px;
+    button:hover { background: #ffcc00; }
+    .playerBox {
+      background: #1c1c1c; margin: 10px 0; padding: 10px; border-left: 4px solid orange;
+    }
+    input, textarea {
+      background: #222; color: #fff; border: 1px solid #555; padding: 6px;
+      margin: 4px 0; width: 250px;
     }
   </style>
 </head>
 <body>
-  <h2>🔐 Admin Login</h2>
-  <input id="adminId" placeholder="Bank ID (e.g. BANK123456)" />
-  <input id="adminPass" type="password" placeholder="Password" />
-  <button onclick="adminLogin()">Login</button>
-
-  <div id="adminPanel" style="display:none;">
-    <h2>🛠️ Admin Control Panel</h2>
-    <button onclick="renderPlayerTax()">📊 View Player Taxes</button>
-    <button onclick="renderBankData()">🏦 View Bank Info</button>
-    <button onclick="sync('tax')">💾 Sync Tax</button>
-    <button onclick="sync('bank')">💾 Sync Bank</button>
+  <h2>🛠️ Admin Panel</h2>
+  <div id="adminPanel">
+    <button onclick="syncTax()">💾 Sync Tax</button>
+    <button onclick="syncBank()">💾 Sync Bank</button>
     <button onclick="location.reload()">🚪 Exit</button>
-
-    <div class="section" id="playerTax"></div>
-    <div class="section" id="bankData"></div>
   </div>
 
-<script>
-const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
-const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
-const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
-const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
-const webhookURL = "https://tax-hook.1987sakshamsingh.workers.dev/?type=pay";
+  <h3>📋 All Players</h3>
+  <div id="playerList">Loading...</div>
 
-let paidPlayers = {}, paymentHistory = {}, taxDeadline = {}, bankAccounts = {}, totalTaxByPlayer = {};
+  <script>
+    const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
+    const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
+    const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
+    const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
+    const webhookURL = "https://tax-hook.1987sakshamsingh.workers.dev/?type=pay";
 
-async function adminLogin() {
-  const id = document.getElementById("adminId").value.trim();
-  const pass = document.getElementById("adminPass").value.trim();
-  try {
-    const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
-    const admin = await res.json();
-    if (id === admin.id && pass === admin.pass) {
-      document.getElementById("adminPanel").style.display = "block";
-      await loadAllData();
-      alert("✅ Admin Login Successful");
-    } else {
-      alert("❌ Invalid credentials");
-    }
-  } catch (e) {
-    alert("❌ Failed to load admin.json");
-  }
-}
+    let paidPlayers = {}, paymentHistory = {}, taxDeadline = {}, bankAccounts = {}, totalTaxByPlayer = {};
 
-async function loadAllData() {
-  const [taxRes, bankRes, transRes] = await Promise.all([
-    fetch(taxURL), fetch(bankURL),
-    fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt")
-  ]);
-  const tax = await taxRes.json();
-  const bank = await bankRes.json();
-  const log = await transRes.text();
-  paidPlayers = tax.paidPlayers || {};
-  paymentHistory = tax.paymentHistory || {};
-  taxDeadline = tax.taxDeadline || {};
-  bankAccounts = bank.accounts || {};
-  calculateTotalTaxFromLog(log);
-}
+    window.onload = async () => {
+      const [taxRes, bankRes, transRes] = await Promise.all([
+        fetch(taxURL), fetch(bankURL),
+        fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt")
+      ]);
+      const taxData = await taxRes.json();
+      const bankData = await bankRes.json();
+      const logText = await transRes.text();
 
-function calculateTotalTaxFromLog(log) {
-  totalTaxByPlayer = {};
-  const lines = log.split(/\r?\n/);
-  lines.forEach(line => {
-    const match = line.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold).*?\$([\d,\.]+)/);
-    if (!match) return;
-    const [_, player, action, amtStr] = match;
-    const amount = parseFloat(amtStr.replace(/,/g, ""));
-    const tax = action === "bought" ? +(amount * 0.04).toFixed(2) : +(amount * 0.10).toFixed(2);
-    totalTaxByPlayer[player] = (totalTaxByPlayer[player] || 0) + tax;
-  });
-}
+      paidPlayers = taxData.paidPlayers || {};
+      paymentHistory = taxData.paymentHistory || {};
+      taxDeadline = taxData.taxDeadline || {};
+      bankAccounts = bankData.accounts || {};
 
-function renderPlayerTax() {
-  const container = document.getElementById("playerTax");
-  container.innerHTML = `<h3>📊 Player Taxes</h3>`;
-  for (const player in totalTaxByPlayer) {
-    const paid = (paymentHistory[player] || []).reduce((s, e) => s + Number(e.amount), 0);
-    const total = totalTaxByPlayer[player] || 0;
-    const due = Math.max(0, total - paid);
-    const isBedrock = player.startsWith(".") ? "Bedrock" : "Java";
-    container.innerHTML += `
-      <div class="player-box">
-        <b>👤 ${player}</b> [${isBedrock}]<br>
-        💰 Total: $${total.toFixed(2)} | Paid: $${paid.toFixed(2)} | Due: $${due.toFixed(2)}<br>
-        <button onclick="viewPlayer('${player}')">👁 View</button>
-      </div>`;
-  }
-}
+      calculateTax(logText);
 
-function renderBankData() {
-  const container = document.getElementById("bankData");
-  container.innerHTML = `<h3>🏦 Bank Information</h3>`;
-  const allPlayers = new Set([
-    ...Object.keys(bankAccounts),
-    ...Object.keys(totalTaxByPlayer)
-  ]);
-  for (const player of allPlayers) {
-    const acc = bankAccounts[player];
-    if (acc) {
-      container.innerHTML += `
-        <div class="player-box">
-          <b>👤 ${player}</b><br>
-          🆔 ID: ${acc.id}<br>
-          🔑 Password: ${acc.password}<br>
-          🧾 Username: ${acc.username}<br>
-          📞 Contact: ${acc.contact || "N/A"}
+      const players = [...new Set([
+        ...Object.keys(paidPlayers),
+        ...Object.keys(paymentHistory),
+        ...Object.keys(bankAccounts),
+        ...logText.match(/\] - ([a-zA-Z0-9_.]+)/g)?.map(m => m.split(" - ")[1].split(" ")[0]) || []
+      ])];
+
+      const list = document.getElementById("playerList");
+      list.innerHTML = players.map(player => {
+        const paid = (paymentHistory[player] || []).reduce((s, e) => s + +e.amount, 0);
+        const total = totalTaxByPlayer[player] || 0;
+        const due = Math.max(0, total - paid);
+        const version = player.startsWith(".") ? "Bedrock" : "Java";
+        const bank = bankAccounts[player] || null;
+
+        return `
+        <div class="playerBox">
+          <strong>${player}</strong> (${version})<br>
+          💰 Due: $${due.toFixed(2)}<br>
+          🏦 Bank: ${bank ? `
+            User: ${bank.username}<br>
+            ID: ${bank.id}<br>
+            Pass: ${bank.password}<br>
+            Contact: ${bank.contact || "N/A"}` : "❌ Not Created (N/A)"}<br><br>
+          <input type="number" id="pay-${player}" placeholder="Govt Pay $" />
+          <input type="text" id="reason-${player}" placeholder="Reason (optional)" />
+          <button onclick="payAsGovt('${player}')">💸 Pay</button>
+          <button onclick="resetPlayer('${player}')">🗑 Reset</button>
         </div>`;
-    } else {
-      container.innerHTML += `
-        <div class="player-box">
-          <b>👤 ${player}</b><br>
-          ❌ Bank Not Created<br>
-          🆔 ID: N/A<br>
-          🔑 Password: N/A<br>
-          🧾 Username: N/A<br>
-          📞 Contact: N/A
-        </div>`;
+      }).join("");
+    };
+
+    function calculateTax(log) {
+      totalTaxByPlayer = {};
+      log.split(/\r?\n/).forEach(line => {
+        const m = line.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold).*?\$([\d,\.]+)/);
+        if (!m) return;
+        const [_, name, action, amount] = m;
+        const tax = +(parseFloat(amount.replace(/,/g, "")) * (action === "bought" ? 0.04 : 0.10)).toFixed(2);
+        if (!totalTaxByPlayer[name]) totalTaxByPlayer[name] = 0;
+        totalTaxByPlayer[name] += tax;
+      });
     }
-  }
-}
 
-function sync(type) {
-  const url = type === "tax" ? syncTaxURL : syncBankURL;
-  const body = type === "tax"
-    ? { paidPlayers, paymentHistory, taxDeadline }
-    : { accounts: bankAccounts };
-  fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  }).then(res => res.ok
-    ? alert(`✅ Synced ${type}`)
-    : res.text().then(text => alert("❌ Sync failed:\n" + text)));
-}
+    function payAsGovt(player) {
+      const amt = parseFloat(document.getElementById(`pay-${player}`).value);
+      const reason = document.getElementById(`reason-${player}`).value.trim() || "N/A";
+      if (!amt || amt <= 0) return alert("❌ Enter valid amount");
 
-function viewPlayer(player) {
-  const newWin = window.open("", "_blank");
-  const paid = (paymentHistory[player] || []).reduce((s, e) => s + Number(e.amount), 0);
-  const total = totalTaxByPlayer[player] || 0;
-  const due = Math.max(0, total - paid);
-  newWin.document.write(`
-    <html><head><title>${player}</title>
-    <style>
-      body { background: #111; color: #eee; font-family: sans-serif; padding: 20px; }
-      input, button, textarea { background: #222; color: #fff; border: none; padding: 8px; margin: 5px; border-radius: 4px; }
-      button { background: gold; color: #000; cursor: pointer; }
-      button:hover { background: orange; }
-    </style></head><body>
-    <h2>👤 ${player}</h2>
-    <p>💰 Total Tax: $${total.toFixed(2)}</p>
-    <p>✅ Paid: $${paid.toFixed(2)}</p>
-    <p>❗ Due: $${due.toFixed(2)}</p>
-    <textarea id="desc" placeholder="Reason (optional)"></textarea><br>
-    <input id="amt" type="number" placeholder="Amount to pay" />
-    <button onclick="pay()">💸 Govt Pay</button>
-    <button onclick="reset()">🗑 Reset Deadline & History</button>
-    <script>
-      function pay() {
-        const amt = parseFloat(document.getElementById('amt').value);
-        const desc = document.getElementById('desc').value || 'No reason given';
-        if (!amt || amt <= 0) return alert('Enter valid amount');
-        fetch("${webhookURL}", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            content: "🏛️ **Govt Payment**\\nPlayer: \`${player}\`\\nAmount: $" + amt + "\\nReason: " + desc
-          })
-        }).then(() => alert("✅ Payment Sent"));
-      }
-      function reset() {
-        fetch("${syncTaxURL}", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            paidPlayers: { "${player}": 0 },
-            paymentHistory: { "${player}": [] },
-            taxDeadline: {}
-          })
-        }).then(() => alert("✅ Player Reset Complete"));
-      }
-    </script>
-  </body></html>
-  `);
-}
-</script>
+      const entry = { amount: amt, date: new Date().toLocaleString(), adminNote: `Paid by Govt: ${reason}` };
+      if (!paymentHistory[player]) paymentHistory[player] = [];
+      paymentHistory[player].unshift(entry);
+      paidPlayers[player] = paymentHistory[player].reduce((s, e) => s + +e.amount, 0);
+
+      fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: `🏛 **Govt Paid**\nPlayer: \`${player}\`\nAmount: $${amt}\nReason: ${reason}`
+        })
+      }).then(() => alert("✅ Payment Sent"));
+
+      fetch(syncTaxURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paidPlayers, paymentHistory, taxDeadline })
+      });
+    }
+
+    function resetPlayer(player) {
+      if (!confirm(`Reset all tax data for ${player}?`)) return;
+      paidPlayers[player] = 0;
+      paymentHistory[player] = [];
+      delete taxDeadline[player];
+      fetch(syncTaxURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paidPlayers, paymentHistory, taxDeadline })
+      }).then(() => alert("✅ Player Reset Complete"));
+    }
+
+    function syncTax() {
+      fetch(syncTaxURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paidPlayers, paymentHistory, taxDeadline })
+      }).then(() => alert("✅ Tax Synced"));
+    }
+
+    function syncBank() {
+      fetch(syncBankURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accounts: bankAccounts })
+      }).then(() => alert("✅ Bank Synced"));
+    }
+  </script>
 </body>
 </html>
