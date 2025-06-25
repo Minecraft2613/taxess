@@ -409,7 +409,7 @@ function markGovtPaid() {
 
   alert(`✅ Paid $${amount} as Govt for ${currentPlayer}`);
   document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
-}
+
    // Refresh player details and list to update due
       showPlayerDetails(currentPlayer);
       renderPlayerTaxList();
