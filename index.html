@@ -606,8 +606,17 @@ function showProfile(buy, sell, total, paid, due, advanced) {
     <h3>Welcome, ${currentPlayer}</h3>
     <p>Total Tax: $${total.toFixed(2)}</p>
     <p>Buying Tax: $${buy.toFixed(2)} | Selling Tax: $${sell.toFixed(2)}</p>
-    <p>Status: <strong>${due === 0 ? (advanced ? "Advance Paid" : "No Tax Due") : "$" + due.toFixed(2) + " Due"}</strong></p>
+
     <input type="number" id="payAmt" placeholder="Enter amount to pay" min="1" />
+<p>Status: <strong>${
+  due === 0
+    ? (advanced
+      ? "Advance Paid"
+      : paymentHistory[currentPlayer]?.[0]?.adminNote === "Paid by Govt"
+        ? `Paid by Govt <button onclick="showGovtNote()" style="margin-left:5px;font-size:12px;padding:2px 5px;">💬 See Description</button>`
+        : "No Tax Due")
+    : "$" + due.toFixed(2) + " Due"
+}</strong></p>
 
     <div class="btn-row">
       <button onclick="submitTax()">${due > 0 ? "Pay Tax" : "Advance Pay"}</button>
@@ -756,17 +765,31 @@ function submitTax() {
   const amt = parseFloat(document.getElementById("payAmt").value);
   if (!amt || amt <= 0) return alert("❌ Invalid amount");
 
-  const entry = { amount: amt, date: new Date().toLocaleString() };
+  const isGovt = currentPlayer === "admin_mode";
+
+  // Optional reason if Govt
+  let note = "";
+  if (isGovt) {
+    note = prompt("📝 Enter reason for Govt payment (optional):") || "";
+  }
+
+  const entry = {
+    amount: amt,
+    date: new Date().toLocaleString(),
+    adminNote: isGovt ? "Paid by Govt" : undefined,
+    desc: isGovt && note ? note : undefined
+  };
+
   if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
   paymentHistory[currentPlayer].unshift(entry);
   paidPlayers[currentPlayer] = sumPayments(currentPlayer);
 
-  // 🔒 Secure webhook call
+  // 🔔 Webhook with optional reason
   fetch("https://tax-hook.1987sakshamsingh.workers.dev/?type=pay", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      content: `💰 **Tax Paid**\nPlayer: \`${currentPlayer}\`\nAmount: $${amt}`
+      content: `💰 **Tax Paid**\nPlayer: \`${currentPlayer}\`\nAmount: $${amt}${isGovt && note ? `\n📄 Reason: ${note}` : ""}`
     })
   });
 
