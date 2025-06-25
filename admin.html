@@ -2,78 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>🛠️ Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
   <style>
-    body {
-      background: #111;
-      color: #eee;
-      font-family: monospace;
-      padding: 20px;
-    }
-    input, textarea, button {
-      display: block;
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      background: #222;
-      color: #fff;
-      border: 1px solid #555;
-      font-size: 16px;
-    }
-    textarea {
-      resize: vertical;
-    }
-    .hidden {
-      display: none;
-    }
+    body { background: #111; color: #eee; font-family: sans-serif; padding: 20px; }
+    button, input, textarea { margin: 5px; padding: 6px; font-size: 14px; }
+    textarea { width: 100%; height: 100px; }
+    .box { border: 1px solid #444; padding: 10px; margin: 10px 0; background: #222; }
   </style>
 </head>
 <body>
-  <h2>🔐 Admin Login</h2>
-  <input id="bankId" placeholder="Enter Admin Bank ID" />
-  <input id="bankPass" type="password" placeholder="Enter Password" />
-  <button onclick="verifyAdmin()">Login</button>
+  <div id="adminLogin">
+    <h2>🔐 Admin Login</h2>
+    <input id="adminId" placeholder="Admin ID" />
+    <input id="adminPass" placeholder="Admin Password" type="password" />
+    <button onclick="verifyAdmin()">Login</button>
+  </div>
 
-  <div id="adminPanel" class="hidden">
-    <h2>🛠️ Admin Tools</h2>
+  <div id="adminPanel" style="display:none">
+    <h2>📋 Admin Panel</h2>
+    <button onclick="showPlayerTaxList()">🧾 Player Tax List</button>
+    <button onclick="showBankInfo()">🏦 Player Bank Info</button>
+    <button onclick="saveTax()">☁️ Sync Tax</button>
+    <button onclick="saveBank()">☁️ Sync Bank</button>
+    <button onclick="logoutAdmin()">🚪 Logout</button>
 
-    <h3>🔍 Search Player</h3>
-    <input id="searchPlayer" placeholder="Exact MC Username (case-sensitive)" />
-    <button onclick="showPlayer()">Search</button>
-    <div id="playerResult"></div>
+    <div id="playerTaxList" class="box"></div>
+    <div id="adminPlayerPanel" class="box"></div>
+    <div id="bankList" class="box"></div>
 
-    <h3>📤 Pay as Govt</h3>
-    <input id="govtName" placeholder="Player Name" />
-    <button onclick="payAsGovt()">Mark as Govt Paid</button>
-
-    <h3>📦 Tax JSON Editor</h3>
-    <textarea id="taxEditor" rows="10"></textarea>
-    <button onclick="saveTax()">Sync Tax</button>
-
-    <h3>🏦 Bank JSON Editor</h3>
-    <textarea id="bankEditor" rows="10"></textarea>
-    <button onclick="saveBank()">Sync Bank</button>
-
-    <br />
-    <button onclick="logout()">🚪 Logout Admin</button>
+    <h3>Edit Tax JSON</h3>
+    <textarea id="taxEditor"></textarea>
+    <h3>Edit Bank JSON</h3>
+    <textarea id="bankEditor"></textarea>
   </div>
 
   <script>
     let taxData = {}, bankData = {}, currentPlayer = "";
 
     async function verifyAdmin() {
-      const id = "BANK" + document.getElementById("bankId").value.trim();
-      const pass = document.getElementById("bankPass").value;
-
-      const adminRes = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
-      const admin = await adminRes.json();
-
+      const id = "BANK" + document.getElementById("adminId").value.trim();
+      const pass = document.getElementById("adminPass").value;
+      const admin = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json").then(r => r.json());
       if (id === admin.id && pass === admin.pass) {
-        alert("✅ Admin Access Granted");
-        document.getElementById("adminPanel").classList.remove("hidden");
+        alert("✅ Access Granted");
+        document.getElementById("adminLogin").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
         loadData();
       } else {
-        alert("❌ Invalid Admin ID or Password");
+        alert("❌ Invalid Credentials");
       }
     }
 
@@ -88,49 +65,75 @@
       document.getElementById("bankEditor").value = JSON.stringify(bankData, null, 2);
     }
 
-    function showPlayer() {
-      const name = document.getElementById("searchPlayer").value.trim();
+    function showPlayerTaxList() {
+      const list = Object.keys(taxData.paidPlayers || {}).map(name => {
+        const isBedrock = name.startsWith(".");
+        const username = isBedrock ? name.slice(1) : name;
+        const platform = isBedrock ? "Bedrock" : "Java";
+        const paid = taxData.paidPlayers[name];
+        const isDue = paid === "❌ Not Paid" || !paid;
+        return `<div><b>${username}</b> (${platform}) - ${isDue ? "❌ Due" : paid}
+          <button onclick='adminViewPlayer("${name}")'>View</button></div>`;
+      }).join("");
+      document.getElementById("playerTaxList").innerHTML = `<h3>All Player Taxes</h3>${list}`;
+    }
+
+    function adminViewPlayer(name) {
       currentPlayer = name;
       const paid = taxData.paidPlayers?.[name] || "❌ Not Paid";
       const history = JSON.stringify(taxData.paymentHistory?.[name] || [], null, 2);
-      const bank = bankData.accounts?.[name] || null;
-      let html = `<h4>💰 Tax: ${paid}</h4><pre>${history}</pre>`;
-      if (bank) {
-        html += `<h4>🏦 Bank Info</h4>
-          <input id="editBankId" value="${bank.id}" />
-          <input id="editBankPass" value="${bank.password}" />
-          <input id="editBankContact" value="${bank.contact}" />
-          <button onclick="updateBank()">💾 Update</button>
-          <button onclick="deleteBank()">🗑️ Delete</button>`;
-      } else {
-        html += `<p>No bank account found.</p>`;
-      }
-      document.getElementById("playerResult").innerHTML = html;
+      const deadline = taxData.taxDeadline?.[name] || "N/A";
+
+      document.getElementById("adminPlayerPanel").innerHTML = `
+        <h3>👤 ${name}</h3>
+        <p>💰 Tax: ${paid}</p>
+        <p>🕒 Deadline: ${deadline}</p>
+        <textarea readonly>${history}</textarea>
+        <input id="govtDesc" placeholder="Pay as Govt - Optional Description" />
+        <button onclick="markGovtPaid()">Pay as Govt</button>
+        <hr />
+        <input id="resetPass" placeholder="Admin Password to Reset" type="password" />
+        <button onclick="resetPlayerTax()">Reset Tax</button>
+        <button onclick="resetHistory()">Reset History</button>
+        <button onclick="resetDeadline()">Reset Deadline</button>
+      `;
     }
 
-    function updateBank() {
-      const id = document.getElementById("editBankId").value;
-      const pass = document.getElementById("editBankPass").value;
-      const contact = document.getElementById("editBankContact").value;
-      bankData.accounts[currentPlayer] = { username: currentPlayer, id, password: pass, contact };
-      alert("✅ Bank updated");
-    }
-
-    function deleteBank() {
-      if (confirm("Are you sure you want to delete this bank account?")) {
-        delete bankData.accounts[currentPlayer];
-        alert("✅ Bank deleted");
-        document.getElementById("playerResult").innerHTML = "";
-      }
-    }
-
-    function payAsGovt() {
-      const name = document.getElementById("govtName").value.trim();
-      if (!name) return alert("Enter a player name");
-      taxData.paidPlayers = taxData.paidPlayers || {};
-      taxData.paidPlayers[name] = "PAID_BY_GOVT";
-      document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
+    function markGovtPaid() {
+      const desc = document.getElementById("govtDesc").value || "PAID_BY_GOVT";
+      taxData.paidPlayers[currentPlayer] = desc;
       alert("✅ Marked as Govt Paid");
+    }
+
+    function resetPlayerTax() {
+      if (!validateReset()) return;
+      delete taxData.paidPlayers[currentPlayer];
+      alert("🔁 Tax Reset");
+    }
+    function resetHistory() {
+      if (!validateReset()) return;
+      delete taxData.paymentHistory[currentPlayer];
+      alert("🔁 History Reset");
+    }
+    function resetDeadline() {
+      if (!validateReset()) return;
+      delete taxData.taxDeadline[currentPlayer];
+      alert("🔁 Deadline Reset");
+    }
+    function validateReset() {
+      const entered = document.getElementById("resetPass").value;
+      return entered === "2613" || (alert("❌ Wrong Pass"), false);
+    }
+
+    function showBankInfo() {
+      const bankList = Object.keys(taxData.paidPlayers || {}).map(name => {
+        const bank = bankData.accounts?.[name];
+        if (!bank) {
+          return `<div><b>${name}</b> - ❌ Bank Not Created</div>`;
+        }
+        return `<div><b>${bank.username}</b><p>ID: ${bank.id}</p><p>Pass: ${bank.password}</p><p>Contact: ${bank.contact}</p></div>`;
+      }).join("");
+      document.getElementById("bankList").innerHTML = `<h3>🏦 Player Bank Accounts</h3>${bankList}`;
     }
 
     function saveTax() {
@@ -142,7 +145,7 @@
           body: JSON.stringify(data)
         }).then(r => alert(r.ok ? "✅ Tax Synced" : "❌ Failed"));
       } catch {
-        alert("❌ Invalid JSON in tax editor");
+        alert("❌ Invalid Tax JSON");
       }
     }
 
@@ -155,12 +158,13 @@
           body: JSON.stringify(data)
         }).then(r => alert(r.ok ? "✅ Bank Synced" : "❌ Failed"));
       } catch {
-        alert("❌ Invalid JSON in bank editor");
+        alert("❌ Invalid Bank JSON");
       }
     }
 
-    function logout() {
-      document.getElementById("adminPanel").classList.add("hidden");
+    function logoutAdmin() {
+      document.getElementById("adminPanel").style.display = "none";
+      document.getElementById("adminLogin").style.display = "block";
       alert("🔒 Logged out");
     }
   </script>
