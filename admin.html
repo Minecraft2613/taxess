@@ -1,82 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>🛠️ Admin Panel</title>
   <style>
-    /* Basic styling */
     body {
       background: #000;
       color: #fff;
       font-family: Arial, sans-serif;
-      margin: 0;
       padding: 20px;
     }
-
     h2, h3 {
       color: orange;
-      text-shadow: 0 0 6px orange;
+      text-shadow: 0 0 5px orange;
     }
-
-    button, input {
+    input, button {
       padding: 8px;
-      margin: 5px 0;
-      border-radius: 6px;
+      margin: 6px;
+      border-radius: 5px;
       border: none;
-      font-weight: bold;
     }
-
     input {
       background: #111;
-      color: white;
+      color: #fff;
     }
-
     button {
       background: orange;
       color: black;
       cursor: pointer;
+      font-weight: bold;
     }
-
     button:hover {
       background: gold;
     }
-
-    .hidden {
-      display: none;
-    }
-
     .section {
-      background: #111;
-      padding: 15px;
-      border: 1px solid #444;
-      border-radius: 10px;
-      margin-top: 20px;
-      box-shadow: 0 0 10px orange;
-    }
-
-    .player-box {
-      border: 1px solid #333;
+      margin: 20px 0;
       padding: 10px;
-      margin: 10px 0;
+      border: 1px solid #444;
       border-radius: 6px;
       background: #111;
       box-shadow: 0 0 8px orange;
     }
-
-    label {
-      display: block;
-      margin-top: 5px;
-      font-size: 14px;
+    .hidden {
+      display: none;
+    }
+    .player-box {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 5px;
+      margin: 10px 0;
+      padding: 10px;
+      box-shadow: 0 0 6px orange;
     }
   </style>
 </head>
 <body>
   <div id="loginBox">
     <h2>🔐 Admin Login</h2>
-    <label for="adminId">Admin ID</label>
-    <input id="adminId" placeholder="Enter Admin ID">
-    <label for="adminPass">Password</label>
-    <input type="password" id="adminPass" placeholder="Enter Password">
+    <input id="adminId" placeholder="Admin ID">
+    <input id="adminPass" type="password" placeholder="Password">
     <button onclick="adminLogin()">Login</button>
   </div>
 
@@ -94,7 +76,7 @@
     </div>
 
     <div id="bankInfo" class="section hidden">
-      <h3>Bank Accounts</h3>
+      <h3>Bank Information</h3>
       <div id="bankList"></div>
     </div>
   </div>
@@ -111,15 +93,19 @@
     async function adminLogin() {
       const id = document.getElementById("adminId").value.trim();
       const pass = document.getElementById("adminPass").value.trim();
-      const res = await fetch(adminJsonURL);
-      const admin = await res.json();
-      if (id === admin.id && pass === admin.pass) {
-        currentAdminPass = pass;
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("adminPanel").classList.remove("hidden");
-        loadData();
-      } else {
-        alert("❌ Invalid Admin Credentials");
+      try {
+        const res = await fetch(adminJsonURL);
+        const admin = await res.json();
+        if (id === admin.id && pass === admin.pass) {
+          currentAdminPass = pass;
+          document.getElementById("loginBox").style.display = "none";
+          document.getElementById("adminPanel").classList.remove("hidden");
+          loadData();
+        } else {
+          alert("❌ Invalid Admin Credentials");
+        }
+      } catch {
+        alert("❌ Failed to load admin data");
       }
     }
 
@@ -127,14 +113,15 @@
       const [taxRes, bankRes] = await Promise.all([fetch(taxURL), fetch(bankURL)]);
       taxData = await taxRes.json();
       bankData = await bankRes.json();
-      renderPlayerList();
-      renderBankList();
+      renderPlayers();
+      renderBanks();
     }
 
-    function renderPlayerList() {
+    function renderPlayers() {
       const container = document.getElementById("playerList");
       container.innerHTML = "";
       const players = Array.from(new Set([...Object.keys(taxData.paidPlayers || {}), ...Object.keys(bankData.accounts || {})]));
+
       players.forEach(player => {
         const paid = (taxData.paymentHistory?.[player] || []).reduce((sum, e) => sum + e.amount, 0);
         const total = taxData.paidPlayers?.[player] || 0;
@@ -143,35 +130,31 @@
         const status = due === 0 ? "✅ No Due" : `❌ Due: $${due.toFixed(2)}`;
 
         container.innerHTML += `
-          <div class="player-box">
+          <div class='player-box'>
             <strong>${player}</strong> (${platform})<br>
-            Status: ${status}
-            <label>Amount</label>
-            <input id="amt_${player}" type="number" placeholder="Govt Pay Amount">
-            <label>Reason</label>
-            <input id="reason_${player}" placeholder="Optional Reason">
-            <label>Admin Pass (for reset)</label>
-            <input id="pass_${player}" type="password" placeholder="Confirm Admin Pass">
-            <button onclick="payGovt('${player}')">💸 Pay as Govt</button>
-            <button onclick="resetTax('${player}')">🗑 Reset Tax</button>
-            <button onclick="resetDeadline('${player}')">⏱ Reset Deadline</button>
+            ${status}<br>
+            <input id='amt_${player}' type='number' placeholder='Amount to pay as Govt'>
+            <input id='reason_${player}' placeholder='Reason (optional)'>
+            <input id='pass_${player}' type='password' placeholder='Confirm Admin Password'>
+            <button onclick="payGovt('${player}')">Pay as Govt</button>
+            <button onclick="resetTax('${player}')">Reset Tax</button>
+            <button onclick="resetDeadline('${player}')">Reset Deadline</button>
           </div>`;
       });
     }
 
-    function renderBankList() {
+    function renderBanks() {
       const container = document.getElementById("bankList");
       container.innerHTML = "";
-      const players = Object.keys(bankData.accounts || {});
-      players.forEach(player => {
-        const acc = bankData.accounts[player] || {};
+      Object.keys(bankData.accounts || {}).forEach(player => {
+        const acc = bankData.accounts[player];
         container.innerHTML += `
-          <div class="player-box">
+          <div class='player-box'>
             <strong>${player}</strong><br>
             Username: ${acc.username || "N/A"}<br>
             ID: ${acc.id || "N/A"}<br>
             Password: ${acc.password || "N/A"}<br>
-            Contact: ${acc.contact || "N/A"}
+            Contact: ${acc.contact || "N/A"}<br>
           </div>`;
       });
     }
@@ -185,24 +168,28 @@
       taxData.paymentHistory[player] = taxData.paymentHistory[player] || [];
       taxData.paymentHistory[player].unshift(entry);
       taxData.paidPlayers[player] = (taxData.paidPlayers[player] || 0) + amt;
-
-      alert("✅ Govt Payment Applied");
-      renderPlayerList();
+      alert("✅ Payment Sent as Govt");
+      renderPlayers();
     }
 
     function resetTax(player) {
       const pass = document.getElementById(`pass_${player}`).value;
       if (pass !== currentAdminPass) return alert("❌ Incorrect Password");
-
       taxData.paymentHistory[player] = [];
       taxData.paidPlayers[player] = 0;
       alert("✅ Tax Reset");
-      renderPlayerList();
+      renderPlayers();
     }
 
     function resetDeadline(player) {
       if (taxData.taxDeadline && taxData.taxDeadline[player]) delete taxData.taxDeadline[player];
       alert("✅ Deadline Reset");
+    }
+
+    function showSection(id) {
+      document.getElementById("playerTax").classList.add("hidden");
+      document.getElementById("bankInfo").classList.add("hidden");
+      document.getElementById(id).classList.remove("hidden");
     }
 
     function syncData(type) {
@@ -219,16 +206,10 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
-      }).then(res => {
-        if (res.ok) alert(`✅ ${type.toUpperCase()} Synced`);
-        else res.text().then(txt => alert("❌ Sync Failed: " + txt));
+      }).then(r => {
+        if (r.ok) alert(`✅ ${type.toUpperCase()} Synced`);
+        else r.text().then(t => alert("❌ Failed: " + t));
       });
-    }
-
-    function showSection(id) {
-      document.getElementById("playerTax").classList.add("hidden");
-      document.getElementById("bankInfo").classList.add("hidden");
-      document.getElementById(id).classList.remove("hidden");
     }
   </script>
 </body>
