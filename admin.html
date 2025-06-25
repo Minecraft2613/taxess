@@ -3,146 +3,170 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel</title>
+  <title>🛠️ Admin Control Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <style>
-    body { background: #111; color: #eee; font-family: sans-serif; padding: 20px; }
-    button, input, textarea { margin: 5px; padding: 6px; font-size: 14px; }
-    textarea { width: 100%; height: 100px; }
-    .box { border: 1px solid #444; padding: 10px; margin: 10px 0; background: #222; }
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      font-family: 'Orbitron', sans-serif;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    .panel {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      background: #111;
+      border-radius: 12px;
+      box-shadow: 0 0 25px #0ff;
+      margin-top: 30px;
+    }
+    h1, h2 {
+      color: #0ff;
+      text-align: center;
+    }
+    input, textarea, select, button {
+      font-family: 'Orbitron', sans-serif;
+      padding: 8px;
+      margin: 5px 0;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+    }
+    input, textarea, select {
+      background: #222;
+      color: #0ff;
+    }
+    button {
+      background: #0ff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #0cc;
+    }
+    .player-card {
+      border: 1px solid #0ff;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      background: #1a1a1a;
+      box-shadow: 0 0 10px #0ff;
+    }
+    .button-row {
+      display: flex;
+      gap: 10px;
+    }
+    .button-row button {
+      flex: 1;
+    }
   </style>
 </head>
 <body>
-  <div id="adminLogin">
-    <h2>🔐 Admin Login</h2>
-    <input id="adminId" placeholder="Admin ID" />
+  <div class="panel">
+    <h1>👑 Admin Login</h1>
+    <input id="adminId" placeholder="Admin ID (without BANK prefix)" />
     <input id="adminPass" placeholder="Admin Password" type="password" />
-    <button onclick="verifyAdmin()">Login</button>
+    <button onclick="verifyAdmin()">🔐 Login</button>
   </div>
 
-  <div id="adminPanel" style="display:none">
-    <h2>📋 Admin Panel</h2>
-    <button onclick="showPlayerTaxList()">🧾 Player Tax List</button>
-    <button onclick="showBankInfo()">🏦 Player Bank Info</button>
-    <button onclick="saveTax()">☁️ Sync Tax</button>
-    <button onclick="saveBank()">☁️ Sync Bank</button>
+  <div class="panel" id="adminPanel" style="display: none">
+    <h2>🧾 Player Tax Manager</h2>
+    <button onclick="showAllPlayers()">📂 Load All Players</button>
+    <div id="playerList"></div>
+    <div id="playerDetail"></div>
+    <h2>💾 JSON Editors</h2>
+    <textarea id="taxEditor" rows="10"></textarea>
+    <button onclick="saveTax()">☁️ Sync Tax JSON</button>
+    <textarea id="bankEditor" rows="10"></textarea>
+    <button onclick="saveBank()">☁️ Sync Bank JSON</button>
     <button onclick="logoutAdmin()">🚪 Logout</button>
-
-    <div id="playerTaxList" class="box"></div>
-    <div id="adminPlayerPanel" class="box"></div>
-    <div id="bankList" class="box"></div>
-
-    <h3>Edit Tax JSON</h3>
-    <textarea id="taxEditor"></textarea>
-    <h3>Edit Bank JSON</h3>
-    <textarea id="bankEditor"></textarea>
   </div>
 
   <script>
-    let taxData = {}, bankData = {}, currentPlayer = "";
+    let taxData = {}, bankData = {}, transactions = "", currentPlayer = "";
 
     async function verifyAdmin() {
       const id = "BANK" + document.getElementById("adminId").value.trim();
       const pass = document.getElementById("adminPass").value;
-      const admin = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json").then(r => r.json());
-      if (id === admin.id && pass === admin.pass) {
+      const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
+      const admin = await res.json();
+      if (admin.id === id && admin.pass === pass) {
         alert("✅ Access Granted");
-        document.getElementById("adminLogin").style.display = "none";
+        document.querySelector(".panel").style.display = "none";
         document.getElementById("adminPanel").style.display = "block";
         loadData();
-      } else {
-        alert("❌ Invalid Credentials");
-      }
+      } else alert("❌ Invalid credentials");
     }
 
     async function loadData() {
-      const [taxRes, bankRes] = await Promise.all([
+      const [taxRes, bankRes, logRes] = await Promise.all([
         fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json"),
-        fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json")
+        fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json"),
+        fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt")
       ]);
       taxData = await taxRes.json();
       bankData = await bankRes.json();
+      transactions = await logRes.text();
       document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
       document.getElementById("bankEditor").value = JSON.stringify(bankData, null, 2);
     }
 
-    function showPlayerTaxList() {
-      const list = Object.keys(taxData.paidPlayers || {}).map(name => {
+    function showAllPlayers() {
+      const players = Object.keys(taxData.paidPlayers || {});
+      const html = players.map(name => {
         const isBedrock = name.startsWith(".");
         const username = isBedrock ? name.slice(1) : name;
         const platform = isBedrock ? "Bedrock" : "Java";
-        const paid = taxData.paidPlayers[name];
-        const isDue = paid === "❌ Not Paid" || !paid;
-        return `<div><b>${username}</b> (${platform}) - ${isDue ? "❌ Due" : paid}
-          <button onclick='adminViewPlayer("${name}")'>View</button></div>`;
+        const paid = taxData.paidPlayers[name] || "❌ Not Paid";
+        return `<div class='player-card'>
+          <b>${username}</b> (${platform}) - ${paid}
+          <button onclick='viewPlayer("${name}")'>View</button>
+        </div>`;
       }).join("");
-      document.getElementById("playerTaxList").innerHTML = `<h3>All Player Taxes</h3>${list}`;
+      document.getElementById("playerList").innerHTML = html;
     }
 
-    function adminViewPlayer(name) {
+    function viewPlayer(name) {
       currentPlayer = name;
-      const paid = taxData.paidPlayers?.[name] || "❌ Not Paid";
-      const history = JSON.stringify(taxData.paymentHistory?.[name] || [], null, 2);
-      const deadline = taxData.taxDeadline?.[name] || "N/A";
-
-      document.getElementById("adminPlayerPanel").innerHTML = `
-        <h3>👤 ${name}</h3>
-        <p>💰 Tax: ${paid}</p>
-        <p>🕒 Deadline: ${deadline}</p>
-        <textarea readonly>${history}</textarea>
-        <input id="govtDesc" placeholder="Pay as Govt - Optional Description" />
-        <button onclick="markGovtPaid()">Pay as Govt</button>
-        <hr />
-        <input id="resetPass" placeholder="Admin Password to Reset" type="password" />
-        <button onclick="resetPlayerTax()">Reset Tax</button>
-        <button onclick="resetHistory()">Reset History</button>
-        <button onclick="resetDeadline()">Reset Deadline</button>
-      `;
+      const tax = taxData.paidPlayers[name] || "❌ Not Paid";
+      const hist = taxData.paymentHistory?.[name] || [];
+      const tx = (transactions.match(new RegExp(name.replace(/\./g, "\\."), "gi")) || []).length;
+      const html = `<h3>🧾 Tax Details for ${name}</h3>
+        <p>Tax Status: ${tax}</p>
+        <p>Total Transaction Matches: ${tx}</p>
+        <textarea readonly rows='5'>${JSON.stringify(hist, null, 2)}</textarea>
+        <input id="govtPayDesc" placeholder="Pay as Govt Description" />
+        <div class='button-row'>
+          <button onclick='markAsGovtPaid()'>✅ Pay as Govt</button>
+          <button onclick='resetPlayerTax()'>🗑️ Reset Tax</button>
+        </div>`;
+      document.getElementById("playerDetail").innerHTML = html;
     }
 
-    function markGovtPaid() {
-      const desc = document.getElementById("govtDesc").value || "PAID_BY_GOVT";
+    function markAsGovtPaid() {
+      const desc = document.getElementById("govtPayDesc").value || "PAID_BY_GOVT";
       taxData.paidPlayers[currentPlayer] = desc;
       alert("✅ Marked as Govt Paid");
     }
 
     function resetPlayerTax() {
-      if (!validateReset()) return;
       delete taxData.paidPlayers[currentPlayer];
-      alert("🔁 Tax Reset");
-    }
-    function resetHistory() {
-      if (!validateReset()) return;
       delete taxData.paymentHistory[currentPlayer];
-      alert("🔁 History Reset");
-    }
-    function resetDeadline() {
-      if (!validateReset()) return;
-      delete taxData.taxDeadline[currentPlayer];
-      alert("🔁 Deadline Reset");
-    }
-    function validateReset() {
-      const entered = document.getElementById("resetPass").value;
-      return entered === "2613" || (alert("❌ Wrong Pass"), false);
-    }
-
-    function showBankInfo() {
-      const bankList = Object.keys(taxData.paidPlayers || {}).map(name => {
-        const bank = bankData.accounts?.[name];
-        if (!bank) {
-          return `<div><b>${name}</b> - ❌ Bank Not Created</div>`;
-        }
-        return `<div><b>${bank.username}</b><p>ID: ${bank.id}</p><p>Pass: ${bank.password}</p><p>Contact: ${bank.contact}</p></div>`;
-      }).join("");
-      document.getElementById("bankList").innerHTML = `<h3>🏦 Player Bank Accounts</h3>${bankList}`;
+      alert("🔄 Tax Reset");
     }
 
     function saveTax() {
       try {
-        const data = JSON.parse(document.getElementById("taxEditor").value);
+        const json = JSON.parse(document.getElementById("taxEditor").value);
         fetch("https://syncs.1987sakshamsingh.workers.dev/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
+          body: JSON.stringify(json)
         }).then(r => alert(r.ok ? "✅ Tax Synced" : "❌ Failed"));
       } catch {
         alert("❌ Invalid Tax JSON");
@@ -151,11 +175,11 @@
 
     function saveBank() {
       try {
-        const data = JSON.parse(document.getElementById("bankEditor").value);
+        const json = JSON.parse(document.getElementById("bankEditor").value);
         fetch("https://syncs.1987sakshamsingh.workers.dev/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
+          body: JSON.stringify(json)
         }).then(r => alert(r.ok ? "✅ Bank Synced" : "❌ Failed"));
       } catch {
         alert("❌ Invalid Bank JSON");
@@ -164,8 +188,7 @@
 
     function logoutAdmin() {
       document.getElementById("adminPanel").style.display = "none";
-      document.getElementById("adminLogin").style.display = "block";
-      alert("🔒 Logged out");
+      location.reload();
     }
   </script>
 </body>
