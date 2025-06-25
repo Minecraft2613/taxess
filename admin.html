@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Admin Panel - Player Tax & Bank</title>
+<title>Admin Panel - Player Tax</title>
 <style>
   body {
     background-color: #121212;
@@ -46,7 +46,7 @@
   }
 
   .player-list {
-    max-height: 300px;
+    max-height: 350px;
     overflow-y: auto;
     border: 1px solid #444;
     padding: 10px;
@@ -74,18 +74,18 @@
     background: #1e1e1e;
     padding: 15px;
     border-radius: 6px;
+    white-space: pre-wrap;
+    font-family: monospace;
   }
 
-  textarea {
+  textarea, pre {
     background-color: #222;
     color: #ddd;
     width: 100%;
-    min-height: 80px;
     border: 1px solid #444;
     border-radius: 4px;
     padding: 8px;
     font-family: monospace;
-    resize: vertical;
   }
 
   input[type=text], input[type=password] {
@@ -150,28 +150,22 @@
   </header>
 
   <main>
-    <!-- Player Tax Section -->
     <section id="playerTax">
       <h2>🧾 Player Taxes</h2>
-      <div class="player-list" id="playerTaxList"></div>
-
-      <div id="playerTaxDetail" class="player-detail hidden">
-        <!-- Filled dynamically -->
-      </div>
+      <div class="player-list" id="playerTaxList">Loading...</div>
+      <div id="playerTaxDetail" class="player-detail hidden"></div>
     </section>
 
-    <!-- Bank Info Section -->
     <section id="bankInfo" class="hidden">
       <h2>🏦 Player Bank Info</h2>
-      <div id="bankList" class="player-list"></div>
+      <div id="bankList" class="player-list">Loading...</div>
     </section>
   </main>
 </div>
 
 <script>
-  let taxData = {}, bankData = {}, currentPlayer = "";
+  let taxData = {}, bankData = {}, transactionLog = "", currentPlayer = "";
 
-  // Load admin credentials from external JSON
   async function verifyAdmin() {
     const id = "BANK" + document.getElementById("adminId").value.trim();
     const pass = document.getElementById("adminPass").value;
@@ -181,56 +175,74 @@
         alert("✅ Admin Access Granted");
         document.getElementById("adminLogin").style.display = "none";
         document.getElementById("adminPanel").classList.remove("hidden");
-        loadData();
+        await loadAllData();
         showSection('playerTax');
       } else {
         alert("❌ Invalid Admin ID or Password");
       }
-    } catch (e) {
-      alert("❌ Failed to fetch admin data");
+    } catch {
+      alert("❌ Could not load admin data");
     }
   }
 
-  async function loadData() {
+  async function loadAllData() {
     try {
-      const [taxRes, bankRes] = await Promise.all([
+      const [taxRes, bankRes, txLogRes] = await Promise.all([
         fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json"),
-        fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json")
+        fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json"),
+        fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt"),
       ]);
       taxData = await taxRes.json();
       bankData = await bankRes.json();
+      transactionLog = await txLogRes.text();
       buildPlayerTaxList();
       buildBankList();
-    } catch (e) {
-      alert("❌ Failed to load data");
+    } catch {
+      alert("❌ Failed to load tax, bank, or transaction log data");
     }
   }
 
-  // Show/hide sections on clicking top buttons
   function showSection(section) {
     const sections = ['playerTax', 'bankInfo'];
     sections.forEach(s => {
       document.getElementById(s).classList.toggle('hidden', s !== section);
     });
-    // Reset detail on switching section
-    if (section === 'playerTax') {
+    if(section === 'playerTax') {
       document.getElementById('playerTaxDetail').classList.add('hidden');
     }
   }
 
-  // Build player tax list with buy/sell/due status
   function buildPlayerTaxList() {
     const container = document.getElementById('playerTaxList');
-    container.innerHTML = '';
-    if (!taxData.paidPlayers) {
-      container.textContent = 'No player tax data available.';
+    container.innerHTML = "";
+    // Gather unique players from transaction log + taxData
+    const players = new Set();
+
+    // From transaction log: match all usernames (Java and Bedrock)
+    // pattern: ' - <name> bought/sold ...' example:
+    // [2025-06-20 04:55:59] - .Atharva4617 sold ...
+    // [2025-06-22 10:46:48] - ansh sold ...
+    const playerRegex = /- (\.?[a-zA-Z0-9_]+) (bought|sold)/g;
+    let match;
+    while ((match = playerRegex.exec(transactionLog)) !== null) {
+      players.add(match[1]);
+    }
+    // Also add players from taxData.paidPlayers keys if any missing
+    if(taxData.paidPlayers) {
+      Object.keys(taxData.paidPlayers).forEach(p => players.add(p));
+    }
+    if(players.size === 0) {
+      container.textContent = "No players found in transaction log or tax data.";
       return;
     }
-    Object.keys(taxData.paidPlayers).forEach(name => {
-      const paidStatus = taxData.paidPlayers[name];
-      const due = (paidStatus === "❌ Not Paid" || !paidStatus) ? true : false;
+
+    // Build player list with due status
+    players.forEach(name => {
       const isBedrock = name.startsWith(".");
       const displayName = isBedrock ? name.slice(1) + " (Bedrock)" : name + " (Java)";
+      const taxInfo = calculatePlayerTax(name, transactionLog);
+      const paidStatus = taxData.paidPlayers?.[name] || "❌ Not Paid";
+      const due = taxInfo.due > 0;
       const div = document.createElement('div');
       div.classList.add('player-item');
       div.innerHTML = `
@@ -242,56 +254,50 @@
     });
   }
 
-  // Show detailed tax info for selected player
   function viewPlayerTax(name) {
     currentPlayer = name;
     const detail = document.getElementById('playerTaxDetail');
     detail.classList.remove('hidden');
-
-    // Parse transactions for this player to calculate buy/sell/due tax
-    const playerLog = window.transactionLog || ""; // you can load this dynamically if available
-    const taxInfo = calculatePlayerTax(name, playerLog);
-
-    // Show payment history, deadline & paid status
+    const taxInfo = calculatePlayerTax(name, transactionLog);
     const paidStatus = taxData.paidPlayers?.[name] || "❌ Not Paid";
     const history = JSON.stringify(taxData.paymentHistory?.[name] || [], null, 2);
     const deadline = taxData.taxDeadline?.[name] || "N/A";
 
     detail.innerHTML = `
       <h3>${name.startsWith(".") ? name.slice(1) + " (Bedrock)" : name + " (Java)"}</h3>
-      <p><strong>Buy Tax (4%):</strong> $${taxInfo.buyTax.toFixed(2)}</p>
-      <p><strong>Sell Tax (10%):</strong> $${taxInfo.sellTax.toFixed(2)}</p>
-      <p><strong>Total Tax:</strong> $${taxInfo.totalTax.toFixed(2)}</p>
-      <p><strong>Paid:</strong> $${taxInfo.paid.toFixed(2)}</p>
-      <p><strong>Due:</strong> $${taxInfo.due.toFixed(2)}</p>
-      <p><strong>Deadline:</strong> ${deadline}</p>
-      <h4>Daily Tax Breakdown:</h4>
-      <pre>${formatDailyTax(taxInfo.dailyData)}</pre>
-      <h4>Payment History:</h4>
-      <pre>${history}</pre>
-
-      <input type="text" id="govtDesc" placeholder="Pay as Govt - Optional Description" />
-      <button class="action-btn" onclick="payAsGovt()">Pay as Govt</button>
-      <hr />
+      <p><b>Buy Tax (4%):</b> $${taxInfo.buyTax.toFixed(2)}</p>
+      <p><b>Sell Tax (10%):</b> $${taxInfo.sellTax.toFixed(2)}</p>
+      <p><b>Total Tax:</b> $${taxInfo.totalTax.toFixed(2)}</p>
+      <p><b>Paid:</b> $${taxInfo.paid.toFixed(2)}</p>
+      <p><b>Due:</b> <span style="color:${taxInfo.due > 0 ? '#ff4c4c' : '#66ff66'}">$${taxInfo.due.toFixed(2)}</span></p>
+      <pre><b>Payment History:</b>\n${history}</pre>
+      <p><b>Deadline:</b> ${deadline}</p>
+      <input type="text" id="govtDesc" placeholder="Optional Description for Pay as Govt" />
       <input type="password" id="resetPass" placeholder="Admin Password to Reset" />
-      <button class="action-btn" onclick="resetPlayerTax()">Reset Tax</button>
-      <button class="action-btn" onclick="resetHistory()">Reset History</button>
-      <button class="action-btn" onclick="resetDeadline()">Reset Deadline</button>
+      <div style="margin-top: 10px;">
+        <button class="action-btn" onclick="payAsGovt()">Pay as Govt</button>
+        <button class="action-btn" onclick="resetPlayerTax()">Reset Tax</button>
+        <button class="action-btn" onclick="resetHistory()">Reset History</button>
+        <button class="action-btn" onclick="resetDeadline()">Reset Deadline</button>
+      </div>
     `;
   }
 
-  // Calculate buy, sell, total, paid, due tax from transaction log
+  // Calculates tax based on transaction log for the player
   function calculatePlayerTax(name, log) {
-    let buyTax = 0, sellTax = 0;
+    let buyTax = 0;
+    let sellTax = 0;
     const dailyData = {};
+    // Case insensitive match for player's name in each line:
     const lines = log.split(/\r?\n/);
-    const playerName = name.toLowerCase();
+    for (const line of lines) {
+      if (!line.toLowerCase().includes(name.toLowerCase())) continue;
 
-    lines.forEach(line => {
-      if (!line.toLowerCase().includes(playerName)) return;
+      // Extract date
       const dateMatch = line.match(/\[(\d{4}-\d{2}-\d{2})/);
-      const day = dateMatch ? dateMatch[1].slice(5).replace('-', '/') : "Unknown";
+      const day = dateMatch ? dateMatch[1].slice(5).replace('-', '/') : "";
 
+      // Extract buy and sell amounts
       const buyMatch = line.match(/bought.*?\$([\d,\.]+)/i);
       const sellMatch = line.match(/sold.*?\$([\d,\.]+)/i);
 
@@ -307,8 +313,7 @@
         sellTax += tax;
         dailyData[day] = (dailyData[day] || 0) + tax;
       }
-    });
-
+    }
     const totalTax = buyTax + sellTax;
     const paid = sumPayments(name);
     const due = Math.max(0, totalTax - paid);
@@ -316,49 +321,42 @@
     return { buyTax, sellTax, totalTax, paid, due, dailyData };
   }
 
-  // Format daily tax object into pretty string
-  function formatDailyTax(dailyData) {
-    return Object.entries(dailyData).map(([day, val]) => `  ${day}: $${val.toFixed(2)}`).join('\n');
-  }
-
-  // Dummy payment sum function — replace with your actual payment logic or data
   function sumPayments(player) {
     if (!taxData.paymentHistory || !taxData.paymentHistory[player]) return 0;
-    // Sum all paid amounts (if any)
-    return taxData.paymentHistory[player].reduce((acc, p) => {
-      return acc + (p.amountPaid || 0);
-    }, 0);
+    return taxData.paymentHistory[player].reduce((acc, p) => acc + (p.amountPaid || 0), 0);
   }
 
-  // Mark player tax as paid by govt with optional description
   function payAsGovt() {
     const desc = document.getElementById("govtDesc").value.trim() || "PAID_BY_GOVT";
+    taxData.paidPlayers = taxData.paidPlayers || {};
     taxData.paidPlayers[currentPlayer] = desc;
-    alert("✅ Marked as Govt Paid");
+    alert(`✅ Marked ${currentPlayer} as Govt Paid`);
     buildPlayerTaxList();
     viewPlayerTax(currentPlayer);
   }
 
-  // Reset tax, history, deadline with password check
   function resetPlayerTax() {
     if (!checkAdminPass()) return;
     delete taxData.paidPlayers[currentPlayer];
-    alert("🔁 Tax Reset");
+    alert(`🔁 Tax reset for ${currentPlayer}`);
     buildPlayerTaxList();
     viewPlayerTax(currentPlayer);
   }
+
   function resetHistory() {
     if (!checkAdminPass()) return;
     delete taxData.paymentHistory[currentPlayer];
-    alert("🔁 History Reset");
+    alert(`🔁 History reset for ${currentPlayer}`);
     viewPlayerTax(currentPlayer);
   }
+
   function resetDeadline() {
     if (!checkAdminPass()) return;
     delete taxData.taxDeadline[currentPlayer];
-    alert("🔁 Deadline Reset");
+    alert(`🔁 Deadline reset for ${currentPlayer}`);
     viewPlayerTax(currentPlayer);
   }
+
   function checkAdminPass() {
     const pass = document.getElementById("resetPass").value;
     if (pass !== "2613") {
@@ -368,15 +366,19 @@
     return true;
   }
 
-  // Build bank info list
   function buildBankList() {
     const container = document.getElementById('bankList');
-    container.innerHTML = '';
-    const players = Object.keys(taxData.paidPlayers || {});
-    if (players.length === 0) {
-      container.textContent = 'No players found.';
+    container.innerHTML = "";
+    const players = new Set();
+    // Collect players from taxData and bankData
+    if (taxData.paidPlayers) Object.keys(taxData.paidPlayers).forEach(p => players.add(p));
+    if (bankData.accounts) Object.keys(bankData.accounts).forEach(p => players.add(p));
+
+    if (players.size === 0) {
+      container.textContent = "No players found.";
       return;
     }
+
     players.forEach(name => {
       const bank = bankData.accounts?.[name];
       const displayName = name.startsWith(".") ? name.slice(1) + " (Bedrock)" : name + " (Java)";
@@ -394,35 +396,39 @@
     });
   }
 
-  // Sync tax JSON to your worker URL
-  function syncTax() {
+  async function syncTax() {
     if (!confirm("Are you sure you want to sync tax data?")) return;
-    fetch("https://syncs.1987sakshamsingh.workers.dev/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(taxData)
-    }).then(res => {
+    try {
+      const res = await fetch("https://syncs.1987sakshamsingh.workers.dev/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(taxData)
+      });
       alert(res.ok ? "✅ Tax data synced successfully" : "❌ Failed to sync tax data");
-    }).catch(() => alert("❌ Failed to sync tax data"));
+    } catch {
+      alert("❌ Failed to sync tax data");
+    }
   }
 
-  // Sync bank JSON
-  function syncBank() {
+  async function syncBank() {
     if (!confirm("Are you sure you want to sync bank data?")) return;
-    fetch("https://syncs.1987sakshamsingh.workers.dev/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bankData)
-    }).then(res => {
+    try {
+      const res = await fetch("https://syncs.1987sakshamsingh.workers.dev/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bankData)
+      });
       alert(res.ok ? "✅ Bank data synced successfully" : "❌ Failed to sync bank data");
-    }).catch(() => alert("❌ Failed to sync bank data"));
+    } catch {
+      alert("❌ Failed to sync bank data");
+    }
   }
 
-  // Logout admin
   function logoutAdmin() {
     if (!confirm("Are you sure you want to logout?")) return;
     taxData = {};
     bankData = {};
+    transactionLog = "";
     currentPlayer = "";
     document.getElementById("adminPanel").classList.add("hidden");
     document.getElementById("adminLogin").style.display = "block";
@@ -431,6 +437,5 @@
     document.getElementById('bankList').innerHTML = "";
   }
 </script>
-
 </body>
 </html>
