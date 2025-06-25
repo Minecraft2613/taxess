@@ -160,7 +160,6 @@ function syncData(type) {
 }
 
 function viewPlayer(player) {
-  // Open new page simulating index.html but with player prefilled
   const newWin = window.open("", "_blank");
   const paid = (paymentHistory[player] || []).reduce((s, e) => s + e.amount, 0);
   const total = paidPlayers[player] || 0;
@@ -169,8 +168,8 @@ function viewPlayer(player) {
   newWin.document.write(`
     <html><head><title>Player: ${player}</title>
     <style>body { background: #111; color: #eee; font-family: sans-serif; padding: 20px; }
-    input, button { padding: 6px; margin: 6px; }
-    </style></head><body>
+    input, button { padding: 6px; margin: 6px; }</style>
+    </head><body>
     <h2>👤 ${player}</h2>
     <p>Total Tax: $${total.toFixed(2)}</p>
     <p>Paid: $${paid.toFixed(2)}</p>
@@ -194,6 +193,7 @@ function viewPlayer(player) {
     </script>
     </body></html>
   `);
+}
 </script>
 </body>
 </html>
