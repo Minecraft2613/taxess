@@ -702,11 +702,12 @@ function showProfile(buy, sell, total, paid, due, advanced) {
   due === 0
     ? (advanced
       ? "Advance Paid"
-      : (paymentHistory[currentPlayer]?.some(p => p.adminNote || p.method === "Paid by Govt"))
+      : (paymentHistory[currentPlayer]?.some(p => p.adminNote || p.method))
         ? `Paid by Govt <button onclick="showGovtNote()" style="margin-left:5px;font-size:12px;padding:2px 5px;">💬 See Description</button>`
         : "No Tax Due")
     : "$" + due.toFixed(2) + " Due"
 }</strong></p>
+
 
 
     <div class="btn-row">
@@ -726,26 +727,25 @@ function showProfile(buy, sell, total, paid, due, advanced) {
   document.getElementById("topTaxPlayers").style.display = "block";
 }
 
-    function showFullHistory() {
-      const all = paymentHistory[currentPlayer] || [];
-      const fullBox = document.getElementById("fullHistoryBox");
-      fullBox.innerHTML = `<h3>Full Payment History</h3><ul>
-      ${all.map(e => `<li>$${e.amount} on ${e.date}${e.adminNote ? ` <button onclick="alert('${e.adminNote}')">📌 Reason</button>` : ''}</li>`).join('')}
+   function showFullHistory() {
+  const all = paymentHistory[currentPlayer] || [];
+  const fullBox = document.getElementById("fullHistoryBox");
+  fullBox.innerHTML = `<h3>Full Payment History</h3><ul>
+    ${all.map(e => `<li>$${e.amount} on ${e.date}${e.adminNote || e.method ? ` <button onclick="alert('${e.adminNote || e.method}')">📌 Reason</button>` : ''}</li>`).join('')}
   </ul>
-        <div class="btn-row"><button onclick="hideFullHistory()">Close</button></div>`;
-      fullBox.style.display = "block";
-      document.getElementById("historyBox").innerHTML = `<h3>Payment History</h3><ul>
-  ${history.map(e => `<li>$${e.amount} on ${e.date}${e.adminNote ? ` — ${e.adminNote}` : ''}</li>`).join('')}</ul>`;
+    <div class="btn-row"><button onclick="hideFullHistory()">Close</button></div>`;
+  fullBox.style.display = "block";
+}
 
-    }
   function showGovtNote() {
-  const note = (paymentHistory[currentPlayer] || []).find(p => p.adminNote || p.method === "Paid by Govt");
+  const note = (paymentHistory[currentPlayer] || []).find(p => p.adminNote || p.method);
   if (note) {
     alert("📌 Govt Note:\n" + (note.adminNote || note.method));
   } else {
     alert("No government note found.");
   }
 }
+
 
     function hideFullHistory() {
       document.getElementById("fullHistoryBox").style.display = "none";
