@@ -429,22 +429,21 @@ async function verifyBankLogin() {
   const pass = document.getElementById("bankPass").value;
   const account = bankAccounts[currentPlayer];
 
-  // 🔐 Admin login using external admin.json
+  // 🔐 Admin login redirect to new admin.html
   try {
     const adminRes = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
     const admin = await adminRes.json();
 
     if (id === admin.id && pass === admin.pass) {
       alert("✅ Admin Access Granted!");
-      document.getElementById("bankBox").style.display = "none";
-      showAdminPanel(); // ⬅️ Show admin interface
+      window.location.href = "admin.html";
       return;
     }
   } catch (e) {
     console.warn("⚠️ Failed to verify admin:", e);
   }
 
-  // Regular user login
+  // 🔐 Player login continues here...
   if (!account) {
     alert("⚠️ No account found. Please create a bank account.");
     askBankDetails();
