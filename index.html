@@ -1,219 +1,55 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🛠️ Tax Admin Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tax & Bank Admin Panel</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      background: #111;
-      color: #eee;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    .btn-row button {
-      margin: 5px;
-      padding: 10px 15px;
-      background: #222;
-      color: #ffe600;
-      border: 1px solid #555;
-      cursor: pointer;
-    }
-    h2, h3 {
-      color: #ffe600;
-    }
-    ul li {
-      margin: 5px 0;
-    }
-    canvas {
-      background: #1a1a1a;
-      border: 1px solid #333;
-    }
-  </style>
 </head>
 <body>
-  <h2>🛠️ Admin Panel</h2>
-  <div id="profile"></div>
-  <div id="bankBox"></div>
-  <div id="topTaxPlayers"></div>
-  <div id="chartContainer">
-    <canvas id="taxChart" width="400" height="200"></canvas>
-    <select id="weekDropdown" onchange="changeWeek(this.value)"></select>
-    <div>
-      <button onclick="changeChart('line')">📈 Line</button>
-      <button onclick="changeTension(true)">Smooth</button>
-      <button onclick="changeTension(false)">Sharp</button>
-      <button onclick="downloadChart()">📤 Export Chart</button>
+  <div id="step1">
+    <h2>🧾 Tax Portal</h2>
+    <select id="platformSelect" onchange="togglePlatform()">
+      <option value="java">Java</option>
+      <option value="bedrock">Bedrock</option>
+    </select>
+    <div id="usernameWrapper">
+      <label for="mcid">Minecraft Username:</label>
+      <input id="mcid" type="text" placeholder="Java Username" />
     </div>
+    <select id="method">
+      <option>Discord</option>
+      <option>Instagram</option>
+    </select>
+    <label id="contactLabel">Contact:</label>
+    <input id="contact" />
+    <button onclick="checkTax()">Check Tax</button>
   </div>
-  <div id="saveNotice" style="margin-top:10px;"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
-    const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
-    const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
-    const syncBankURL = "https://syncbank.1987sakshamsingh.workers.dev/";
-    const webhookURL = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
-    const infoHookURL = webhookURL;
-    const bankHookURL = webhookURL;
+  <div id="loading" style="display:none">⏳ Loading...</div>
 
-    let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, currentPlayer = "", dailyData = {}, chart, totalTaxByPlayer = {};
-    let chartType = localStorage.getItem("chartType") || "line";
-    let currentWeek = 'this';
-    let isAdminView = true;
+  <div id="bankBox" style="display:none"></div>
+  <div id="profile" style="display:none"></div>
+  <div id="topTaxPlayers" style="display:none"></div>
+  <div id="saveNotice" style="display:none"></div>
 
-    localStorage.setItem("username", "Ansh_2613");
+  <div id="chartContainer">
+    <select id="weekDropdown" onchange="changeWeek(this.value)"></select>
+    <canvas id="taxChart" width="400" height="200"></canvas>
+    <select onchange="handleChartOption(this.value)">
+      <option disabled selected>Chart Options</option>
+      <option value="export">Download PNG</option>
+      <option value="line">Line</option>
+    </select>
+  </div>
 
-    function sumPayments(player) {
-      const history = paymentHistory[player] || [];
-      return history.reduce((sum, entry) => sum + Number(entry.amount), 0);
-    }
+  <div id="footerButtons" style="display:none">
+    <button onclick="changeTension(true)">Smooth Line</button>
+    <button onclick="submitTax()">Pay Tax</button>
+  </div>
 
-    async function loadAllDataForAdmin() {
-      try {
-        const [taxRes, bankRes, transRes] = await Promise.all([
-          fetch(taxURL),
-          fetch(bankURL),
-          fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt")
-        ]);
-
-        const taxData = await taxRes.json();
-        const bankData = await bankRes.json();
-        const logText = await transRes.text();
-
-        paidPlayers = taxData.paidPlayers || {};
-        paymentHistory = taxData.paymentHistory || {};
-        bankAccounts = bankData.accounts || {};
-        taxDeadline = taxData.taxDeadline || {};
-
-        calculateTotalTaxFromLog(logText);
-
-        const players = [...new Set([
-          ...Object.keys(paidPlayers),
-          ...Object.keys(paymentHistory),
-          ...Object.keys(bankAccounts),
-          ...(logText.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold)/g) || []).map(line => line.split(" - ")[1].split(" ")[0])
-        ])];
-
-        document.getElementById("profile").innerHTML = `
-          <h3>🛠️ Admin Panel</h3>
-          <div class="btn-row">
-            <button onclick="syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline })">💾 Sync Tax</button>
-            <button onclick="syncToCloudflare(syncBankURL, { accounts: bankAccounts })">💾 Sync Bank</button>
-            <button onclick="exitApp()">🚪 Exit</button>
-          </div>
-        `;
-
-        document.getElementById("topTaxPlayers").innerHTML = `
-          <h3>📋 All Players</h3>
-          <ul>
-            ${players.map(p => {
-              const paid = (paymentHistory[p] || []).reduce((s, e) => s + Number(e.amount), 0);
-              const total = totalTaxByPlayer[p] || 0;
-              const due = Math.max(0, total - paid);
-              const version = p.includes(".") ? "Bedrock" : "Java";
-              return `<li><strong>${p}</strong> — Due: $${due.toFixed(2)} (${version}) <button onclick="viewPlayerAsAdmin('${p}')">👁 View</button></li>`;
-            }).join("")}
-          </ul>
-        `;
-      } catch (e) {
-        console.error("❌ Admin data load failed:", e);
-        alert("❌ Failed to load admin data.");
-      }
-    }
-
-    function calculateTotalTaxFromLog(logText) {
-      totalTaxByPlayer = {};
-      const lines = logText.split(/\r?\n/);
-      lines.forEach(line => {
-        const match = line.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold).*?\$([\d,\.]+)/);
-        if (!match) return;
-        const [_, player, action, amountStr] = match;
-        const amount = parseFloat(amountStr.replace(/,/g, ""));
-        const tax = action === "bought" ? +(amount * 0.04).toFixed(2) : +(amount * 0.10).toFixed(2);
-        if (!totalTaxByPlayer[player]) totalTaxByPlayer[player] = 0;
-        totalTaxByPlayer[player] += tax;
-      });
-    }
-
-    function viewPlayerAsAdmin(player) {
-      currentPlayer = player;
-      isAdminView = true;
-      loadTax();
-    }
-
-    function renderChart() {
-      const ctx = document.getElementById("taxChart").getContext("2d");
-      if (chart) chart.destroy();
-      const labels = Object.keys(dailyData);
-      const values = Object.values(dailyData);
-      chart = new Chart(ctx, {
-        type: chartType,
-        data: {
-          labels,
-          datasets: [{
-            label: `Tax Data for ${currentPlayer}`,
-            data: values,
-            borderColor: "#ffee00",
-            backgroundColor: "#ffaa00",
-            tension: chartType === "line" ? 0.4 : 0
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { ticks: { color: "#aaa" }, grid: { color: "#333" } },
-            y: { beginAtZero: true, ticks: { color: "#aaa" }, grid: { color: "#333" } }
-          }
-        }
-      });
-    }
-
-    function changeChart(type) {
-      chartType = type;
-      localStorage.setItem("chartType", type);
-      renderChart();
-    }
-
-    function changeTension(smooth) {
-      chartType = "line";
-      localStorage.setItem("lineTension", smooth ? 0.4 : 0);
-      renderChart();
-    }
-
-    function downloadChart() {
-      const canvas = document.getElementById("taxChart");
-      const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#000";
-      ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
-      ctx.fillStyle = "#ffee00";
-      ctx.font = "bold 14px Arial";
-      ctx.fillText(`📊 ${currentPlayer}'s Tax Chart`, 10, canvas.height - 10);
-      const link = document.createElement("a");
-      link.download = `${currentPlayer}-tax-chart.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-      renderChart();
-    }
-
-    function syncToCloudflare(url, data) {
-      fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      }).then(res => res.ok ? console.log("☁️ Synced") : console.warn("Sync Fail", res))
-        .catch(err => console.warn("Sync Error:", err));
-    }
-
-    function exitApp() {
-      location.reload();
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      loadAllDataForAdmin();
-    });
-  </script>
+  <script src="admin-functions.js"></script>
 </body>
 </html>
