@@ -26,6 +26,10 @@
       background: #1c1c1c;
       border-radius: 5px;
     }
+    .details {
+      background: #000; padding: 8px; margin-top: 8px;
+      display: none; border: 1px solid #333;
+    }
   </style>
 </head>
 <body>
@@ -55,7 +59,6 @@ async function adminLogin() {
   try {
     const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
     const admin = await res.json();
-
     const ipRes = await fetch("https://api64.ipify.org?format=json");
     const { ip } = await ipRes.json();
     const discord = prompt("Enter your Discord username (e.g. Ansh_2613)");
@@ -139,13 +142,33 @@ function displayPlayers() {
         ☎️ Contact: ${info.contact || "N/A"}<br>` : ""}
       💰 Total Tax: $${total.toFixed(2)}<br>
       ✅ Paid: $${paid.toFixed(2)}<br>
-      ❗ Due: $${due.toFixed(2)}<br><br>
+      ❗ Due: $${due.toFixed(2)}<br>
+      <button onclick="toggleDetails('${player}')">📄 View Details</button>
+      <div class="details" id="details-${player}"></div><br>
       <input id="amt-${player}" type="number" placeholder="Amount" />
       <textarea id="desc-${player}" placeholder="Reason for payment (required)"></textarea><br>
       <button onclick="payAsGovt('${player}', ${due})">💸 Pay as Govt</button>
     `;
     container.appendChild(div);
   });
+}
+
+function toggleDetails(player) {
+  const box = document.getElementById(`details-${player}`);
+  if (box.style.display === "block") {
+    box.style.display = "none";
+    box.innerHTML = "";
+  } else {
+    const history = paymentHistory[player] || [];
+    if (!history.length) {
+      box.innerHTML = `<i>No payments yet.</i>`;
+    } else {
+      box.innerHTML = `<b>🧾 Payment History:</b><br><ul style="padding-left:15px;">${history.map(e =>
+        `<li>$${e.amount} - ${e.date}${e.adminNote ? " 📝 (" + e.adminNote + ")" : ""}</li>`
+      ).join('')}</ul>`;
+    }
+    box.style.display = "block";
+  }
 }
 
 function payAsGovt(player, maxDue) {
