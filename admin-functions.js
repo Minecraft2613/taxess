@@ -1,4 +1,4 @@
-// admin-functions.js
+
 
 let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, currentPlayer = "", dailyData = {}, chart;
 let chartType = localStorage.getItem("chartType") || "line";
