@@ -1,10 +1,8 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Panel | Player Tax Dashboard</title>
+  <title>Admin Panel | Real Tax Dashboard</title>
   <style>
     body { font-family: Arial; background: #111; color: #eee; padding: 20px; }
     h2 { color: gold; }
@@ -37,17 +35,18 @@
   <button onclick="adminLogin()">Login</button>
 
   <div id="adminPanel" style="display:none;">
-    <h2>📋 Player List</h2>
+    <h2>📋 Player List (Real Tax)</h2>
     <div id="playerList"></div>
   </div>
 
 <script>
 const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
 const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
+const logURL  = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt";
 const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
 const paymentHookURL = "https://discordapp.com/api/webhooks/1387003883947032596/BkLzoSlQk6wLaPP4voI2mAshDTfXRaGkFf0mbK1Y0xfvU2XytWazF3MFjpvgugHnkKuR";
 
-let paidPlayers = {}, paymentHistory = {}, taxDeadline = {}, bankAccounts = {};
+let paidPlayers = {}, paymentHistory = {}, taxDeadline = {}, bankAccounts = {}, taxLog = "";
 
 async function adminLogin() {
   const id = document.getElementById("adminId").value.trim();
@@ -63,8 +62,7 @@ async function adminLogin() {
     const discord = prompt("Enter your Discord username (e.g. Ansh_2613)");
 
     if (!admin.allowedDiscords.includes(discord) || !admin.allowedIps.includes(ip)) {
-      return alert(`❌ Unauthorized access.
-Your IP or Discord is not allowed.`);
+      return alert(`❌ Unauthorized access.\nYour IP or Discord is not allowed.`);
     }
 
     if (id === admin.id && pass === admin.pass) {
@@ -80,38 +78,65 @@ Your IP or Discord is not allowed.`);
 }
 
 async function loadAllData() {
-  const [taxRes, bankRes] = await Promise.all([
-    fetch(taxURL), fetch(bankURL)
+  const [taxRes, bankRes, logRes] = await Promise.all([
+    fetch(taxURL), fetch(bankURL), fetch(logURL)
   ]);
   const tax = await taxRes.json();
   const bank = await bankRes.json();
+  const log = await logRes.text();
+
   paidPlayers = tax.paidPlayers || {};
   paymentHistory = tax.paymentHistory || {};
   taxDeadline = tax.taxDeadline || {};
   bankAccounts = bank.accounts || {};
+  taxLog = log;
 
   document.getElementById("adminPanel").style.display = "block";
   displayPlayers();
+}
+
+function calculateTaxFromLog(player) {
+  const lines = taxLog.split(/\r?\n/);
+  let total = 0;
+  lines.forEach(line => {
+    if (!line.toLowerCase().includes(player.toLowerCase())) return;
+
+    const buy = line.match(/bought.*?\$([\d,\.]+)/);
+    const sell = line.match(/sold.*?\$([\d,\.]+)/);
+
+    if (buy) {
+      const amount = parseFloat(buy[1].replace(/,/g, ""));
+      total += +(amount * 0.04).toFixed(2);
+    }
+    if (sell) {
+      const amount = parseFloat(sell[1].replace(/,/g, ""));
+      total += +(amount * 0.10).toFixed(2);
+    }
+  });
+  return +total.toFixed(2);
 }
 
 function displayPlayers() {
   const container = document.getElementById("playerList");
   container.innerHTML = "";
 
-  Object.keys(bankAccounts).forEach(player => {
+  const allPlayers = new Set([...Object.keys(bankAccounts), ...Object.keys(paymentHistory)]);
+
+  allPlayers.forEach(player => {
     const info = bankAccounts[player];
     const paid = (paymentHistory[player] || []).reduce((s, e) => s + e.amount, 0);
-    const total = 5000;
+    const total = calculateTaxFromLog(player);
     const due = Math.max(0, total - paid);
 
     const div = document.createElement("div");
     div.className = "player";
     div.innerHTML = `
-      <b>👤 Player: ${player}</b><br>
-      🏦 Bank Created: ✅<br>
-      📛 Bank Username: ${info.username}<br>
-      🆔 Bank ID: ${info.id}<br>
-      ☎️ Contact: ${info.contact || "N/A"}<br>
+      <b>👤 ${player}</b><br>
+      🏦 Bank Created: ${info ? "✅" : "❌"}<br>
+      ${info ? `
+        📛 Username: ${info.username}<br>
+        🆔 ID: ${info.id}<br>
+        ☎️ Contact: ${info.contact || "N/A"}<br>` : ""}
       💰 Total Tax: $${total.toFixed(2)}<br>
       ✅ Paid: $${paid.toFixed(2)}<br>
       ❗ Due: $${due.toFixed(2)}<br><br>
