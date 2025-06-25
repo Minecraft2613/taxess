@@ -390,7 +390,7 @@ const totalPaid = getPaidAmount(name);
     }
 
     // Mark payment as govt, save payment amount + description
-function markGovtPaid() {
+function payAsGovt() {
   const desc = document.getElementById("govtDesc").value || "Paid by Govt";
   const amount = parseFloat(document.getElementById("govtAmount").value);
 
