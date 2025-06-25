@@ -4,19 +4,59 @@
   <meta charset="UTF-8" />
   <title>🛠️ Admin Panel</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 20px; }
-    h2, h3 { color: #ffaa00; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(ellipse at top, #111 0%, #000 100%);
+      color: #f8f8f8;
+      padding: 20px;
+      animation: glowPulse 4s ease-in-out infinite;
+    }
+    @keyframes glowPulse {
+      0%, 100% { background-color: #111; }
+      50% { background-color: #181818; }
+    }
+    h2, h3 { color: #ffaa00; text-shadow: 0 0 10px #ffaa00; }
     button {
-      background: #ffaa00; color: #000; padding: 6px 12px; margin: 4px;
+      background: #ffaa00; color: #000;
+      padding: 6px 12px; margin: 4px;
       border: none; border-radius: 4px; cursor: pointer;
+      box-shadow: 0 0 8px #ffaa00;
     }
     button:hover { background: #ffcc00; }
     .playerBox {
-      background: #1c1c1c; margin: 10px 0; padding: 10px; border-left: 4px solid orange;
+      background: #1a1a1a;
+      border-left: 5px solid #ffaa00;
+      margin: 10px 0; padding: 10px;
+      box-shadow: 0 0 8px #ffaa00 inset;
     }
     input, textarea {
-      background: #222; color: #fff; border: 1px solid #555; padding: 6px;
-      margin: 4px 0; width: 250px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #444;
+      padding: 6px;
+      margin: 4px 0;
+      width: 250px;
+    }
+    textarea {
+      width: 90%; resize: vertical;
+      height: 50px;
+    }
+    details {
+      margin-bottom: 10px;
+    }
+    summary {
+      cursor: pointer;
+      font-size: 1.1em;
+      font-weight: bold;
+      color: #ffd700;
+    }
+    #searchBar {
+      margin: 10px 0;
+      padding: 8px;
+      background: #111;
+      border: 1px solid #ffaa00;
+      color: #fff;
+      width: 250px;
     }
   </style>
 </head>
@@ -25,8 +65,10 @@
   <div id="adminPanel">
     <button onclick="syncTax()">💾 Sync Tax</button>
     <button onclick="syncBank()">💾 Sync Bank</button>
-    <button onclick="location.reload()">🚪 Exit</button>
+    <button onclick="location.reload()">🔄 Refresh</button>
   </div>
+
+  <input type="text" id="searchBar" placeholder="🔍 Search player..." oninput="filterPlayers()"/>
 
   <h3>📋 All Players</h3>
   <div id="playerList">Loading...</div>
@@ -38,7 +80,7 @@
     const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
     const webhookURL = "https://tax-hook.1987sakshamsingh.workers.dev/?type=pay";
 
-    let paidPlayers = {}, paymentHistory = {}, taxDeadline = {}, bankAccounts = {}, totalTaxByPlayer = {};
+    let paidPlayers = {}, paymentHistory = {}, taxDeadline = {}, bankAccounts = {}, totalTaxByPlayer = {}, allPlayers = [];
 
     window.onload = async () => {
       const [taxRes, bankRes, transRes] = await Promise.all([
@@ -56,36 +98,14 @@
 
       calculateTax(logText);
 
-      const players = [...new Set([
+      allPlayers = [...new Set([
         ...Object.keys(paidPlayers),
         ...Object.keys(paymentHistory),
         ...Object.keys(bankAccounts),
         ...logText.match(/\] - ([a-zA-Z0-9_.]+)/g)?.map(m => m.split(" - ")[1].split(" ")[0]) || []
-      ])];
+      ])].sort();
 
-      const list = document.getElementById("playerList");
-      list.innerHTML = players.map(player => {
-        const paid = (paymentHistory[player] || []).reduce((s, e) => s + +e.amount, 0);
-        const total = totalTaxByPlayer[player] || 0;
-        const due = Math.max(0, total - paid);
-        const version = player.startsWith(".") ? "Bedrock" : "Java";
-        const bank = bankAccounts[player] || null;
-
-        return `
-        <div class="playerBox">
-          <strong>${player}</strong> (${version})<br>
-          💰 Due: $${due.toFixed(2)}<br>
-          🏦 Bank: ${bank ? `
-            User: ${bank.username}<br>
-            ID: ${bank.id}<br>
-            Pass: ${bank.password}<br>
-            Contact: ${bank.contact || "N/A"}` : "❌ Not Created (N/A)"}<br><br>
-          <input type="number" id="pay-${player}" placeholder="Govt Pay $" />
-          <input type="text" id="reason-${player}" placeholder="Reason (optional)" />
-          <button onclick="payAsGovt('${player}')">💸 Pay</button>
-          <button onclick="resetPlayer('${player}')">🗑 Reset</button>
-        </div>`;
-      }).join("");
+      renderPlayers();
     };
 
     function calculateTax(log) {
@@ -97,6 +117,39 @@
         const tax = +(parseFloat(amount.replace(/,/g, "")) * (action === "bought" ? 0.04 : 0.10)).toFixed(2);
         if (!totalTaxByPlayer[name]) totalTaxByPlayer[name] = 0;
         totalTaxByPlayer[name] += tax;
+      });
+    }
+
+    function renderPlayers() {
+      const list = document.getElementById("playerList");
+      list.innerHTML = allPlayers.map(player => {
+        const paid = (paymentHistory[player] || []).reduce((s, e) => s + +e.amount, 0);
+        const total = totalTaxByPlayer[player] || 0;
+        const due = Math.max(0, total - paid);
+        const version = player.startsWith(".") ? "Bedrock" : "Java";
+        const bank = bankAccounts[player] || null;
+
+        return `
+        <details class="playerBox" data-name="${player.toLowerCase()}">
+          <summary>👤 ${player} (${version}) - 💰 $${due.toFixed(2)}</summary>
+          <div style="padding-left:10px;">
+            🏦 Bank: ${bank ? `
+              ID: ${bank.id}<br>
+              Pass: ${bank.password}` : "❌ Not Created (N/A)"}<br><br>
+
+            <input type="number" id="pay-${player}" placeholder="Govt Pay $" />
+            <textarea id="reason-${player}" placeholder="Reason for payment (optional)"></textarea><br>
+            <button onclick="payAsGovt('${player}')">💸 Pay</button>
+            <button onclick="resetPlayer('${player}')">🗑 Reset</button>
+          </div>
+        </details>`;
+      }).join("");
+    }
+
+    function filterPlayers() {
+      const query = document.getElementById("searchBar").value.toLowerCase();
+      document.querySelectorAll("#playerList details").forEach(el => {
+        el.style.display = el.getAttribute("data-name").includes(query) ? "block" : "none";
       });
     }
 
