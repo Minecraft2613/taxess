@@ -110,7 +110,8 @@ function renderTaxList() {
 
   Object.keys(paidPlayers).forEach(player => {
     const paid = (paymentHistory[player] || []).reduce((s, e) => s + e.amount, 0);
-    const due = Math.max(0, paidPlayers[player] - paid);
+    const total = paidPlayers[player] || 0;
+    const due = Math.max(0, total - paid);
 
     const div = document.createElement("div");
     div.className = "player";
@@ -118,7 +119,7 @@ function renderTaxList() {
       👤 <b>${player}</b><br>
       ✅ Paid: $${paid.toFixed(2)}<br>
       ❗ Due: $${due.toFixed(2)}<br>
-      <button onclick="viewPlayer('${player}')">👁 View</button>
+      <button onclick="viewPlayer('${player}', ${total}, ${paid}, ${due})">👁 View</button>
     `;
     list.appendChild(div);
   });
@@ -159,17 +160,14 @@ function syncData(type) {
   }).catch(() => alert("❌ Sync Error"));
 }
 
-function viewPlayer(player) {
-  const newWin = window.open("", "_blank");
-  const paid = (paymentHistory[player] || []).reduce((s, e) => s + e.amount, 0);
-  const total = paidPlayers[player] || 0;
-  const due = Math.max(0, total - paid);
-
-  newWin.document.write(`
-    <html><head><title>Player: ${player}</title>
-    <style>body { background: #111; color: #eee; font-family: sans-serif; padding: 20px; }
-    input, button { padding: 6px; margin: 6px; }</style>
-    </head><body>
+function viewPlayer(player, total, paid, due) {
+  const win = window.open("", "_blank");
+  win.document.write(`
+    <html><head><title>${player}</title>
+    <style>
+      body { background:#111; color:#eee; font-family:sans-serif; padding:20px; }
+      input, button { padding:6px; margin:6px; }
+    </style></head><body>
     <h2>👤 ${player}</h2>
     <p>Total Tax: $${total.toFixed(2)}</p>
     <p>Paid: $${paid.toFixed(2)}</p>
@@ -186,11 +184,11 @@ function viewPlayer(player) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            content: '🏛️ **Govt Payment**\\nPlayer: \`${player}\`\\nAmount: $' + amt + '\\nReason: ' + desc
+            content: '🏛️ **Govt Payment**\\nPlayer: ${player}\\nAmount: $' + amt + '\\nReason: ' + desc
           })
         }).then(() => alert('✅ Payment Sent')).catch(() => alert('❌ Failed'));
       }
-    </script>
+    <\/script>
     </body></html>
   `);
 }
