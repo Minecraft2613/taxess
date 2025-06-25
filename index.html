@@ -424,8 +424,6 @@ async function checkTax() {
     hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
   }
 
- window.isAdminView = false;
-
 async function verifyBankLogin() {
   const id = "BANK" + document.getElementById("bankId").value.trim();
   const pass = document.getElementById("bankPass").value;
@@ -434,13 +432,12 @@ async function verifyBankLogin() {
     const adminRes = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
     const admin = await adminRes.json();
 
-    if (id === admin.id && pass === admin.pass) {
-      alert("✅ Admin Access Granted");
-      window.isAdminView = true;
-      document.getElementById("bankBox").style.display = "none";
-      loadAllDataForAdmin(); // Show all players
-      return;
-    }
+ if (id === admin.id && pass === admin.pass) {
+  alert("✅ Admin Access Granted. Redirecting to Admin Panel...");
+  window.location.href = "admin.html";
+  return;
+}
+
   } catch (e) {
     console.warn("⚠️ Admin check failed:", e);
   }
