@@ -1,56 +1,171 @@
-
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tax & Bank Admin Panel</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>🛠️ Admin Panel</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    input, button, select, textarea {
+      display: block;
+      margin: 10px 0;
+      padding: 8px;
+      width: 100%;
+      font-size: 1em;
+    }
+    textarea { height: 150px; }
+    #panel { display: none; }
+    .section { margin-top: 30px; border-top: 1px solid #444; padding-top: 20px; }
+  </style>
 </head>
 <body>
-  <div id="step1">
-    <h2>🧾 Tax Portal</h2>
-    <select id="platformSelect" onchange="togglePlatform()">
-      <option value="java">Java</option>
-      <option value="bedrock">Bedrock</option>
-    </select>
-    <div id="usernameWrapper">
-      <label for="mcid">Minecraft Username:</label>
-      <input id="mcid" type="text" placeholder="Java Username" />
+  <h1>🔐 Admin Login</h1>
+  <div id="login">
+    <input id="adminId" placeholder="Admin Bank ID" />
+    <input id="adminPass" type="password" placeholder="Password" />
+    <button onclick="verifyAdmin()">Login</button>
+    <p id="loginStatus" style="color:red;"></p>
+  </div>
+
+  <div id="panel">
+    <h2>🛠️ Admin Panel</h2>
+    <button onclick="loadData()">🔄 Load Latest Data</button>
+    <button onclick="logout()">🚪 Logout</button>
+
+    <div class="section">
+      <h3>🔍 Player Lookup</h3>
+      <input id="searchPlayer" placeholder="Enter Minecraft Username" />
+      <button onclick="showPlayer()">Search</button>
+      <div id="playerResult"></div>
     </div>
-    <select id="method">
-      <option>Discord</option>
-      <option>Instagram</option>
-    </select>
-    <label id="contactLabel">Contact:</label>
-    <input id="contact" />
-    <button onclick="checkTax()">Check Tax</button>
+
+    <div class="section">
+      <h3>💸 Pay as Govt</h3>
+      <input id="govtName" placeholder="Player Name to mark as paid" />
+      <button onclick="payAsGovt()">✅ Mark Paid</button>
+    </div>
+
+    <div class="section">
+      <h3>📝 Raw Editors</h3>
+      <button onclick="saveBank()">💾 Save Bank</button>
+      <button onclick="saveTax()">💾 Save Tax</button>
+      <h4>🏦 Bank JSON</h4>
+      <textarea id="bankEditor"></textarea>
+      <h4>📄 Tax JSON</h4>
+      <textarea id="taxEditor"></textarea>
+    </div>
   </div>
 
-  <div id="loading" style="display:none">⏳ Loading...</div>
+  <script>
+    let taxData = {}, bankData = {}, currentPlayer = "";
 
-  <div id="bankBox" style="display:none"></div>
-  <div id="profile" style="display:none"></div>
-  <div id="topTaxPlayers" style="display:none"></div>
-  <div id="saveNotice" style="display:none"></div>
+    async function verifyAdmin() {
+      const id = document.getElementById("adminId").value.trim();
+      const pass = document.getElementById("adminPass").value.trim();
+      try {
+        const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
+        const json = await res.json();
+        if (id === json.id && pass === json.pass) {
+          document.getElementById("login").style.display = "none";
+          document.getElementById("panel").style.display = "block";
+          loadData();
+        } else {
+          document.getElementById("loginStatus").textContent = "❌ Invalid credentials";
+        }
+      } catch {
+        document.getElementById("loginStatus").textContent = "❌ Error loading admin.json";
+      }
+    }
 
-  <div id="chartContainer">
-    <select id="weekDropdown" onchange="changeWeek(this.value)"></select>
-    <canvas id="taxChart" width="400" height="200"></canvas>
-    <select onchange="handleChartOption(this.value)">
-      <option disabled selected>Chart Options</option>
-      <option value="export">Download PNG</option>
-      <option value="line">Line</option>
-    </select>
-  </div>
+    async function loadData() {
+      const taxRes = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json");
+      const bankRes = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json");
+      taxData = await taxRes.json();
+      bankData = await bankRes.json();
+      document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
+      document.getElementById("bankEditor").value = JSON.stringify(bankData, null, 2);
+    }
 
-  <div id="footerButtons" style="display:none">
-    <button onclick="changeTension(true)">Smooth Line</button>
-    <button onclick="submitTax()">Pay Tax</button>
-  </div>
+    function showPlayer() {
+      const name = document.getElementById("searchPlayer").value.trim();
+      currentPlayer = name;
+      const paid = taxData.paidPlayers?.[name] || "❌ Not Paid";
+      const history = JSON.stringify(taxData.paymentHistory?.[name] || [], null, 2);
+      const bank = bankData.accounts?.[name] || null;
 
-  <script src="admin-functions.js"></script>
+      let html = `<h4>💰 Tax Status: ${paid}</h4>`;
+      html += `<h4>📜 Payment History:</h4><pre>${history}</pre>`;
+      if (bank) {
+        html += `<h4>🏦 Bank:</h4>
+          <input id="editBankId" value="${bank.id}" />
+          <input id="editBankPass" value="${bank.password}" />
+          <input id="editBankContact" value="${bank.contact}" />
+          <button onclick="updateBank()">💾 Update</button>
+          <button onclick="deleteBank()">🗑️ Delete</button>`;
+      } else {
+        html += `<p>No bank account found for ${name}</p>`;
+      }
+      document.getElementById("playerResult").innerHTML = html;
+    }
+
+    function updateBank() {
+      const id = document.getElementById("editBankId").value;
+      const pass = document.getElementById("editBankPass").value;
+      const contact = document.getElementById("editBankContact").value;
+      bankData.accounts[currentPlayer] = { username: currentPlayer, id, password: pass, contact };
+      alert("✅ Updated Bank");
+    }
+
+    function deleteBank() {
+      if (confirm("Delete this bank account?")) {
+        delete bankData.accounts[currentPlayer];
+        alert("✅ Deleted Bank");
+        document.getElementById("playerResult").innerHTML = "";
+      }
+    }
+
+    function payAsGovt() {
+      const name = document.getElementById("govtName").value.trim();
+      if (!name) return alert("❌ Enter a name");
+      taxData.paidPlayers = taxData.paidPlayers || {};
+      taxData.paidPlayers[name] = "PAID_BY_GOVT";
+      document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
+      alert("✅ Marked as paid");
+    }
+
+    function saveTax() {
+      try {
+        const data = JSON.parse(document.getElementById("taxEditor").value);
+        fetch("https://syncs.1987sakshamsingh.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        }).then(r => alert(r.ok ? "✅ Tax Synced" : "❌ Failed"));
+      } catch {
+        alert("❌ Invalid Tax JSON");
+      }
+    }
+
+    function saveBank() {
+      try {
+        const data = JSON.parse(document.getElementById("bankEditor").value);
+        fetch("https://syncs.1987sakshamsingh.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        }).then(r => alert(r.ok ? "✅ Bank Synced" : "❌ Failed"));
+      } catch {
+        alert("❌ Invalid Bank JSON");
+      }
+    }
+
+    function logout() {
+      location.reload();
+    }
+  </script>
 </body>
 </html>
