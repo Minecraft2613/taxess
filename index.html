@@ -432,12 +432,14 @@ async function verifyBankLogin() {
     const adminRes = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
     const admin = await adminRes.json();
 
- if (id === admin.id && pass === admin.pass) {
-  alert("✅ Admin Access Granted. Redirecting to Admin Panel...");
-  window.location.href = "admin.html";
-  return;
-}
-
+    if (id === admin.id && pass === admin.pass) {
+      alert("✅ Admin Access Granted");
+      window.isAdminView = true;
+      document.getElementById("bankBox").style.display = "none";
+      document.getElementById("mainTitle").innerText = "🛠️ Admin Panel - All Player Data";
+      await loadAllDataForAdmin(); // Show all players
+      return;
+    }
   } catch (e) {
     console.warn("⚠️ Admin check failed:", e);
   }
@@ -451,11 +453,12 @@ async function verifyBankLogin() {
 
   if (account.id === id && account.password === pass) {
     document.getElementById("bankBox").style.display = "none";
-    loadTax(); // Normal player login
+    await loadTax(); // Normal player login
   } else {
     alert("❌ Invalid Bank ID or Password.");
   }
 }
+
 
 async function loadAllDataForAdmin() {
   try {
