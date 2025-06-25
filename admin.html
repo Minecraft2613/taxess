@@ -15,13 +15,18 @@
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 10px; border-bottom: 1px solid #333; }
     .btn-small { font-size: 12px; padding: 4px 8px; margin: 2px; }
+    label { display: block; margin-top: 10px; font-size: 14px; }
   </style>
 </head>
 <body>
   <div id="loginBox">
     <h2>🔐 Admin Login</h2>
-    <input id="adminId" placeholder="Admin ID" />
-    <input id="adminPass" type="password" placeholder="Password" />
+    <label for="adminId">Admin ID</label>
+    <input id="adminId" name="adminId" placeholder="Admin ID" />
+    
+    <label for="adminPass">Password</label>
+    <input id="adminPass" name="adminPass" type="password" placeholder="Password" />
+    
     <button onclick="adminLogin()">Login</button>
   </div>
 
@@ -54,8 +59,13 @@
     <div id="viewPanel" class="section hidden">
       <h3 id="viewPlayer">👤 Viewing Player</h3>
       <p id="viewStats"></p>
-      <input id="govAmt" type="number" placeholder="Amount to pay as Govt" />
-      <input id="govReason" placeholder="Reason (optional)" />
+      
+      <label for="govAmt">Amount to pay as Govt</label>
+      <input id="govAmt" name="govAmt" type="number" placeholder="Amount to pay as Govt" />
+      
+      <label for="govReason">Reason (optional)</label>
+      <input id="govReason" name="govReason" placeholder="Reason (optional)" />
+      
       <button onclick="govPay()">💸 Govt Pay</button>
       <button onclick="resetHistory()">🗑 Reset History</button>
       <button onclick="resetDeadline()">⏱ Reset Deadline</button>
