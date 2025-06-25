@@ -391,8 +391,8 @@ const totalPaid = getPaidAmount(name);
 
     // Mark payment as govt, save payment amount + description
 function payAsGovt() {
-  const desc = document.getElementById("govtDesc").value || "Paid by Govt";
-  const amount = parseFloat(document.getElementById("govtAmount").value);
+  const desc = document.getElementById("govtPayDesc").value || "Paid by Govt";
+  const amount = parseFloat(document.getElementById("govtPayAmount").value);
 
   if (isNaN(amount) || amount <= 0) {
     alert("❌ Enter valid amount.");
@@ -410,14 +410,11 @@ function payAsGovt() {
 
   alert(`✅ Paid $${amount} as Govt for ${currentPlayer}`);
   document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
-
-  // 🔄 Sync automatically after paying
   autoSyncTax();
-
-  // 🔁 Refresh player details and list
   showPlayerDetails(currentPlayer);
   renderPlayerTaxList();
 }
+
 
  function autoSyncTax() {
   fetch("https://syncs.1987sakshamsingh.workers.dev/", {
