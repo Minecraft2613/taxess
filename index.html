@@ -424,6 +424,8 @@ async function checkTax() {
     hideElements(['profile','historyBox','fullHistoryBox','chartArea','topTaxPlayers','saveNotice','footerButtons']);
   }
 
+ window.isAdminView = false;
+
 async function verifyBankLogin() {
   const id = "BANK" + document.getElementById("bankId").value.trim();
   const pass = document.getElementById("bankPass").value;
@@ -431,31 +433,119 @@ async function verifyBankLogin() {
   try {
     const adminRes = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
     const admin = await adminRes.json();
-    const discord = prompt("Enter your Discord username");
 
-    if (id === admin.id && pass === admin.pass && admin.allowedDiscords.includes(discord)) {
+    if (id === admin.id && pass === admin.pass) {
       alert("✅ Admin Access Granted");
+      window.isAdminView = true;
       document.getElementById("bankBox").style.display = "none";
-      loadAllDataForAdmin(); // ⬅️ Show full admin view
+      loadAllDataForAdmin(); // Show all players
       return;
     }
   } catch (e) {
-    console.warn("⚠️ Failed to verify admin:", e);
+    console.warn("⚠️ Admin check failed:", e);
   }
 
   const account = bankAccounts[currentPlayer];
   if (!account) {
-    alert("⚠️ No account found. Please create a bank account.");
+    alert("⚠️ No account found. Please create one.");
     askBankDetails();
     return;
   }
 
   if (account.id === id && account.password === pass) {
     document.getElementById("bankBox").style.display = "none";
-    loadTax(); // Load only personal tax
+    loadTax(); // Normal player login
   } else {
     alert("❌ Invalid Bank ID or Password.");
   }
+}
+
+async function loadAllDataForAdmin() {
+  try {
+    const [taxRes, bankRes, transRes] = await Promise.all([
+      fetch(taxURL),
+      fetch(bankURL),
+      fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt")
+    ]);
+
+    const taxData = await taxRes.json();
+    const bankData = await bankRes.json();
+    const logText = await transRes.text();
+
+    paidPlayers = taxData.paidPlayers || {};
+    paymentHistory = taxData.paymentHistory || {};
+    bankAccounts = bankData.accounts || {};
+    taxDeadline = taxData.taxDeadline || {};
+
+    calculateTotalTaxFromLog(logText);
+
+    const players = [...new Set([
+      ...Object.keys(paidPlayers),
+      ...Object.keys(paymentHistory),
+      ...Object.keys(bankAccounts),
+      ...(logText.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold)/g) || []).map(line => line.split(" - ")[1].split(" ")[0])
+    ])];
+
+    document.getElementById("profile").innerHTML = `
+      <h2>🛠️ Admin Panel</h2>
+      <p>Logged in as Admin</p>
+      <div class="btn-row">
+        <button onclick="syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline })">💾 Sync Tax</button>
+        <button onclick="syncToCloudflare(syncBankURL, { accounts: bankAccounts })">💾 Sync Bank</button>
+        <button onclick="exitApp()">🚪 Exit</button>
+      </div>
+    `;
+    document.getElementById("profile").style.display = "block";
+
+    document.getElementById("topTaxPlayers").innerHTML = `
+      <h3>📋 All Players</h3>
+      <ul>
+        ${players.map(p => {
+          const paid = (paymentHistory[p] || []).reduce((s, e) => s + Number(e.amount), 0);
+          const total = totalTaxByPlayer[p] || 0;
+          const due = Math.max(0, total - paid);
+          const version = p.includes(".") ? "Bedrock" : "Java";
+          return `<li>
+            <strong>${p}</strong> — Due: $${due.toFixed(2)} (${version})
+            <button onclick="viewPlayerAsAdmin('${p}')">👁 View</button>
+          </li>`;
+        }).join("")}
+      </ul>
+    `;
+    document.getElementById("topTaxPlayers").style.display = "block";
+
+  } catch (e) {
+    console.error("❌ Admin data load failed:", e);
+    alert("❌ Failed to load admin data.");
+  }
+}
+
+function viewPlayerAsAdmin(player) {
+  currentPlayer = player;
+  window.isAdminView = true;
+  loadTax(); // Admin view of player's data
+}
+
+function calculateTotalTaxFromLog(logText) {
+  totalTaxByPlayer = {};
+  const lines = logText.split(/\r?\n/);
+
+  lines.forEach(line => {
+    const match = line.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold).*?\$([\d,\.]+)/);
+    if (!match) return;
+
+    const [_, player, action, amountStr] = match;
+    const amount = parseFloat(amountStr.replace(/,/g, ""));
+    const tax = action === "bought" ? +(amount * 0.04).toFixed(2) : +(amount * 0.10).toFixed(2);
+
+    if (!totalTaxByPlayer[player]) totalTaxByPlayer[player] = 0;
+    totalTaxByPlayer[player] += tax;
+  });
+}
+
+function exitApp() {
+  window.isAdminView = false;
+  location.reload();
 }
 
   function createBankAccount() {
@@ -639,7 +729,8 @@ function showProfile(buy, sell, total, paid, due, advanced) {
       const all = paymentHistory[currentPlayer] || [];
       const fullBox = document.getElementById("fullHistoryBox");
       fullBox.innerHTML = `<h3>Full Payment History</h3><ul>
-        ${all.map(e => `<li>$${e.amount} on ${e.date}</li>`).join('')}</ul>
+      ${all.map(e => `<li>$${e.amount} on ${e.date}${e.adminNote ? ` <button onclick="alert('${e.adminNote}')">📌 Reason</button>` : ''}</li>`).join('')}
+  </ul>
         <div class="btn-row"><button onclick="hideFullHistory()">Close</button></div>`;
       fullBox.style.display = "block";
     }
@@ -765,32 +856,33 @@ function submitTax() {
   const amt = parseFloat(document.getElementById("payAmt").value);
   if (!amt || amt <= 0) return alert("❌ Invalid amount");
 
-  const isGovt = currentPlayer === "admin_mode";
+  const isGovt = window.isAdminView === true;
+  let adminNote = "";
 
-  // Optional reason if Govt
-  let note = "";
   if (isGovt) {
-    note = prompt("📝 Enter reason for Govt payment (optional):") || "";
+    adminNote = prompt("📋 Enter reason for Govt payment (optional):") || "Paid by Govt";
   }
 
   const entry = {
     amount: amt,
-    date: new Date().toLocaleString(),
-    adminNote: isGovt ? "Paid by Govt" : undefined,
-    desc: isGovt && note ? note : undefined
+    date: new Date().toLocaleString()
   };
+
+  if (isGovt) entry.adminNote = adminNote;
 
   if (!paymentHistory[currentPlayer]) paymentHistory[currentPlayer] = [];
   paymentHistory[currentPlayer].unshift(entry);
   paidPlayers[currentPlayer] = sumPayments(currentPlayer);
 
-  // 🔔 Webhook with optional reason
+  // 🔔 Webhook
+  const webhookMessage = isGovt
+    ? `🏛️ **Govt Payment**\nPlayer: \`${currentPlayer}\`\nAmount: $${amt}\nReason: ${adminNote}`
+    : `💰 **Tax Paid**\nPlayer: \`${currentPlayer}\`\nAmount: $${amt}`;
+
   fetch("https://tax-hook.1987sakshamsingh.workers.dev/?type=pay", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      content: `💰 **Tax Paid**\nPlayer: \`${currentPlayer}\`\nAmount: $${amt}${isGovt && note ? `\n📄 Reason: ${note}` : ""}`
-    })
+    body: JSON.stringify({ content: webhookMessage })
   });
 
   syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline });
@@ -952,77 +1044,6 @@ function togglePlatform() {
       <input id="mcid" type="text" placeholder="Java Username" />
     `;
   }
-}
-  async function loadAllDataForAdmin() {
-  try {
-    const [taxRes, bankRes, transRes] = await Promise.all([
-      fetch(taxURL),
-      fetch(bankURL),
-      fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt")
-    ]);
-    const taxData = await taxRes.json();
-    const bankData = await bankRes.json();
-   const logText = await transRes.text();
-calculateTotalTaxFromLog(logText);
-
-
-    paidPlayers = taxData.paidPlayers || {};
-    paymentHistory = taxData.paymentHistory || {};
-    bankAccounts = bankData.accounts || {};
-    taxDeadline = taxData.taxDeadline || {};
-
-    const players = [...new Set([
-      ...Object.keys(paidPlayers),
-      ...Object.keys(paymentHistory),
-      ...Object.keys(bankAccounts),
-      ...logText.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold)/g)?.map(line => line.split(" - ")[1].split(" ")[0]) || []
-    ])];
-
- document.getElementById("profile").innerHTML = `
-      <h2>🛠️ Admin Panel</h2>
-      <p>Logged in as Admin</p>
-      <div class="btn-row">
-        <button onclick="syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline })">💾 Sync Tax</button>
-        <button onclick="syncToCloudflare(syncBankURL, { accounts: bankAccounts })">💾 Sync Bank</button>
-        <button onclick="exitApp()">🚪 Exit</button>
-      </div>
-    `;
-    document.getElementById("profile").style.display = "block";
-   document.getElementById("topTaxPlayers").innerHTML = `<h3>📋 All Players</h3><ul>${
-  players.map(p => {
-    const paid = (paymentHistory[p] || []).reduce((sum, e) => sum + Number(e.amount), 0);
-    const total = totalTaxByPlayer[p] || 0;
-    const due = Math.max(0, total - paid);
-    return `<li><strong>${p}</strong> — Due: $${due.toFixed(2)} <button onclick="viewPlayerAsAdmin('${p}')">👁 View</button></li>`;
-  }).join("")
-}</ul>`;
-
-    document.getElementById("topTaxPlayers").style.display = "block";
-
-  } catch (e) {
-    console.error("❌ Failed to load admin data:", e);
-    alert("❌ Admin panel failed to load.");
-  }
-}
-function viewPlayerAsAdmin(player) {
-  currentPlayer = player;
-  loadTax();
-}
-function calculateTotalTaxFromLog(logText) {
-  totalTaxByPlayer = {};
-  const lines = logText.split(/\r?\n/);
-
-  lines.forEach(line => {
-    const match = line.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold).*?\$([\d,\.]+)/);
-    if (!match) return;
-
-    const [_, player, action, amountStr] = match;
-    const amount = parseFloat(amountStr.replace(/,/g, ""));
-    const tax = action === "bought" ? +(amount * 0.04).toFixed(2) : +(amount * 0.10).toFixed(2);
-
-    if (!totalTaxByPlayer[player]) totalTaxByPlayer[player] = 0;
-    totalTaxByPlayer[player] += tax;
-  });
 }
 
 </script>
