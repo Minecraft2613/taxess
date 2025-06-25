@@ -289,10 +289,10 @@
   const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
   const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
   const syncTransactionURL = "https://transaction.1987sakshamsingh.workers.dev/";
-  const bankHookURL    = "https://discordapp.com/api/webhooks/1387004135018336256/eH2abpMnl52NAAKXIoDvQsw2uq3i851I4_uKNJTwfqrv_oQppkjmBzcAA8Fs7zmqxjyJ";
-const paymentHookURL = "https://discordapp.com/api/webhooks/1387003883947032596/BkLzoSlQk6wLaPP4voI2mAshDTfXRaGkFf0mbK1Y0xfvU2XytWazF3MFjpvgugHnkKuR";
-const taxHookURL     = "https://discordapp.com/api/webhooks/1387003395604353035/vmsX1Kx3-uTgQ8452IXQtTjCPd6jiiCnHRCUikjHpgf4uziia_fFMzdrkOiztWDpoeI_";
-const infoHookURL    = "https://discordapp.com/api/webhooks/1385267628842684526/7aw6Ms9TLRUHfEvQK0Y6aQvj8zwy4TS0WIgdRQe0iGcOZeZg3r95gT3UTep4jhK3NhWZ";
+const infoHookURL = "https://tax-hook.1987sakshamsingh.workers.dev/?type=info";
+const bankHookURL = "https://tax-hook.1987sakshamsingh.workers.dev/?type=bank";
+const paymentHookURL = "https://tax-hook.1987sakshamsingh.workers.dev/?type=pay";
+const taxHookURL = "https://tax-hook.1987sakshamsingh.workers.dev/?type=tax";
 
   let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, currentPlayer = "", dailyData = {}, chart;
   let chartType = localStorage.getItem("chartType") || "line";
@@ -762,8 +762,8 @@ function submitTax() {
   paymentHistory[currentPlayer].unshift(entry);
   paidPlayers[currentPlayer] = sumPayments(currentPlayer);
 
-  // 💰 Payment webhook
-  fetch(paymentHookURL, {
+  // 🔒 Secure webhook call
+  fetch("https://tax-hook.1987sakshamsingh.workers.dev/?type=pay", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
