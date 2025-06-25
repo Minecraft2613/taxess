@@ -410,7 +410,10 @@ function markGovtPaid() {
   alert(`✅ Paid $${amount} as Govt for ${currentPlayer}`);
   document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
 }
-
+   // Refresh player details and list to update due
+      showPlayerDetails(currentPlayer);
+      renderPlayerTaxList();
+    }
  function autoSyncTax() {
   fetch("https://syncs.1987sakshamsingh.workers.dev/", {
     method: "POST",
@@ -418,10 +421,6 @@ function markGovtPaid() {
     body: JSON.stringify(taxData)
   }).then(r => alert(r.ok ? "✅ Tax Auto Synced" : "❌ Sync Failed"));
 }
-      // Refresh player details and list to update due
-      showPlayerDetails(currentPlayer);
-      renderPlayerTaxList();
-    }
 
     // Reset tax for current player
     function resetTax() {
