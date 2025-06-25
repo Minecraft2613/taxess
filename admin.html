@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🛠️ Admin Panel</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: monospace;
+      padding: 20px;
+    }
+    input, textarea, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #555;
+      font-size: 16px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔐 Admin Login</h2>
+  <input id="bankId" placeholder="Enter Admin Bank ID" />
+  <input id="bankPass" type="password" placeholder="Enter Password" />
+  <button onclick="verifyAdmin()">Login</button>
+
+  <div id="adminPanel" class="hidden">
+    <h2>🛠️ Admin Tools</h2>
+
+    <h3>🔍 Search Player</h3>
+    <input id="searchPlayer" placeholder="Exact MC Username (case-sensitive)" />
+    <button onclick="showPlayer()">Search</button>
+    <div id="playerResult"></div>
+
+    <h3>📤 Pay as Govt</h3>
+    <input id="govtName" placeholder="Player Name" />
+    <button onclick="payAsGovt()">Mark as Govt Paid</button>
+
+    <h3>📦 Tax JSON Editor</h3>
+    <textarea id="taxEditor" rows="10"></textarea>
+    <button onclick="saveTax()">Sync Tax</button>
+
+    <h3>🏦 Bank JSON Editor</h3>
+    <textarea id="bankEditor" rows="10"></textarea>
+    <button onclick="saveBank()">Sync Bank</button>
+
+    <br />
+    <button onclick="logout()">🚪 Logout Admin</button>
+  </div>
+
+  <script>
+    let taxData = {}, bankData = {}, currentPlayer = "";
+
+    async function verifyAdmin() {
+      const id = "BANK" + document.getElementById("bankId").value.trim();
+      const pass = document.getElementById("bankPass").value;
+
+      const adminRes = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
+      const admin = await adminRes.json();
+
+      if (id === admin.id && pass === admin.pass) {
+        alert("✅ Admin Access Granted");
+        document.getElementById("adminPanel").classList.remove("hidden");
+        loadData();
+      } else {
+        alert("❌ Invalid Admin ID or Password");
+      }
+    }
+
+    async function loadData() {
+      const [taxRes, bankRes] = await Promise.all([
+        fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json"),
+        fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json")
+      ]);
+      taxData = await taxRes.json();
+      bankData = await bankRes.json();
+      document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
+      document.getElementById("bankEditor").value = JSON.stringify(bankData, null, 2);
+    }
+
+    function showPlayer() {
+      const name = document.getElementById("searchPlayer").value.trim();
+      currentPlayer = name;
+      const paid = taxData.paidPlayers?.[name] || "❌ Not Paid";
+      const history = JSON.stringify(taxData.paymentHistory?.[name] || [], null, 2);
+      const bank = bankData.accounts?.[name] || null;
+      let html = `<h4>💰 Tax: ${paid}</h4><pre>${history}</pre>`;
+      if (bank) {
+        html += `<h4>🏦 Bank Info</h4>
+          <input id="editBankId" value="${bank.id}" />
+          <input id="editBankPass" value="${bank.password}" />
+          <input id="editBankContact" value="${bank.contact}" />
+          <button onclick="updateBank()">💾 Update</button>
+          <button onclick="deleteBank()">🗑️ Delete</button>`;
+      } else {
+        html += `<p>No bank account found.</p>`;
+      }
+      document.getElementById("playerResult").innerHTML = html;
+    }
+
+    function updateBank() {
+      const id = document.getElementById("editBankId").value;
+      const pass = document.getElementById("editBankPass").value;
+      const contact = document.getElementById("editBankContact").value;
+      bankData.accounts[currentPlayer] = { username: currentPlayer, id, password: pass, contact };
+      alert("✅ Bank updated");
+    }
+
+    function deleteBank() {
+      if (confirm("Are you sure you want to delete this bank account?")) {
+        delete bankData.accounts[currentPlayer];
+        alert("✅ Bank deleted");
+        document.getElementById("playerResult").innerHTML = "";
+      }
+    }
+
+    function payAsGovt() {
+      const name = document.getElementById("govtName").value.trim();
+      if (!name) return alert("Enter a player name");
+      taxData.paidPlayers = taxData.paidPlayers || {};
+      taxData.paidPlayers[name] = "PAID_BY_GOVT";
+      document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
+      alert("✅ Marked as Govt Paid");
+    }
+
+    function saveTax() {
+      try {
+        const data = JSON.parse(document.getElementById("taxEditor").value);
+        fetch("https://syncs.1987sakshamsingh.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        }).then(r => alert(r.ok ? "✅ Tax Synced" : "❌ Failed"));
+      } catch {
+        alert("❌ Invalid JSON in tax editor");
+      }
+    }
+
+    function saveBank() {
+      try {
+        const data = JSON.parse(document.getElementById("bankEditor").value);
+        fetch("https://syncs.1987sakshamsingh.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        }).then(r => alert(r.ok ? "✅ Bank Synced" : "❌ Failed"));
+      } catch {
+        alert("❌ Invalid JSON in bank editor");
+      }
+    }
+
+    function logout() {
+      document.getElementById("adminPanel").classList.add("hidden");
+      alert("🔒 Logged out");
+    }
+  </script>
+</body>
+</html>
