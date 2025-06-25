@@ -231,6 +231,9 @@
     <textarea id="bankEditor" class="editor-area"></textarea>
     <button onclick="saveBank()">Save Bank JSON</button>
   </section>
+<input id="govtAmount" type="number" placeholder="Enter Amount">
+<input id="govtDesc" placeholder="Description (optional)">
+<button onclick="markGovtPaid()">Pay as Govt</button>
 
   <script>
     // Data
@@ -410,10 +413,14 @@ function markGovtPaid() {
   alert(`✅ Paid $${amount} as Govt for ${currentPlayer}`);
   document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
 
-   // Refresh player details and list to update due
-      showPlayerDetails(currentPlayer);
-      renderPlayerTaxList();
-    }
+  // 🔄 Sync automatically after paying
+  autoSyncTax();
+
+  // 🔁 Refresh player details and list
+  showPlayerDetails(currentPlayer);
+  renderPlayerTaxList();
+}
+
  function autoSyncTax() {
   fetch("https://syncs.1987sakshamsingh.workers.dev/", {
     method: "POST",
