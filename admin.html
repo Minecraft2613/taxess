@@ -4,18 +4,73 @@
   <meta charset="UTF-8" />
   <title>🛠️ Admin Panel</title>
   <style>
-    body { background: #000; color: #fff; font-family: Arial; margin: 0; padding: 20px; }
-    h2, h3 { color: orange; text-shadow: 0 0 5px orange; }
-    input, button { padding: 8px; margin: 6px; border-radius: 5px; border: none; }
-    input { background: #111; color: #fff; }
-    button { background: orange; color: black; cursor: pointer; font-weight: bold; }
-    button:hover { background: gold; }
-    .section { margin: 20px 0; padding: 10px; border: 1px solid #444; border-radius: 6px; background: #111; box-shadow: 0 0 10px orange; }
-    .hidden { display: none; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 10px; border-bottom: 1px solid #333; text-align: left; }
-    .player-box { margin: 10px 0; padding: 10px; border: 1px solid #666; background: #111; box-shadow: 0 0 5px orange; }
-    label { display: block; margin-top: 8px; font-size: 14px; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h2, h3 {
+      color: orange;
+      text-shadow: 0 0 5px orange;
+    }
+    input, button {
+      padding: 8px;
+      margin: 6px;
+      border-radius: 5px;
+      border: none;
+    }
+    input {
+      background: #111;
+      color: #fff;
+    }
+    button {
+      background: orange;
+      color: black;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: gold;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      background: #111;
+      box-shadow: 0 0 10px orange;
+    }
+    .hidden {
+      display: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #333;
+      text-align: left;
+    }
+    .player-box {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #666;
+      background: #111;
+      box-shadow: 0 0 5px orange;
+    }
+    label {
+      display: block;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    #footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+    }
   </style>
 </head>
 <body>
@@ -46,6 +101,8 @@
       <div id="bankList"></div>
     </div>
   </div>
+
+  <div id="footer">Tax Admin Panel - Synced with GitHub JSON - Powered by Saksham Singh</div>
 
   <script>
     const adminJsonURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json";
