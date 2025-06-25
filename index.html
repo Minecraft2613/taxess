@@ -427,23 +427,23 @@ async function checkTax() {
 async function verifyBankLogin() {
   const id = "BANK" + document.getElementById("bankId").value.trim();
   const pass = document.getElementById("bankPass").value;
-  const account = bankAccounts[currentPlayer];
 
-  // 🔐 Admin login redirect to new admin.html
   try {
     const adminRes = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
     const admin = await adminRes.json();
+    const discord = prompt("Enter your Discord username");
 
-    if (id === admin.id && pass === admin.pass) {
-      alert("✅ Admin Access Granted!");
-      window.location.href = "admin.html";
+    if (id === admin.id && pass === admin.pass && admin.allowedDiscords.includes(discord)) {
+      alert("✅ Admin Access Granted");
+      document.getElementById("bankBox").style.display = "none";
+      loadAllDataForAdmin(); // ⬅️ Show full admin view
       return;
     }
   } catch (e) {
     console.warn("⚠️ Failed to verify admin:", e);
   }
 
-  // 🔐 Player login continues here...
+  const account = bankAccounts[currentPlayer];
   if (!account) {
     alert("⚠️ No account found. Please create a bank account.");
     askBankDetails();
@@ -452,7 +452,7 @@ async function verifyBankLogin() {
 
   if (account.id === id && account.password === pass) {
     document.getElementById("bankBox").style.display = "none";
-    loadTax();
+    loadTax(); // Load only personal tax
   } else {
     alert("❌ Invalid Bank ID or Password.");
   }
@@ -930,6 +930,78 @@ function togglePlatform() {
     `;
   }
 }
+  async function loadAllDataForAdmin() {
+  try {
+    const [taxRes, bankRes, transRes] = await Promise.all([
+      fetch(taxURL),
+      fetch(bankURL),
+      fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt")
+    ]);
+    const taxData = await taxRes.json();
+    const bankData = await bankRes.json();
+   const logText = await transRes.text();
+calculateTotalTaxFromLog(logText);
+
+
+    paidPlayers = taxData.paidPlayers || {};
+    paymentHistory = taxData.paymentHistory || {};
+    bankAccounts = bankData.accounts || {};
+    taxDeadline = taxData.taxDeadline || {};
+
+    const players = [...new Set([
+      ...Object.keys(paidPlayers),
+      ...Object.keys(paymentHistory),
+      ...Object.keys(bankAccounts),
+      ...logText.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold)/g)?.map(line => line.split(" - ")[1].split(" ")[0]) || []
+    ])];
+
+ document.getElementById("profile").innerHTML = `
+      <h2>🛠️ Admin Panel</h2>
+      <p>Logged in as Admin</p>
+      <div class="btn-row">
+        <button onclick="syncToCloudflare(syncTaxURL, { paidPlayers, paymentHistory, taxDeadline })">💾 Sync Tax</button>
+        <button onclick="syncToCloudflare(syncBankURL, { accounts: bankAccounts })">💾 Sync Bank</button>
+        <button onclick="exitApp()">🚪 Exit</button>
+      </div>
+    `;
+    document.getElementById("profile").style.display = "block";
+   document.getElementById("topTaxPlayers").innerHTML = `<h3>📋 All Players</h3><ul>${
+  players.map(p => {
+    const paid = (paymentHistory[p] || []).reduce((sum, e) => sum + Number(e.amount), 0);
+    const total = totalTaxByPlayer[p] || 0;
+    const due = Math.max(0, total - paid);
+    return `<li><strong>${p}</strong> — Due: $${due.toFixed(2)} <button onclick="viewPlayerAsAdmin('${p}')">👁 View</button></li>`;
+  }).join("")
+}</ul>`;
+
+    document.getElementById("topTaxPlayers").style.display = "block";
+
+  } catch (e) {
+    console.error("❌ Failed to load admin data:", e);
+    alert("❌ Admin panel failed to load.");
+  }
+}
+function viewPlayerAsAdmin(player) {
+  currentPlayer = player;
+  loadTax();
+}
+function calculateTotalTaxFromLog(logText) {
+  totalTaxByPlayer = {};
+  const lines = logText.split(/\r?\n/);
+
+  lines.forEach(line => {
+    const match = line.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold).*?\$([\d,\.]+)/);
+    if (!match) return;
+
+    const [_, player, action, amountStr] = match;
+    const amount = parseFloat(amountStr.replace(/,/g, ""));
+    const tax = action === "bought" ? +(amount * 0.04).toFixed(2) : +(amount * 0.10).toFixed(2);
+
+    if (!totalTaxByPlayer[player]) totalTaxByPlayer[player] = 0;
+    totalTaxByPlayer[player] += tax;
+  });
+}
+
 </script>
 </body>
 </html>
