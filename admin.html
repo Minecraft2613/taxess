@@ -4,217 +4,156 @@
   <meta charset="UTF-8" />
   <title>🛠️ Admin Panel</title>
   <style>
-    body { font-family: Arial; background: #111; color: #eee; padding: 20px; }
-    h2, h3 { color: gold; }
-    input, textarea, button {
-      margin: 6px; padding: 6px; border-radius: 4px; border: none;
-      font-family: inherit; font-size: 14px;
-    }
-    input, textarea {
-      background: #222; color: #fff; width: 250px;
-    }
-    button {
-      background: gold; color: #000; cursor: pointer;
-    }
+    body { background: #111; color: #eee; font-family: Arial; padding: 20px; }
+    input, button { padding: 8px; margin: 6px; font-size: 14px; border-radius: 4px; border: none; }
+    input { background: #222; color: #fff; width: 250px; }
+    button { background: gold; color: black; cursor: pointer; }
     button:hover { background: orange; }
-    .section, .player {
-      margin: 16px 0;
-      padding: 12px;
-      background: #1c1c1c;
-      border: 1px solid #444;
-      border-radius: 6px;
-    }
-    .hidden { display: none; }
+    #topTaxPlayers ul { list-style: none; padding: 0; }
+    #topTaxPlayers li { margin: 6px 0; }
+    .btn-row button { margin-right: 10px; }
   </style>
 </head>
 <body>
+
   <div id="loginBox">
     <h2>🔐 Admin Login</h2>
     <input id="adminId" placeholder="Admin Bank ID" />
-    <input id="adminPass" type="password" placeholder="Admin Password" />
+    <input id="adminPass" placeholder="Admin Password" type="password" />
     <button onclick="adminLogin()">Login</button>
   </div>
 
-  <div id="adminMenu" class="hidden">
-    <h2>🛠️ Admin Dashboard</h2>
-    <button onclick="showSection('taxSection')">📊 View Player Taxes</button>
-    <button onclick="showSection('bankSection')">🏦 View Bank Accounts</button>
-    <button onclick="syncTax()">💾 Sync Tax Data</button>
-    <button onclick="syncBank()">💾 Sync Bank Data</button>
-    <button onclick="location.reload()">🚪 Exit</button>
-  </div>
-
-  <div id="taxSection" class="hidden">
-    <h3>📊 Player Tax Overview</h3>
-    <div id="taxList">Loading...</div>
-  </div>
-
-  <div id="bankSection" class="hidden">
-    <h3>🏦 Bank Account Overview</h3>
-    <div id="bankList">Loading...</div>
-  </div>
+  <div id="profile" style="display:none;"></div>
+  <div id="topTaxPlayers" style="display:none;"></div>
 
 <script>
 const taxURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json";
 const bankURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json";
-const logURL  = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt";
-const adminURL = "https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json";
 const syncTaxURL = "https://syncs.1987sakshamsingh.workers.dev/";
 const syncBankURL = "https://b-syncs.1987sakshamsingh.workers.dev/";
 const webhookURL = "https://tax-hook.1987sakshamsingh.workers.dev/?type=pay";
 
-let paidPlayers = {}, paymentHistory = {}, taxDeadline = {}, bankAccounts = {};
-let transactionLog = "";
+let paidPlayers = {}, paymentHistory = {}, bankAccounts = {}, taxDeadline = {}, totalTaxByPlayer = {};
 
 async function adminLogin() {
   const id = document.getElementById("adminId").value.trim();
   const pass = document.getElementById("adminPass").value.trim();
   try {
-    const admin = await fetch(adminURL).then(r => r.json());
-    const discord = prompt("Enter your Discord username (e.g. Ansh_2613)");
-    if (!admin.allowedDiscords.includes(discord)) return alert("❌ Discord not allowed.");
-    if (id !== admin.id || pass !== admin.pass) return alert("❌ Invalid credentials");
+    const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/admin.json");
+    const admin = await res.json();
+    const discord = prompt("Enter your Discord username");
 
-    alert("✅ Admin Logged In");
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("adminMenu").classList.remove("hidden");
-
-    await loadData();
-  } catch (e) {
-    console.error(e);
-    alert("❌ Failed to load admin data");
-  }
-}
-
-async function loadData() {
-  try {
-    const [tax, bank, logText] = await Promise.all([
-      fetch(taxURL).then(r => r.json()),
-      fetch(bankURL).then(r => r.json()),
-      fetch(logURL).then(r => r.text())
-    ]);
-    paidPlayers = tax.paidPlayers || {};
-    paymentHistory = tax.paymentHistory || {};
-    taxDeadline = tax.taxDeadline || {};
-    bankAccounts = bank.accounts || {};
-    transactionLog = logText;
-  } catch (e) {
-    alert("❌ Failed to load data");
-    console.error(e);
-  }
-}
-
-function showSection(id) {
-  document.getElementById("taxSection").classList.add("hidden");
-  document.getElementById("bankSection").classList.add("hidden");
-  if (id === "taxSection") renderTaxList();
-  if (id === "bankSection") renderBankList();
-  document.getElementById(id).classList.remove("hidden");
-}
-
-function calculateDue(player) {
-  const lines = transactionLog.split(/\r?\n/);
-  let buy = 0, sell = 0;
-
-  lines.forEach(line => {
-    if (!line.toLowerCase().includes(player.toLowerCase())) return;
-    const buyMatch = line.match(/bought.*?\$([\d,\.]+)/);
-    const sellMatch = line.match(/sold.*?\$([\d,\.]+)/);
-    if (buyMatch) buy += parseFloat(buyMatch[1].replace(/,/g, "")) * 0.04;
-    if (sellMatch) sell += parseFloat(sellMatch[1].replace(/,/g, "")) * 0.10;
-  });
-
-  return +(buy + sell).toFixed(2);
-}
-
-function renderTaxList() {
-  const list = document.getElementById("taxList");
-  list.innerHTML = "";
-
-  const players = [...new Set([
-    ...Object.keys(paidPlayers),
-    ...Object.keys(paymentHistory),
-    ...Object.keys(bankAccounts)
-  ])];
-
-  players.forEach(player => {
-    const paid = (paymentHistory[player] || []).reduce((s, e) => s + Number(e.amount), 0);
-    const total = calculateDue(player);
-    const due = Math.max(0, total - paid);
-
-    const div = document.createElement("div");
-    div.className = "player";
-    div.innerHTML = `
-      👤 <b>${player}</b><br>
-      💰 Total Tax: $${total.toFixed(2)}<br>
-      ✅ Paid: $${paid.toFixed(2)}<br>
-      ❗ Due: $${due.toFixed(2)}<br>
-      <input type="number" id="amt-${player}" placeholder="Amount" />
-      <input type="text" id="desc-${player}" placeholder="Reason" />
-      <button onclick="payAsGovt('${player}', ${due})">💸 Pay</button>
-    `;
-    list.appendChild(div);
-  });
-}
-
-function renderBankList() {
-  const list = document.getElementById("bankList");
-  list.innerHTML = "";
-
-  const players = [...new Set([
-    ...Object.keys(paidPlayers),
-    ...Object.keys(bankAccounts)
-  ])];
-
-  players.forEach(player => {
-    const acc = bankAccounts[player];
-    const div = document.createElement("div");
-    div.className = "player";
-
-    if (acc) {
-      div.innerHTML = `
-        👤 <b>${player}</b><br>
-        🏦 Username: ${acc.username}<br>
-        🆔 ID: ${acc.id}<br>
-        🔑 Password: ${acc.password}<br>
-        📞 Contact: ${acc.contact || "N/A"}
-      `;
+    if (id === admin.id && pass === admin.pass && admin.allowedDiscords.includes(discord)) {
+      alert("✅ Admin Access Granted");
+      document.getElementById("loginBox").style.display = "none";
+      loadAllDataForAdmin();
     } else {
-      div.innerHTML = `
-        👤 <b>${player}</b><br>
-        ❌ Bank Account Not Created
-      `;
+      alert("❌ Invalid admin credentials");
     }
+  } catch (e) {
+    console.error("Failed to load admin.json", e);
+    alert("❌ Admin verification failed");
+  }
+}
 
-    list.appendChild(div);
+async function loadAllDataForAdmin() {
+  try {
+    const [taxRes, bankRes, transRes] = await Promise.all([
+      fetch(taxURL),
+      fetch(bankURL),
+      fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt")
+    ]);
+    const taxData = await taxRes.json();
+    const bankData = await bankRes.json();
+    const logText = await transRes.text();
+
+    calculateTotalTaxFromLog(logText);
+
+    paidPlayers = taxData.paidPlayers || {};
+    paymentHistory = taxData.paymentHistory || {};
+    bankAccounts = bankData.accounts || {};
+    taxDeadline = taxData.taxDeadline || {};
+
+    const players = [...new Set([
+      ...Object.keys(paidPlayers),
+      ...Object.keys(paymentHistory),
+      ...Object.keys(bankAccounts),
+      ...(logText.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold)/g)?.map(l => l.split(" - ")[1].split(" ")[0]) || [])
+    ])];
+
+    document.getElementById("profile").innerHTML = `
+      <h2>🛠️ Admin Panel</h2>
+      <p>Logged in as Admin</p>
+      <div class="btn-row">
+        <button onclick="syncTax()">💾 Sync Tax</button>
+        <button onclick="syncBank()">💾 Sync Bank</button>
+        <button onclick="location.reload()">🚪 Exit</button>
+      </div>
+    `;
+    document.getElementById("profile").style.display = "block";
+
+    document.getElementById("topTaxPlayers").innerHTML = `<h3>📋 All Players</h3><ul>${
+      players.map(p => {
+        const paid = (paymentHistory[p] || []).reduce((s, e) => s + Number(e.amount), 0);
+        const total = totalTaxByPlayer[p] || 0;
+        const due = Math.max(0, total - paid);
+        return `<li><strong>${p}</strong> — Due: $${due.toFixed(2)} 
+          <button onclick="viewPlayerAsAdmin('${p}')">👁 View</button></li>`;
+      }).join("")
+    }</ul>`;
+    document.getElementById("topTaxPlayers").style.display = "block";
+  } catch (e) {
+    console.error("❌ Failed to load admin data:", e);
+    alert("❌ Admin panel failed to load.");
+  }
+}
+
+function calculateTotalTaxFromLog(logText) {
+  totalTaxByPlayer = {};
+  const lines = logText.split(/\r?\n/);
+  lines.forEach(line => {
+    const match = line.match(/\] - ([a-zA-Z0-9_.]+) (bought|sold).*?\$([\d,\.]+)/);
+    if (!match) return;
+    const [_, player, type, amountStr] = match;
+    const amount = parseFloat(amountStr.replace(/,/g, ""));
+    const tax = type === "bought" ? +(amount * 0.04).toFixed(2) : +(amount * 0.10).toFixed(2);
+    if (!totalTaxByPlayer[player]) totalTaxByPlayer[player] = 0;
+    totalTaxByPlayer[player] += tax;
   });
 }
 
-function payAsGovt(player, maxDue) {
-  const amt = parseFloat(document.getElementById(`amt-${player}`).value);
-  const desc = document.getElementById(`desc-${player}`).value.trim();
-  if (!amt || amt <= 0 || amt > maxDue) return alert("❌ Invalid amount");
-  if (!desc) return alert("❌ Reason required");
+function viewPlayerAsAdmin(player) {
+  const paid = (paymentHistory[player] || []).reduce((s, e) => s + Number(e.amount), 0);
+  const total = totalTaxByPlayer[player] || 0;
+  const due = Math.max(0, total - paid);
 
-  const entry = {
-    amount: amt,
-    date: new Date().toLocaleString(),
-    adminNote: `Govt Paid - Reason: ${desc}`
-  };
-
-  if (!paymentHistory[player]) paymentHistory[player] = [];
-  paymentHistory[player].unshift(entry);
-  paidPlayers[player] = paymentHistory[player].reduce((s, e) => s + e.amount, 0);
-
-  fetch(webhookURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      content: `🏛️ **Govt Payment**\nPlayer: \`${player}\`\nAmount: $${amt}\nReason: ${desc}`
-    })
-  });
-
-  syncTax();
+  const win = window.open("", "_blank");
+  win.document.write(`
+    <html><head><title>${player}</title>
+    <style>body{background:#111;color:#eee;font-family:sans-serif;padding:20px}
+    input,button{padding:6px;margin:6px}</style></head><body>
+    <h2>👤 ${player}</h2>
+    <p>Total Tax: $${total.toFixed(2)}</p>
+    <p>Paid: $${paid.toFixed(2)}</p>
+    <p>Due: $${due.toFixed(2)}</p>
+    <input id="amt" type="number" placeholder="Amount" />
+    <input id="desc" placeholder="Reason" />
+    <button onclick="pay()">💸 Govt Pay</button>
+    <script>
+      function pay() {
+        const amt = parseFloat(document.getElementById('amt').value);
+        const desc = document.getElementById('desc').value;
+        if (!amt || amt <= 0 || !desc) return alert('❌ Fill valid amount and reason');
+        fetch("${webhookURL}", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+            content: "🏛️ **Govt Payment**\\nPlayer: \`${player}\`\\nAmount: $" + amt + "\\nReason: " + desc
+          })
+        }).then(() => alert("✅ Payment sent")).catch(() => alert("❌ Failed"));
+      }
+    </script></body></html>
+  `);
 }
 
 function syncTax() {
@@ -233,5 +172,6 @@ function syncBank() {
   }).then(r => alert(r.ok ? "✅ Synced Bank" : "❌ Failed"));
 }
 </script>
+
 </body>
 </html>
