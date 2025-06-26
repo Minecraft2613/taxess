@@ -198,6 +198,15 @@
   <h1>Admin Panel</h1>
 <form onsubmit="return false;">
 <label>Bank ID:</label>
+  <script>
+function prependBANK() {
+  const input = document.getElementById("bankId");
+  if (!input.value.startsWith("BANK")) {
+    input.value = "BANK" + input.value.replace(/^BANK/, "").replace(/\D/g, "");
+  }
+}
+</script>
+
 <input type="text" id="bankId" placeholder="Enter only number (e.g. 123)" oninput="prependBANK()" />
 
 <label>Password:</label>
