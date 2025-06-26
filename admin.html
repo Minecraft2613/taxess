@@ -196,6 +196,15 @@
 </head>
 <body>
   <h1>Admin Panel</h1>
+<form>
+  <label>Bank ID:</label>
+  <input type="text" id="bankId" placeholder="Enter BANK ID (e.g. BANK123)" />
+
+  <label>Password:</label>
+  <input type="password" id="bankPass" placeholder="Enter Bank Password" />
+
+  <button type="button" onclick="verifyBankLogin()">Login</button>
+</form>
 
   <div class="tabs">
     <div class="tab-button active" id="tabPlayerTaxBtn" onclick="showSection('playerTax')">Player Tax</div>
@@ -231,6 +240,45 @@
     <textarea id="bankEditor" class="editor-area"></textarea>
     <button onclick="saveBank()">Save Bank JSON</button>
   </section>
+<script>
+async function verifyBankLogin() {
+  const id = document.getElementById("bankId").value.trim();
+  const pass = document.getElementById("bankPass").value.trim();
+
+  if (!id.startsWith("BANK") || pass.length < 1) {
+    alert("❌ Please enter a valid BANK ID (e.g. BANK123) and password.");
+    return;
+  }
+
+  try {
+    const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json");
+    const bankData = await res.json();
+
+    const playerMatch = Object.values(bankData.accounts).find(acc => {
+      return "BANK" + acc.id === id && acc.password === pass;
+    });
+
+    if (playerMatch) {
+      alert("✅ Logged in as " + playerMatch.username);
+      localStorage.setItem("bankAuthed", "true");
+      localStorage.setItem("bankUser", playerMatch.username);
+      await loadAllData();
+    } else {
+      alert("❌ Invalid credentials.");
+    }
+  } catch (e) {
+    alert("Error verifying login: " + e.message);
+  }
+}
+  window.onload = () => {
+  if (localStorage.getItem("bankAuthed") === "true") {
+    loadAllData(); // Only runs if already logged in
+  } else {
+    alert("🔒 Please login using your BANK ID and password.");
+  }
+};
+
+</script>
 
   <script>
     // Data
