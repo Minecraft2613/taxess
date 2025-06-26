@@ -252,26 +252,26 @@ async function verifyBankLogin() {
     return;
   }
 
+  let playerMatch = null; // 🔧 Declare here so it's accessible outside try
+
   try {
     const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json");
     const bankData = await res.json();
 
-    const playerMatch = Object.values(bankData.accounts).find(acc => {
+    playerMatch = Object.values(bankData.accounts).find(acc => {
       return "BANK" + acc.id === id && acc.password === pass;
     });
 
-    if (playerMatch) {
-      alert("✅ Logged in as " + playerMatch.username);
-      localStorage.setItem("bankAuthed", "true");
-      localStorage.setItem("bankUser", playerMatch.username);
-      await loadAllData();
-    } else {
+    if (!playerMatch) {
       alert("❌ Invalid credentials.");
+      return;
     }
   } catch (e) {
     alert("Error verifying login: " + e.message);
+    return;
   }
-  if (playerMatch) {
+
+  // ✅ Use playerMatch here safely
   alert("✅ Logged in as " + playerMatch.username);
   localStorage.setItem("bankAuthed", "true");
   localStorage.setItem("bankUser", playerMatch.username);
@@ -279,7 +279,7 @@ async function verifyBankLogin() {
   document.querySelector("form").style.display = "none";
   await loadAllData();
 }
-}
+
 
  window.onload = () => {
   if (localStorage.getItem("bankAuthed") === "true") {
