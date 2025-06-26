@@ -204,7 +204,8 @@
 <input type="password" id="bankPass" placeholder="Enter Bank Password" />
 <button onclick="verifyBankLogin()">Login</button>
 </form>
-  <div class="tabs">
+ <div class="tabs" style="display:none;">
+
     <div class="tab-button active" id="tabPlayerTaxBtn" onclick="showSection('playerTax')">Player Tax</div>
     <div class="tab-button" id="tabBankBtn" onclick="showSection('bankInfo')">Player Bank Info</div>
     <div class="tab-button" id="tabSyncTaxBtn" onclick="showSection('syncTax')">Sync Tax JSON</div>
@@ -213,27 +214,28 @@
   </div>
 
   <!-- Player Tax Section -->
-  <section id="playerTax" class="container">
+<section id="playerTax" class="container" style="display:none;">
+
     <h2>Player Taxes</h2>
     <div id="playerTaxList"></div>
     <div id="adminPlayerPanel" style="margin-top: 20px;"></div>
   </section>
 
   <!-- Bank Info Section -->
-  <section id="bankInfo" class="container hidden">
+ <section id="bankInfo" class="container hidden" style="display:none;">
     <h2>Player Bank Accounts</h2>
     <div id="bankList"></div>
   </section>
 
   <!-- Sync Tax Section -->
-  <section id="syncTax" class="container hidden">
+ <section id="syncTax" class="container hidden" style="display:none;">
     <h2>Edit and Sync Tax JSON</h2>
     <textarea id="taxEditor" class="editor-area"></textarea>
     <button onclick="saveTax()">Save Tax JSON</button>
   </section>
 
   <!-- Sync Bank Section -->
-  <section id="syncBank" class="container hidden">
+ <section id="syncBank" class="container hidden" style="display:none;">
     <h2>Edit and Sync Bank JSON</h2>
     <textarea id="bankEditor" class="editor-area"></textarea>
     <button onclick="saveBank()">Save Bank JSON</button>
@@ -262,49 +264,65 @@ function verifyBankLogin() {
   // fetch bank-data.json and validate
 }
     <script>
-  let isLoggedIn = false;
+       let isLoggedIn = false;
+async function verifyBankLogin() {
+  const rawId = document.getElementById("bankId").value.trim();
+  const pass = document.getElementById("bankPass").value.trim();
 
-  async function verifyBankLogin() {
-    const rawId = document.getElementById("bankId").value.trim();
-    const pass = document.getElementById("bankPass").value.trim();
+  if (!rawId.startsWith("BANK") || pass.length < 1) {
+    alert("❌ Enter valid BANK ID and password.");
+    return;
+  }
 
-    if (!rawId.startsWith("BANK") || pass.length < 1) {
-      alert("❌ Enter full BANK ID and password.");
+  const id = rawId;
+  try {
+    const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json");
+    const bankJson = await res.json();
+    const accounts = bankJson.accounts || {};
+    const player = Object.values(accounts).find(acc => ("BANK" + acc.id) === id && acc.password === pass);
+
+    if (!player) {
+      alert("❌ Invalid credentials.");
       return;
     }
 
-    const id = rawId;
-    try {
-      const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json");
-      const bankJson = await res.json();
-      const accounts = bankJson.accounts || {};
-      const player = Object.values(accounts).find(acc => ("BANK" + acc.id) === id && acc.password === pass);
+    // ✅ Valid login
+    localStorage.setItem("bankLogin", id);
+    document.querySelector("form").style.display = "none";
+    document.querySelector(".tabs").style.display = "flex";
 
-      if (!player) {
-        alert("❌ Invalid credentials.");
-        return;
-      }
+    // Show all sections (you can show one default, like playerTax)
+    ["playerTax", "bankInfo", "syncTax", "syncBank"].forEach(sec => {
+      document.getElementById(sec).style.display = "block";
+    });
 
-      // ✅ Valid login
-      localStorage.setItem("bankLogin", id);
-      isLoggedIn = true;
-      document.querySelector("form").style.display = "none";
-      document.querySelector(".tabs").style.display = "flex";
-      document.querySelector(".container").style.display = "block";
-      loadAllData();
-    } catch (e) {
-      alert("Error verifying login: " + e.message);
-    }
+    loadAllData();
+  } catch (e) {
+    alert("Error verifying login: " + e.message);
   }
+}
 
   // On page load, check session
   window.onload = () => {
-    const savedId = localStorage.getItem("bankLogin");
-    if (savedId) {
-      document.getElementById("bankId").value = savedId;
-    }
+  const savedId = localStorage.getItem("bankLogin");
+  if (!savedId) {
+    // Prevent showing tabs or panels before login
+    document.querySelector("form").style.display = "block";
+    document.querySelector(".tabs").style.display = "none";
+    ["playerTax", "bankInfo", "syncTax", "syncBank"].forEach(sec => {
+      document.getElementById(sec).style.display = "none";
+    });
+  } else {
+    document.getElementById("bankId").value = savedId;
+    document.querySelector("form").style.display = "none";
+    document.querySelector(".tabs").style.display = "flex";
+    ["playerTax", "bankInfo", "syncTax", "syncBank"].forEach(sec => {
+      document.getElementById(sec).style.display = "block";
+    });
     loadAllData();
-  };
+  }
+};
+
 </script>
     <script>
   window.addEventListener("DOMContentLoaded", () => {
