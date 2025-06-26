@@ -253,26 +253,34 @@ function prependBANK() {
   <script>
       let isLoggedIn = false;
 async function verifyBankLogin() {
-  const rawId = document.getElementById("bankId").value.trim();
+  const id = document.getElementById("bankId").value.trim();
   const pass = document.getElementById("bankPass").value.trim();
 
-  if (!rawId.startsWith("BANK") || pass.length < 1) {
-    alert("❌ Enter valid BANK ID and password.");
+  if (!id.startsWith("BANK") || pass.length < 1) {
+    alert("❌ Please enter a valid BANK ID and password.");
     return;
   }
 
-  const id = rawId;
   try {
     const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json");
-    const bankJson = await res.json();
-    const accounts = bankJson.accounts || {};
-    const player = Object.values(accounts).find(acc => ("BANK" + acc.id) === id && acc.password === pass);
+    const bankData = await res.json();
 
-    if (!player) {
+    const playerMatch = Object.values(bankData.accounts).find(acc => {
+      return "BANK" + acc.id === id && acc.password === pass;
+    });
+
+    if (playerMatch) {
+      alert("✅ Logged in as " + playerMatch.username);
+      localStorage.setItem("bankAuthed", "true");
+      localStorage.setItem("bankUser", playerMatch.username);
+      location.reload(); // or redirect if needed
+    } else {
       alert("❌ Invalid credentials.");
-      return;
     }
-
+  } catch (err) {
+    alert("❌ Error loading bank data: " + err.message);
+  }
+}
     // ✅ Valid login
     localStorage.setItem("bankLogin", id);
     document.querySelector("form").style.display = "none";
