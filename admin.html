@@ -196,25 +196,8 @@
 </head>
 <body>
   <h1>Admin Panel</h1>
-<form onsubmit="return false;">
-<label>Bank ID:</label>
-  <script>
-function prependBANK() {
-  const input = document.getElementById("bankId");
-  if (!input.value.startsWith("BANK")) {
-    input.value = "BANK" + input.value.replace(/^BANK/, "").replace(/\D/g, "");
-  }
-}
-</script>
 
-<input type="text" id="bankId" placeholder="Enter only number (e.g. 123)" oninput="prependBANK()" />
-
-<label>Password:</label>
-<input type="password" id="bankPass" placeholder="Enter Bank Password" >
-<button onclick="verifyBankLogin()">Login</button>
-</form>
- <div class="tabs" style="display:none;">
-
+  <div class="tabs">
     <div class="tab-button active" id="tabPlayerTaxBtn" onclick="showSection('playerTax')">Player Tax</div>
     <div class="tab-button" id="tabBankBtn" onclick="showSection('bankInfo')">Player Bank Info</div>
     <div class="tab-button" id="tabSyncTaxBtn" onclick="showSection('syncTax')">Sync Tax JSON</div>
@@ -223,106 +206,33 @@ function prependBANK() {
   </div>
 
   <!-- Player Tax Section -->
-<section id="playerTax" class="container" style="display:none;">
-
+  <section id="playerTax" class="container">
     <h2>Player Taxes</h2>
     <div id="playerTaxList"></div>
     <div id="adminPlayerPanel" style="margin-top: 20px;"></div>
   </section>
 
   <!-- Bank Info Section -->
- <section id="bankInfo" class="container hidden" style="display:none;">
+  <section id="bankInfo" class="container hidden">
     <h2>Player Bank Accounts</h2>
     <div id="bankList"></div>
   </section>
 
   <!-- Sync Tax Section -->
- <section id="syncTax" class="container hidden" style="display:none;">
+  <section id="syncTax" class="container hidden">
     <h2>Edit and Sync Tax JSON</h2>
     <textarea id="taxEditor" class="editor-area"></textarea>
     <button onclick="saveTax()">Save Tax JSON</button>
   </section>
 
   <!-- Sync Bank Section -->
- <section id="syncBank" class="container hidden" style="display:none;">
+  <section id="syncBank" class="container hidden">
     <h2>Edit and Sync Bank JSON</h2>
     <textarea id="bankEditor" class="editor-area"></textarea>
     <button onclick="saveBank()">Save Bank JSON</button>
   </section>
 
   <script>
-      let isLoggedIn = false;
-async function verifyBankLogin() {
-  const id = document.getElementById("bankId").value.trim();
-  const pass = document.getElementById("bankPass").value.trim();
-
-  if (!id.startsWith("BANK") || pass.length < 1) {
-    alert("❌ Please enter a valid BANK ID and password.");
-    return;
-  }
-
-  try {
-    const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json");
-    const bankData = await res.json();
-
-    const playerMatch = Object.values(bankData.accounts).find(acc => {
-      return "BANK" + acc.id === id && acc.password === pass;
-    });
-
-    if (playerMatch) {
-      alert("✅ Logged in as " + playerMatch.username);
-      localStorage.setItem("bankAuthed", "true");
-      localStorage.setItem("bankUser", playerMatch.username);
-      location.reload(); // or redirect if needed
-    } else {
-      alert("❌ Invalid credentials.");
-    }
-  } catch (err) {
-    alert("❌ Error loading bank data: " + err.message);
-  }
-}
-    // ✅ Valid login
-    localStorage.setItem("bankLogin", id);
-    document.querySelector("form").style.display = "none";
-    document.querySelector(".tabs").style.display = "flex";
-
-    // Show all sections (you can show one default, like playerTax)
-    ["playerTax", "bankInfo", "syncTax", "syncBank"].forEach(sec => {
-      document.getElementById(sec).style.display = "block";
-    });
-
-    loadAllData();
-  } catch (e) {
-    alert("Error verifying login: " + e.message);
-  }
-}
-
-  // On page load, check session
-  window.onload = () => {
-  const savedId = localStorage.getItem("bankLogin");
-  if (!savedId) {
-    // Prevent showing tabs or panels before login
-    document.querySelector("form").style.display = "block";
-    document.querySelector(".tabs").style.display = "none";
-    ["playerTax", "bankInfo", "syncTax", "syncBank"].forEach(sec => {
-      document.getElementById(sec).style.display = "none";
-    });
-  } else {
-    document.getElementById("bankId").value = savedId;
-    document.querySelector("form").style.display = "none";
-    document.querySelector(".tabs").style.display = "flex";
-    ["playerTax", "bankInfo", "syncTax", "syncBank"].forEach(sec => {
-      document.getElementById(sec).style.display = "block";
-    });
-    loadAllData();
-  }
-};
-  window.addEventListener("DOMContentLoaded", () => {
-    const bankId = document.getElementById("bankId");
-    if (!bankId.value) {
-      bankId.value = "BANK";
-    }
-  });
     // Data
     let taxData = {}, bankData = {}, transactionsLog = "";
     let currentPlayer = "";
@@ -657,9 +567,5 @@ function payAsGovt() {
 }
 
   </script>
-
-
-</script>
-
 </body>
 </html>
