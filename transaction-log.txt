@@ -482,3 +482,119 @@
 [2025-06-21 16:43:11] - ansh sold 598x Iron Ingot(Ores.page1.items.16) for $48,007.43 with the sell gui.
 [2025-06-22 04:53:49] - ansh sold 135x Iron Ingot(Ores.page1.items.16) for $10,837.80 with the sell gui.
 [2025-06-22 10:46:48] - ansh sold 102x Iron Ingot(Ores.page1.items.16) for $8,188.55 with the sell gui.
+[2025-06-22 15:08:14] - ansh sold 521x Iron Ingot(Ores.page1.items.16) for $41,825.87 with the sell gui.
+[2025-06-22 15:14:17] - ansh sold 82x Iron Ingot(Ores.page1.items.16) for $6,582.96 with the sell gui.
+[2025-06-22 15:14:27] - ansh bought 1 x Elytra(Miscellaneous.page1.items.8) for $9,999.00 with the buy screen.
+[2025-06-22 15:23:10] - ansh sold 135x Iron Ingot(Ores.page1.items.16), 354x Poppy(Dyes.page1.items.28) for $13,662.72 with the sell gui.
+[2025-06-22 15:29:05] - ansh sold 64x Iron Ingot(Ores.page1.items.16) for $5,137.92 with the sell gui.
+[2025-06-22 15:36:22] - ansh bought 256 x Tuff Bricks(Blocks.page4.items.191) for $537.60 with the buy stacks screen.
+[2025-06-22 15:36:22] - ansh bought 256 x Tuff Bricks(Blocks.page4.items.191) for $537.60 with the buy stacks screen.
+[2025-06-22 15:37:16] - ansh bought 192 x Oak Planks(Blocks.page5.items.231) for $192.00 with the buy stacks screen.
+[2025-06-22 15:40:42] - ansh bought 192 x Tuff Bricks(Blocks.page4.items.191) for $403.20 with the buy stacks screen.
+[2025-06-22 15:40:43] - ansh bought 192 x Tuff Bricks(Blocks.page4.items.191) for $403.20 with the buy stacks screen.
+[2025-06-22 15:42:54] - ansh sold 192x Iron Ingot(Ores.page1.items.16) for $15,413.76 with the sell gui.
+[2025-06-22 15:56:39] - ansh bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-22 15:56:39] - ansh bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-22 15:56:40] - ansh bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-22 15:56:55] - ansh bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-22 15:57:07] - ansh bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-22 16:10:55] - ansh sold 276x Iron Ingot(Ores.page1.items.16) for $22,157.28 with the sell gui.
+[2025-06-22 16:39:02] - ansh sold 211x Iron Ingot(Ores.page1.items.16) for $16,939.08 with the sell gui.
+[2025-06-22 17:25:27] - ansh sold 340x Iron Ingot(Ores.page1.items.16) for $27,295.19 with the sell gui.
+[2025-06-22 17:30:59] - ansh sold 84 x Iron Ingot(Ores.page1.items.16) for $6,743.52 with the sell screen.
+[2025-06-22 17:31:05] - ansh bought 33 x Gunpowder(Mobs.page1.items.10) for $511.50 with the buy screen.
+[2025-06-22 17:31:09] - ansh bought 33 x Sugar Cane(Farming.page1.items.25) for $495.00 with the buy screen.
+[2025-06-22 17:37:32] - ansh sold 76x Iron Ingot(Ores.page1.items.16), 299x Poppy(Dyes.page1.items.28) for $8,487.30 with the sell gui.
+[2025-06-22 17:54:29] - ansh sold 266x Iron Ingot(Ores.page1.items.16) for $21,354.48 with the sell gui.
+[2025-06-23 05:44:23] - ansh sold 241x Poppy(Dyes.page1.items.28), 573x Iron Ingot(Ores.page1.items.16) for $47,923.61 with the sell gui.
+[2025-06-23 05:47:37] - ansh sold 7x Poppy(Dyes.page1.items.28), 71x Iron Ingot(Ores.page1.items.16) for $5,755.74 with the sell gui.
+[2025-06-23 06:00:42] - ansh sold 40x Poppy(Dyes.page1.items.28), 154x Iron Ingot(Ores.page1.items.16) for $12,682.32 with the sell gui.
+[2025-06-23 06:22:56] - ansh sold 62x Poppy(Dyes.page1.items.28), 262x Iron Ingot(Ores.page1.items.16) for $21,528.12 with the sell gui.
+[2025-06-23 06:26:34] - ansh bought 128 x Experience Bottle(Miscellaneous.page1.items.11) for $6,400.00 with the buy stacks screen.
+[2025-06-23 06:26:45] - ansh bought 1 x Enchanted Book(Enchanting.page1.items.40) for $5,000.00 with the buy screen.
+[2025-06-23 06:26:50] - ansh bought 1 x Enchanted Book(Enchanting.page1.items.23) for $5,000.00 with the buy screen.
+[2025-06-23 06:59:40] - ansh sold 278x Iron Ingot(Ores.page1.items.16) for $22,317.84 with the sell gui.
+[2025-06-23 07:26:13] - ansh bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy stacks screen.
+[2025-06-23 07:26:13] - ansh bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy stacks screen.
+[2025-06-23 07:26:14] - ansh bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy stacks screen.
+[2025-06-23 07:26:19] - ansh bought 64 x Sugar Cane(Farming.page1.items.25) for $960.00 with the buy stacks screen.
+[2025-06-23 07:26:20] - ansh bought 64 x Sugar Cane(Farming.page1.items.25) for $960.00 with the buy stacks screen.
+[2025-06-23 07:26:20] - ansh bought 64 x Sugar Cane(Farming.page1.items.25) for $960.00 with the buy stacks screen.
+[2025-06-23 07:30:25] - ansh sold 178x Poppy(Dyes.page1.items.28), 444x Iron Ingot(Ores.page1.items.16) for $37,064.76 with the sell gui.
+[2025-06-23 07:50:44] - ansh bought 1 x Pumpkin(Farming.page1.items.22) for $15.00 with the buy screen.
+[2025-06-23 07:50:44] - ansh bought 1 x Pumpkin(Farming.page1.items.22) for $15.00 with the buy screen.
+[2025-06-23 07:50:44] - ansh bought 1 x Pumpkin(Farming.page1.items.22) for $15.00 with the buy screen.
+[2025-06-23 07:50:46] - ansh bought 1 x Pumpkin(Farming.page1.items.22) for $15.00 with the buy screen.
+[2025-06-23 07:50:52] - ansh bought 18 x Iron Block(Ores.page1.items.15) for $16,200.00 with the buy screen.
+[2025-06-23 07:51:00] - ansh sold 1 x Iron Block(Ores.page1.items.15) for $647.62 with the sell screen.
+[2025-06-23 07:51:00] - ansh sold 1 x Iron Block(Ores.page1.items.15) for $647.62 with the sell screen.
+[2025-06-23 07:51:01] - ansh sold 1 x Iron Block(Ores.page1.items.15) for $647.62 with the sell screen.
+[2025-06-23 07:51:05] - ansh bought 1 x Iron Block(Ores.page1.items.15) for $900.00 with the buy screen.
+[2025-06-23 07:51:09] - ansh bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-23 07:51:10] - ansh bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-23 07:51:10] - ansh bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-23 07:51:11] - ansh bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-23 07:51:11] - ansh bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-23 07:57:23] - ansh bought 7 x Iron Ingot(Ores.page1.items.16) for $700.00 with the buy screen.
+[2025-06-23 16:44:23] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-23 16:44:23] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-23 16:44:24] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-23 16:44:24] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-23 16:49:54] - ansh sold 228x Iron Ingot(Ores.page1.items.16) for $18,303.84 with the sell gui.
+[2025-06-23 17:19:12] - ansh sold 171x Poppy(Dyes.page1.items.28), 297x Iron Ingot(Ores.page1.items.16) for $25,207.74 with the sell gui.
+[2025-06-24 07:15:27] - .Atharva4617 bought 1 x Red Bed(Miscellaneous.page1.items.25) for $50.00 with the buy screen.
+[2025-06-24 07:15:49] - .Atharva4617 bought 32 x Diamond(Ores.page1.items.9) for $48,000.00 with the buy screen.
+[2025-06-24 07:16:03] - .Atharva4617 bought 7 x Netherite Ingot(Ores.page1.items.20) for $59,500.00 with the buy screen.
+[2025-06-24 07:16:12] - .Atharva4617 bought 3 x Diamond(Ores.page1.items.9) for $4,500.00 with the buy screen.
+[2025-06-24 07:16:21] - .Atharva4617 bought 4 x Redstone(Ores.page1.items.23) for $60.00 with the buy screen.
+[2025-06-24 07:17:03] - .Atharva4617 bought 5 x Netherite Upgrade Smithing Template(Decoration.page4.items.141) for $15,965.25 with the buy screen.
+[2025-06-24 07:17:30] - .Atharva4617 bought 4 x Silence Armor Trim Smithing Template(Decoration.page4.items.146) for $12,773.20 with the buy screen.
+[2025-06-24 07:18:55] - .Atharva4617 bought 1 x Diamond(Ores.page1.items.9) for $1,500.00 with the buy screen.
+[2025-06-24 07:18:59] - .Atharva4617 bought 3 x Diamond(Ores.page1.items.9) for $4,500.00 with the buy screen.
+[2025-06-24 07:19:53] - .Atharva3044 bought 2 x Iron Ingot(Ores.page1.items.16) for $200.00 with the buy screen.
+[2025-06-24 07:20:04] - .Atharva4617 bought 1 x Enchanted Book(Enchanting.page1.items.9) for $5,000.00 with the buy screen.
+[2025-06-24 07:20:15] - .Atharva4617 bought 1 x Enchanted Book(Enchanting.page1.items.40) for $5,000.00 with the buy screen.
+[2025-06-24 07:21:49] - .Atharva3044 bought 3 x Iron Block(Ores.page1.items.15) for $2,700.00 with the buy screen.
+[2025-06-24 07:21:57] - .Atharva4617 bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-24 07:21:58] - .Atharva4617 bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-24 07:21:59] - .Atharva4617 bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-24 07:22:03] - .Atharva4617 bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-24 07:22:46] - .Atharva4617 bought 17 x Experience Bottle(Miscellaneous.page1.items.11) for $850.00 with the buy screen.
+[2025-06-24 07:23:07] - .Atharva4617 bought 1 x Experience Bottle(Miscellaneous.page1.items.11) for $50.00 with the buy screen.
+[2025-06-24 07:23:25] - .Atharva3044 bought 4 x Iron Ingot(Ores.page1.items.16) for $400.00 with the buy screen.
+[2025-06-24 07:23:50] - .Atharva4617 bought 1 x Experience Bottle(Miscellaneous.page1.items.11) for $50.00 with the buy screen.
+[2025-06-24 07:23:51] - .Atharva4617 bought 1 x Experience Bottle(Miscellaneous.page1.items.11) for $50.00 with the buy screen.
+[2025-06-24 07:23:52] - .Atharva4617 bought 1 x Experience Bottle(Miscellaneous.page1.items.11) for $50.00 with the buy screen.
+[2025-06-24 07:23:53] - .Atharva4617 bought 1 x Experience Bottle(Miscellaneous.page1.items.11) for $50.00 with the buy screen.
+[2025-06-24 07:24:17] - .Atharva4617 bought 17 x Experience Bottle(Miscellaneous.page1.items.11) for $850.00 with the buy screen.
+[2025-06-24 07:25:48] - .Atharva4617 bought 64 x Bread(Food.page1.items.2) for $960.00 with the buy stacks screen.
+[2025-06-24 07:35:22] - .Atharva3044 bought 1 x Iron Ingot(Ores.page1.items.16) for $100.00 with the buy screen.
+[2025-06-24 07:38:35] - .Atharva4617 sold 3x Crimson Stem(Blocks.page5.items.208) for $15.00 with the sell gui.
+[2025-06-24 07:41:10] - .Atharva3044 bought 3 x Diamond(Ores.page1.items.9) for $4,500.00 with the buy screen.
+[2025-06-24 07:41:38] - .Atharva3044 bought 18 x Experience Bottle(Miscellaneous.page1.items.11) for $900.00 with the buy screen.
+[2025-06-24 07:44:15] - .Atharva4617 bought 1 x Enchanted Book(Enchanting.page1.items.40) for $5,000.00 with the buy screen.
+[2025-06-24 07:44:54] - .Atharva3044 bought 1 x Enchanted Book(Enchanting.page1.items.9) for $5,000.00 with the buy screen.
+[2025-06-24 07:55:46] - .Atharva4617 sold 609x Spruce Log(Blocks.page5.items.235), 2x White Wool(Blocks.page6.items.261), 3x Mutton(Food.page1.items.18), 10x Spruce Planks(Blocks.page5.items.236), 23x Spruce Sapling(Decoration.page2.items.84), 1x Oak Planks(Blocks.page5.items.231) for $2,545.76 with the sell gui.
+[2025-06-24 08:42:09] - .Atharva4617 sold 948x Spruce Log(Blocks.page5.items.235) for $3,792.00 with the sell gui.
+[2025-06-24 08:58:13] - .Atharva4617 sold 633x Spruce Log(Blocks.page5.items.235), 6x Wheat Seeds(Farming.page1.items.29), 1x Poppy(Dyes.page1.items.28), 48x Spruce Sapling(Decoration.page2.items.84) for $2,589.48 with the sell gui.
+[2025-06-24 09:09:55] - .Atharva4617 sold 574x Spruce Log(Blocks.page5.items.235) for $2,296.00 with the sell gui.
+[2025-06-24 09:26:24] - .Atharva4617 sold 841x Spruce Log(Blocks.page5.items.235), 25x Spruce Sapling(Decoration.page2.items.84) for $3,382.75 with the sell gui.
+[2025-06-24 14:45:03] - ansh sold 513x Iron Ingot(Ores.page1.items.16) for $41,183.63 with the sell gui.
+[2025-06-24 15:04:36] - .Atharva4617 sold 1141x Spruce Log(Blocks.page5.items.235) for $4,564.00 with the sell gui.
+[2025-06-24 15:05:51] - .Atharva4617 bought 3 x Diamond(Ores.page1.items.9) for $4,500.00 with the buy screen.
+[2025-06-24 15:06:32] - .Atharva4617 bought 1 x Enchanted Book(Enchanting.page1.items.9) for $5,000.00 with the buy screen.
+[2025-06-24 15:06:41] - .Atharva4617 bought 1 x Enchanted Book(Enchanting.page1.items.40) for $5,000.00 with the buy screen.
+[2025-06-24 15:07:27] - .Atharva4617 bought 17 x Experience Bottle(Miscellaneous.page1.items.11) for $850.00 with the buy screen.
+[2025-06-24 15:07:29] - .Atharva4617 bought 17 x Experience Bottle(Miscellaneous.page1.items.11) for $850.00 with the buy screen.
+[2025-06-24 16:02:34] - ansh sold 56x Iron Ingot(Ores.page1.items.16), 136x Poppy(Dyes.page1.items.28) for $5,580.96 with the sell gui.
+[2025-06-24 16:15:22] - ansh sold 224x Iron Ingot(Ores.page1.items.16), 39x Poppy(Dyes.page1.items.28), 16x Pumpkin Seeds(Farming.page1.items.23) for $18,437.94 with the sell gui.
+[2025-06-24 16:35:55] - ansh sold 303x Iron Ingot(Ores.page1.items.16) for $24,324.84 with the sell gui.
+[2025-06-24 16:50:50] - ansh sold 218x Iron Ingot(Ores.page1.items.16) for $17,501.04 with the sell gui.
+[2025-06-24 16:57:57] - ansh sold 128x Iron Ingot(Ores.page1.items.16), 169x Poppy(Dyes.page1.items.28) for $11,624.46 with the sell gui.
+[2025-06-24 17:18:08] - ansh sold 309x Iron Ingot(Ores.page1.items.16), 70x Poppy(Dyes.page1.items.28) for $25,365.12 with the sell gui.
+[2025-06-24 17:29:18] - .Atharva4617 sold 1079x Spruce Log(Blocks.page5.items.235) for $4,316.00 with the sell gui.
+[2025-06-24 17:51:03] - .Atharva4617 sold 1118x Spruce Log(Blocks.page5.items.235) for $4,472.00 with the sell gui.
+[2025-06-25 04:58:00] - ansh sold 226x Iron Ingot(Ores.page1.items.16) for $18,143.28 with the sell gui.
+[2025-06-25 05:17:10] - ansh sold 267x Iron Ingot(Ores.page1.items.16) for $21,434.76 with the sell gui.
+[2025-06-25 05:58:21] - ansh sold 520x Iron Ingot(Ores.page1.items.16) for $41,745.59 with the sell gui.
+[2025-06-25 05:58:39] - ansh sold 42x Iron Ingot(Ores.page1.items.16) for $3,371.76 with the sell gui.
