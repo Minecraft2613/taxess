@@ -196,17 +196,7 @@
 </head>
 <body>
   <h1>Admin Panel</h1>
-<form>
-  <label>Bank ID:</label>
-  <input type="text" id="bankId" placeholder="Enter BANK ID (e.g. BANK123)" />
 
-  <label>Password:</label>
-  <input type="password" id="bankPass" placeholder="Enter Bank Password" />
-
-  <button type="button" onclick="verifyBankLogin()">Login</button>
-</form>
-
-  <div id="adminPanel" style="display:none;">
   <div class="tabs">
     <div class="tab-button active" id="tabPlayerTaxBtn" onclick="showSection('playerTax')">Player Tax</div>
     <div class="tab-button" id="tabBankBtn" onclick="showSection('bankInfo')">Player Bank Info</div>
@@ -241,58 +231,6 @@
     <textarea id="bankEditor" class="editor-area"></textarea>
     <button onclick="saveBank()">Save Bank JSON</button>
   </section>
-    </div>
-<script>
-async function verifyBankLogin() {
-  const id = document.getElementById("bankId").value.trim();
-  const pass = document.getElementById("bankPass").value.trim();
-
-  if (!id.startsWith("BANK") || pass.length < 1) {
-    alert("❌ Please enter a valid BANK ID (e.g. BANK123) and password.");
-    return;
-  }
-
-  let playerMatch = null; // 🔧 Declare here so it's accessible outside try
-
-  try {
-    const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json");
-    const bankData = await res.json();
-
-    playerMatch = Object.values(bankData.accounts).find(acc => {
-      return "BANK" + acc.id === id && acc.password === pass;
-    });
-
-    if (!playerMatch) {
-      alert("❌ Invalid credentials.");
-      return;
-    }
-  } catch (e) {
-    alert("Error verifying login: " + e.message);
-    return;
-  }
-
-  // ✅ Use playerMatch here safely
-  alert("✅ Logged in as " + playerMatch.username);
-  localStorage.setItem("bankAuthed", "true");
-  localStorage.setItem("bankUser", playerMatch.username);
-  document.getElementById("adminPanel").style.display = "block";
-  document.querySelector("form").style.display = "none";
-  await loadAllData();
-}
-
-
- window.onload = () => {
-  if (localStorage.getItem("bankAuthed") === "true") {
-    document.getElementById("adminPanel").style.display = "block";
-    document.querySelector("form").style.display = "none";
-    loadAllData();
-  } else {
-    document.getElementById("adminPanel").style.display = "none";
-    document.querySelector("form").style.display = "block";
-  }
-};
-
-</script>
 
   <script>
     // Data
@@ -619,7 +557,15 @@ function payAsGovt() {
       }
     }
 
-    // 
+    // On page load
+    window.onload = () => {
+      loadAllData();
+    };
+    function getPaidAmount(player) {
+  const history = taxData.paymentHistory?.[player] || [];
+  return history.reduce((sum, entry) => sum + Number(entry.amount), 0);
+}
+
   </script>
 </body>
 </html>
