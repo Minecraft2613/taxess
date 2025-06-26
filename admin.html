@@ -238,6 +238,82 @@
     <textarea id="bankEditor" class="editor-area"></textarea>
     <button onclick="saveBank()">Save Bank JSON</button>
   </section>
+  <script>
+function prependBANK() {
+  const input = document.getElementById("bankId");
+  if (!input.value.startsWith("BANK")) {
+    input.value = "BANK" + input.value.replace(/^BANK/, "").replace(/\D/g, "");
+  }
+}
+
+function verifyBankLogin() {
+  const id = document.getElementById("bankId").value.trim();
+  const pass = document.getElementById("bankPass").value.trim();
+
+  if (!id.startsWith("BANK") || pass.length < 1) {
+    alert("❌ Please enter a valid BANK ID and password.");
+    return;
+  }
+
+  // You can now verify `id` and `pass` with your bank-data.json or any method
+  console.log("Logging in with:", id, pass);
+
+  // Example:
+  // fetch bank-data.json and validate
+}
+    <script>
+  let isLoggedIn = false;
+
+  async function verifyBankLogin() {
+    const rawId = document.getElementById("bankId").value.trim();
+    const pass = document.getElementById("bankPass").value.trim();
+
+    if (!rawId.startsWith("BANK") || pass.length < 1) {
+      alert("❌ Enter full BANK ID and password.");
+      return;
+    }
+
+    const id = rawId;
+    try {
+      const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json");
+      const bankJson = await res.json();
+      const accounts = bankJson.accounts || {};
+      const player = Object.values(accounts).find(acc => ("BANK" + acc.id) === id && acc.password === pass);
+
+      if (!player) {
+        alert("❌ Invalid credentials.");
+        return;
+      }
+
+      // ✅ Valid login
+      localStorage.setItem("bankLogin", id);
+      isLoggedIn = true;
+      document.querySelector("form").style.display = "none";
+      document.querySelector(".tabs").style.display = "flex";
+      document.querySelector(".container").style.display = "block";
+      loadAllData();
+    } catch (e) {
+      alert("Error verifying login: " + e.message);
+    }
+  }
+
+  // On page load, check session
+  window.onload = () => {
+    const savedId = localStorage.getItem("bankLogin");
+    if (savedId) {
+      document.getElementById("bankId").value = savedId;
+    }
+    loadAllData();
+  };
+</script>
+    <script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const bankId = document.getElementById("bankId");
+    if (!bankId.value) {
+      bankId.value = "BANK";
+    }
+  });
+</script>
 
   <script>
     // Data
@@ -574,82 +650,6 @@ function payAsGovt() {
 }
 
   </script>
-  <script>
-function prependBANK() {
-  const input = document.getElementById("bankId");
-  if (!input.value.startsWith("BANK")) {
-    input.value = "BANK" + input.value.replace(/^BANK/, "").replace(/\D/g, "");
-  }
-}
-
-function verifyBankLogin() {
-  const id = document.getElementById("bankId").value.trim();
-  const pass = document.getElementById("bankPass").value.trim();
-
-  if (!id.startsWith("BANK") || pass.length < 1) {
-    alert("❌ Please enter a valid BANK ID and password.");
-    return;
-  }
-
-  // You can now verify `id` and `pass` with your bank-data.json or any method
-  console.log("Logging in with:", id, pass);
-
-  // Example:
-  // fetch bank-data.json and validate
-}
-    <script>
-  let isLoggedIn = false;
-
-  async function verifyBankLogin() {
-    const rawId = document.getElementById("bankId").value.trim();
-    const pass = document.getElementById("bankPass").value.trim();
-
-    if (!rawId.startsWith("BANK") || pass.length < 1) {
-      alert("❌ Enter full BANK ID and password.");
-      return;
-    }
-
-    const id = rawId;
-    try {
-      const res = await fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json");
-      const bankJson = await res.json();
-      const accounts = bankJson.accounts || {};
-      const player = Object.values(accounts).find(acc => ("BANK" + acc.id) === id && acc.password === pass);
-
-      if (!player) {
-        alert("❌ Invalid credentials.");
-        return;
-      }
-
-      // ✅ Valid login
-      localStorage.setItem("bankLogin", id);
-      isLoggedIn = true;
-      document.querySelector("form").style.display = "none";
-      document.querySelector(".tabs").style.display = "flex";
-      document.querySelector(".container").style.display = "block";
-      loadAllData();
-    } catch (e) {
-      alert("Error verifying login: " + e.message);
-    }
-  }
-
-  // On page load, check session
-  window.onload = () => {
-    const savedId = localStorage.getItem("bankLogin");
-    if (savedId) {
-      document.getElementById("bankId").value = savedId;
-    }
-    loadAllData();
-  };
-</script>
-    <script>
-  window.addEventListener("DOMContentLoaded", () => {
-    const bankId = document.getElementById("bankId");
-    if (!bankId.value) {
-      bankId.value = "BANK";
-    }
-  });
-</script>
 
 
 </script>
