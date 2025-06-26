@@ -240,31 +240,9 @@
     <textarea id="bankEditor" class="editor-area"></textarea>
     <button onclick="saveBank()">Save Bank JSON</button>
   </section>
+
   <script>
-function prependBANK() {
-  const input = document.getElementById("bankId");
-  if (!input.value.startsWith("BANK")) {
-    input.value = "BANK" + input.value.replace(/^BANK/, "").replace(/\D/g, "");
-  }
-}
-
-function verifyBankLogin() {
-  const id = document.getElementById("bankId").value.trim();
-  const pass = document.getElementById("bankPass").value.trim();
-
-  if (!id.startsWith("BANK") || pass.length < 1) {
-    alert("❌ Please enter a valid BANK ID and password.");
-    return;
-  }
-
-  // You can now verify `id` and `pass` with your bank-data.json or any method
-  console.log("Logging in with:", id, pass);
-
-  // Example:
-  // fetch bank-data.json and validate
-}
-    <script>
-       let isLoggedIn = false;
+      let isLoggedIn = false;
 async function verifyBankLogin() {
   const rawId = document.getElementById("bankId").value.trim();
   const pass = document.getElementById("bankPass").value.trim();
@@ -322,18 +300,12 @@ async function verifyBankLogin() {
     loadAllData();
   }
 };
-
-</script>
-    <script>
   window.addEventListener("DOMContentLoaded", () => {
     const bankId = document.getElementById("bankId");
     if (!bankId.value) {
       bankId.value = "BANK";
     }
   });
-</script>
-
-  <script>
     // Data
     let taxData = {}, bankData = {}, transactionsLog = "";
     let currentPlayer = "";
