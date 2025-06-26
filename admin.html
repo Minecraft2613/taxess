@@ -206,6 +206,7 @@
   <button type="button" onclick="verifyBankLogin()">Login</button>
 </form>
 
+  <div id="adminPanel" style="display:none;">
   <div class="tabs">
     <div class="tab-button active" id="tabPlayerTaxBtn" onclick="showSection('playerTax')">Player Tax</div>
     <div class="tab-button" id="tabBankBtn" onclick="showSection('bankInfo')">Player Bank Info</div>
@@ -240,6 +241,7 @@
     <textarea id="bankEditor" class="editor-area"></textarea>
     <button onclick="saveBank()">Save Bank JSON</button>
   </section>
+    </div>
 <script>
 async function verifyBankLogin() {
   const id = document.getElementById("bankId").value.trim();
@@ -269,12 +271,24 @@ async function verifyBankLogin() {
   } catch (e) {
     alert("Error verifying login: " + e.message);
   }
+  if (playerMatch) {
+  alert("✅ Logged in as " + playerMatch.username);
+  localStorage.setItem("bankAuthed", "true");
+  localStorage.setItem("bankUser", playerMatch.username);
+  document.getElementById("adminPanel").style.display = "block";
+  document.querySelector("form").style.display = "none";
+  await loadAllData();
 }
-  window.onload = () => {
+}
+
+ window.onload = () => {
   if (localStorage.getItem("bankAuthed") === "true") {
-    loadAllData(); // Only runs if already logged in
+    document.getElementById("adminPanel").style.display = "block";
+    document.querySelector("form").style.display = "none";
+    loadAllData();
   } else {
-    alert("🔒 Please login using your BANK ID and password.");
+    document.getElementById("adminPanel").style.display = "none";
+    document.querySelector("form").style.display = "block";
   }
 };
 
@@ -605,15 +619,7 @@ function payAsGovt() {
       }
     }
 
-    // On page load
-    window.onload = () => {
-      loadAllData();
-    };
-    function getPaidAmount(player) {
-  const history = taxData.paymentHistory?.[player] || [];
-  return history.reduce((sum, entry) => sum + Number(entry.amount), 0);
-}
-
+    // 
   </script>
 </body>
 </html>
