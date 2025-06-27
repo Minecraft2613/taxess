@@ -60,7 +60,5 @@
       }
     ]
   },
-  "taxDeadline": {
-    "ansh": 1750789800000
-  }
+  "taxDeadline": {}
 }
