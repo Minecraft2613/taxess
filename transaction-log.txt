@@ -598,3 +598,169 @@
 [2025-06-25 05:17:10] - ansh sold 267x Iron Ingot(Ores.page1.items.16) for $21,434.76 with the sell gui.
 [2025-06-25 05:58:21] - ansh sold 520x Iron Ingot(Ores.page1.items.16) for $41,745.59 with the sell gui.
 [2025-06-25 05:58:39] - ansh sold 42x Iron Ingot(Ores.page1.items.16) for $3,371.76 with the sell gui.
+[2025-06-26 05:41:17] - ansh bought 64 x Green Wool(Blocks.page6.items.252) for $1,881.60 with the buy stacks screen.
+[2025-06-26 05:41:37] - ansh bought 64 x Stone(Blocks.page4.items.173) for $46.08 with the buy stacks screen.
+[2025-06-26 05:41:37] - ansh bought 64 x Stone(Blocks.page4.items.173) for $46.08 with the buy stacks screen.
+[2025-06-26 05:41:38] - ansh bought 64 x Stone(Blocks.page4.items.173) for $46.08 with the buy stacks screen.
+[2025-06-26 05:41:42] - ansh bought 64 x Stone Brick Slab(Blocks.page4.items.176) for $24.32 with the buy stacks screen.
+[2025-06-26 05:50:00] - ansh bought 1 x Glowstone(Blocks.page3.items.128) for $29.40 with the buy screen.
+[2025-06-26 05:50:00] - ansh bought 1 x Glowstone(Blocks.page3.items.128) for $29.40 with the buy screen.
+[2025-06-26 05:50:01] - ansh bought 1 x Glowstone(Blocks.page3.items.128) for $29.40 with the buy screen.
+[2025-06-26 05:50:01] - ansh bought 1 x Glowstone(Blocks.page3.items.128) for $29.40 with the buy screen.
+[2025-06-26 05:50:04] - ansh bought 1 x Glowstone(Blocks.page3.items.128) for $29.40 with the buy screen.
+[2025-06-26 05:50:04] - ansh bought 1 x Glowstone(Blocks.page3.items.128) for $29.40 with the buy screen.
+[2025-06-26 05:50:19] - ansh bought 4 x Soul Sand(Blocks.page1.items.10) for $40.00 with the buy screen.
+[2025-06-26 05:50:31] - ansh bought 1 x Water Bucket(Miscellaneous.page1.items.41) for $50.00 with the buy screen.
+[2025-06-26 05:50:31] - ansh bought 1 x Water Bucket(Miscellaneous.page1.items.41) for $50.00 with the buy screen.
+[2025-06-26 05:57:16] - ansh bought 64 x Stone Slab(Blocks.page4.items.174) for $24.32 with the buy stacks screen.
+[2025-06-26 05:59:22] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-26 05:59:22] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-26 05:59:23] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-26 05:59:23] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-26 06:05:09] - ansh bought 128 x Glass(Blocks.page3.items.119) for $806.40 with the buy stacks screen.
+[2025-06-26 06:05:20] - ansh sold 64 x Glass(Blocks.page3.items.119) for $101.12 with the sell screen.
+[2025-06-26 06:05:53] - ansh sold 17x Tuff Brick Stairs(Blocks.page4.items.190), 128x Tuff Bricks(Blocks.page4.items.191), 32x Cobblestone(Blocks.page1.items.51), 52x Tuff Brick Slab(Blocks.page4.items.189), 64x Stone Brick Slab(Blocks.page4.items.176), 127x Stone(Blocks.page4.items.173), 4x Glowstone Dust(Miscellaneous.page1.items.13) for $266.27 with the sell gui.
+[2025-06-26 06:06:05] - ansh bought 1 x Zombie Spawn Egg(SpawnEggs.page2.items.75) for $600.00 with the buy screen.
+[2025-06-26 06:06:05] - ansh bought 1 x Zombie Spawn Egg(SpawnEggs.page2.items.75) for $600.00 with the buy screen.
+[2025-06-26 06:06:19] - ansh bought 12 x Villager Spawn Egg(SpawnEggs.page2.items.66) for $3,600.00 with the buy screen.
+[2025-06-26 06:15:31] - ansh bought 1 x Name Tag(Miscellaneous.page1.items.21) for $50.00 with the buy screen.
+[2025-06-26 06:15:31] - ansh bought 1 x Name Tag(Miscellaneous.page1.items.21) for $50.00 with the buy screen.
+[2025-06-26 06:16:14] - ansh sold 384x Iron Ingot(Ores.page1.items.16) for $30,827.51 with the sell gui.
+[2025-06-26 06:16:27] - ansh sold 192x Poppy(Dyes.page1.items.28), 156x Iron Ingot(Ores.page1.items.16) for $14,055.84 with the sell gui.
+[2025-06-26 06:16:36] - ansh sold 257x Iron Ingot(Ores.page1.items.16) for $20,631.96 with the sell gui.
+[2025-06-26 06:31:36] - ansh sold 125x Polished Blackstone Brick Slab(Blocks.page1.items.30), 18x Arrow(Mobs.page1.items.1), 1x Stone Button(Redstone.page1.items.22), 1x Goat Horn(Music.page1.items.20), 64x Rotten Flesh(Mobs.page1.items.17) for $134.46 with the sell gui.
+[2025-06-26 06:35:01] - ansh bought 256 x Oak Planks(Blocks.page5.items.231) for $256.00 with the buy stacks screen.
+[2025-06-26 06:37:39] - ansh bought 64 x Hopper(Redstone.page1.items.6) for $1,600.00 with the buy stacks screen.
+[2025-06-26 06:37:40] - ansh bought 64 x Hopper(Redstone.page1.items.6) for $1,600.00 with the buy stacks screen.
+[2025-06-26 06:37:40] - ansh bought 64 x Hopper(Redstone.page1.items.6) for $1,600.00 with the buy stacks screen.
+[2025-06-26 07:03:11] - ansh sold 11x Diorite(Blocks.page2.items.101), 28x Green Wool(Blocks.page6.items.252), 134x Tuff Bricks(Blocks.page4.items.191), 8x Stone Slab(Blocks.page4.items.174), 9x Granite(Blocks.page3.items.122), 2x Soul Sand(Blocks.page1.items.10), 113x Cobblestone(Blocks.page1.items.51), 1x Glowstone(Blocks.page3.items.128), 64x Hopper(Redstone.page1.items.6) for $1,464.78 with the sell gui.
+[2025-06-26 07:03:34] - ansh bought 384 x Oak Log(Blocks.page5.items.230) for $1,536.00 with the buy stacks screen.
+[2025-06-26 07:07:47] - ansh bought 64 x Stone Bricks(Blocks.page4.items.178) for $48.00 with the buy stacks screen.
+[2025-06-26 07:07:51] - ansh bought 64 x Stone Bricks(Blocks.page4.items.178) for $48.00 with the buy stacks screen.
+[2025-06-26 07:08:11] - ansh bought 128 x Dark Oak Planks(Blocks.page5.items.210) for $192.00 with the buy stacks screen.
+[2025-06-26 07:08:52] - ansh sold 44x Diorite(Blocks.page2.items.101), 9x Tuff Bricks(Blocks.page4.items.191), 13x Cobblestone(Blocks.page1.items.51) for $14.90 with the sell gui.
+[2025-06-26 07:10:35] - ansh bought 1 x Dropper(Redstone.page1.items.5) for $25.00 with the buy screen.
+[2025-06-26 07:10:40] - ansh bought 1 x Comparator(Redstone.page1.items.18) for $30.00 with the buy screen.
+[2025-06-26 07:10:45] - ansh bought 1 x Repeater(Redstone.page1.items.19) for $20.00 with the buy screen.
+[2025-06-26 07:10:46] - ansh bought 1 x Repeater(Redstone.page1.items.19) for $20.00 with the buy screen.
+[2025-06-26 07:10:48] - ansh bought 1 x Redstone Torch(Redstone.page1.items.14) for $15.00 with the buy screen.
+[2025-06-26 07:10:49] - ansh bought 1 x Redstone Torch(Redstone.page1.items.14) for $15.00 with the buy screen.
+[2025-06-26 07:10:49] - ansh bought 1 x Redstone Torch(Redstone.page1.items.14) for $15.00 with the buy screen.
+[2025-06-26 07:10:54] - ansh bought 1 x Lever(Redstone.page1.items.9) for $10.00 with the buy screen.
+[2025-06-26 07:10:55] - ansh bought 1 x Lever(Redstone.page1.items.9) for $10.00 with the buy screen.
+[2025-06-26 07:11:10] - ansh bought 128 x Redstone(Ores.page1.items.23) for $1,920.00 with the buy stacks screen.
+[2025-06-26 07:14:04] - ansh bought 1 x Comparator(Redstone.page1.items.18) for $30.00 with the buy screen.
+[2025-06-26 07:14:04] - ansh bought 1 x Comparator(Redstone.page1.items.18) for $30.00 with the buy screen.
+[2025-06-26 07:14:05] - ansh bought 1 x Comparator(Redstone.page1.items.18) for $30.00 with the buy screen.
+[2025-06-26 07:20:53] - ansh bought 192 x Glass(Blocks.page3.items.119) for $1,209.60 with the buy stacks screen.
+[2025-06-26 07:21:01] - ansh bought 33 x Cyan Dye(Dyes.page1.items.4) for $495.00 with the buy screen.
+[2025-06-26 07:21:50] - ansh bought 1 x Oak Slab(Blocks.page5.items.232) for $0.50 with the buy screen.
+[2025-06-26 07:21:51] - ansh bought 1 x Oak Slab(Blocks.page5.items.232) for $0.50 with the buy screen.
+[2025-06-26 07:21:51] - ansh bought 1 x Oak Slab(Blocks.page5.items.232) for $0.50 with the buy screen.
+[2025-06-26 07:21:51] - ansh bought 1 x Oak Slab(Blocks.page5.items.232) for $0.50 with the buy screen.
+[2025-06-26 07:21:52] - ansh bought 1 x Oak Slab(Blocks.page5.items.232) for $0.50 with the buy screen.
+[2025-06-26 07:23:10] - ansh bought 192 x Glass(Blocks.page3.items.119) for $1,209.60 with the buy stacks screen.
+[2025-06-26 07:23:19] - ansh bought 33 x Blue Dye(Dyes.page1.items.2) for $495.00 with the buy screen.
+[2025-06-26 07:28:01] - ansh sold 13x Diorite(Blocks.page2.items.101), 1x Tuff Bricks(Blocks.page4.items.191), 7x Gravel(Blocks.page3.items.111), 128x Cobblestone(Blocks.page1.items.51), 38x Iron Ingot(Ores.page1.items.16) for $3,089.27 with the sell gui.
+[2025-06-26 07:28:07] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:28:08] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:28:08] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:28:08] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:28:09] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:28:09] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:28:09] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:28:10] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:28:10] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:28:10] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:28:21] - ansh bought 1 x Water Bucket(Miscellaneous.page1.items.41) for $50.00 with the buy screen.
+[2025-06-26 07:28:35] - ansh bought 1 x Oak Sign(Decoration.page3.items.102) for $2.52 with the buy screen.
+[2025-06-26 07:30:05] - ansh bought 1 x Soul Sand(Blocks.page1.items.10) for $10.00 with the buy screen.
+[2025-06-26 07:31:09] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:31:09] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:31:09] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:31:09] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:31:10] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:31:10] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:31:10] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:31:11] - ansh bought 1 x Kelp(Farming.page1.items.14) for $6.00 with the buy screen.
+[2025-06-26 07:38:39] - ansh sold 2x Poppy(Dyes.page1.items.28), 25x Diorite(Blocks.page2.items.101), 64x Cobblestone(Blocks.page1.items.51), 17x Gravel(Blocks.page3.items.111), 6x Cyan Dye(Dyes.page1.items.4), 6x Iron Ingot(Ores.page1.items.16), 17x Hopper(Redstone.page1.items.6) for $911.88 with the sell gui.
+[2025-06-26 07:38:52] - ansh bought 64 x Cobblestone(Blocks.page1.items.51) for $43.52 with the buy stacks screen.
+[2025-06-26 07:38:53] - ansh bought 64 x Cobblestone(Blocks.page1.items.51) for $43.52 with the buy stacks screen.
+[2025-06-26 07:38:53] - ansh bought 64 x Cobblestone(Blocks.page1.items.51) for $43.52 with the buy stacks screen.
+[2025-06-26 07:38:54] - ansh bought 64 x Cobblestone(Blocks.page1.items.51) for $43.52 with the buy stacks screen.
+[2025-06-26 07:38:54] - ansh bought 64 x Cobblestone(Blocks.page1.items.51) for $43.52 with the buy stacks screen.
+[2025-06-26 07:38:58] - ansh sold 320 x Cobblestone(Blocks.page1.items.51) for $54.40 with the sell screen.
+[2025-06-26 07:39:05] - ansh bought 192 x Deepslate(Blocks.page2.items.97) for $138.24 with the buy stacks screen.
+[2025-06-26 07:39:05] - ansh bought 192 x Deepslate(Blocks.page2.items.97) for $92.16 with the buy stacks screen.
+[2025-06-26 07:43:58] - ansh sold 66x Cobblestone(Blocks.page1.items.51), 20x Andesite(Blocks.page1.items.12) for $14.82 with the sell gui.
+[2025-06-26 07:44:05] - ansh bought 1 x Repeater(Redstone.page1.items.19) for $20.00 with the buy screen.
+[2025-06-26 07:44:05] - ansh bought 1 x Repeater(Redstone.page1.items.19) for $20.00 with the buy screen.
+[2025-06-26 07:44:06] - ansh bought 1 x Repeater(Redstone.page1.items.19) for $20.00 with the buy screen.
+[2025-06-26 07:44:06] - ansh bought 1 x Repeater(Redstone.page1.items.19) for $20.00 with the buy screen.
+[2025-06-26 07:49:41] - ansh sold 221 x Deepslate(Blocks.page2.items.97) for $39.78 with the sell screen.
+[2025-06-26 07:49:48] - ansh bought 64 x Tuff Bricks(Blocks.page4.items.191) for $134.40 with the buy stacks screen.
+[2025-06-26 07:49:49] - ansh bought 64 x Tuff Bricks(Blocks.page4.items.191) for $134.40 with the buy stacks screen.
+[2025-06-26 07:49:49] - ansh bought 64 x Tuff Bricks(Blocks.page4.items.191) for $134.40 with the buy stacks screen.
+[2025-06-26 07:49:50] - ansh bought 64 x Tuff Bricks(Blocks.page4.items.191) for $134.40 with the buy stacks screen.
+[2025-06-26 07:51:48] - ansh sold 1792x Iron Ingot(Ores.page1.items.16) for $143,861.76 with the sell gui.
+[2025-06-26 07:52:09] - ansh sold 730x Poppy(Dyes.page1.items.28), 101x Iron Ingot(Ores.page1.items.16) for $13,933.68 with the sell gui.
+[2025-06-26 07:52:29] - ansh sold 105x Poppy(Dyes.page1.items.28), 457x Iron Ingot(Ores.page1.items.16) for $37,525.85 with the sell gui.
+[2025-06-27 09:31:02] - ansh sold 1792x Iron Ingot(Ores.page1.items.16) for $143,861.76 with the sell gui.
+[2025-06-27 09:31:37] - ansh sold 1792x Iron Ingot(Ores.page1.items.16) for $143,861.76 with the sell gui.
+[2025-06-27 09:32:33] - ansh sold 1002x Iron Ingot(Ores.page1.items.16) for $80,440.55 with the sell gui.
+[2025-06-27 09:33:30] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-27 09:33:30] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-27 09:33:30] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-27 09:33:31] - ansh bought 1 x Totem Of Undying(Miscellaneous.page1.items.36) for $4,000.00 with the buy screen.
+[2025-06-27 09:34:38] - ansh bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy stacks screen.
+[2025-06-27 09:34:39] - ansh bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy stacks screen.
+[2025-06-27 09:34:52] - ansh bought 64 x Sugar Cane(Farming.page1.items.25) for $960.00 with the buy stacks screen.
+[2025-06-27 09:34:52] - ansh bought 64 x Sugar Cane(Farming.page1.items.25) for $960.00 with the buy stacks screen.
+[2025-06-27 09:42:42] - ansh bought 64 x White Concrete(Blocks.page2.items.71) for $93.44 with the buy stacks screen.
+[2025-06-27 09:42:42] - ansh bought 64 x White Concrete(Blocks.page2.items.71) for $93.44 with the buy stacks screen.
+[2025-06-27 09:42:50] - ansh bought 64 x Light Gray Concrete(Blocks.page2.items.64) for $93.44 with the buy stacks screen.
+[2025-06-27 09:42:51] - ansh bought 64 x Light Gray Concrete(Blocks.page2.items.64) for $93.44 with the buy stacks screen.
+[2025-06-27 09:43:07] - ansh bought 1 x Gray Wool(Blocks.page6.items.251) for $29.40 with the buy screen.
+[2025-06-27 09:43:07] - ansh bought 1 x Gray Wool(Blocks.page6.items.251) for $29.40 with the buy screen.
+[2025-06-27 09:43:08] - ansh bought 1 x Gray Wool(Blocks.page6.items.251) for $29.40 with the buy screen.
+[2025-06-27 09:43:08] - ansh bought 1 x Gray Wool(Blocks.page6.items.251) for $29.40 with the buy screen.
+[2025-06-27 09:43:09] - ansh bought 1 x Gray Wool(Blocks.page6.items.251) for $29.40 with the buy screen.
+[2025-06-27 09:43:09] - ansh bought 1 x Gray Wool(Blocks.page6.items.251) for $29.40 with the buy screen.
+[2025-06-27 09:43:11] - ansh bought 1 x Lime Wool(Blocks.page6.items.255) for $29.40 with the buy screen.
+[2025-06-27 09:43:11] - ansh bought 1 x Lime Wool(Blocks.page6.items.255) for $29.40 with the buy screen.
+[2025-06-27 09:43:12] - ansh bought 1 x Lime Wool(Blocks.page6.items.255) for $29.40 with the buy screen.
+[2025-06-27 09:43:12] - ansh bought 1 x Lime Wool(Blocks.page6.items.255) for $29.40 with the buy screen.
+[2025-06-27 09:43:12] - ansh bought 1 x Lime Wool(Blocks.page6.items.255) for $29.40 with the buy screen.
+[2025-06-27 09:43:12] - ansh bought 1 x Lime Wool(Blocks.page6.items.255) for $29.40 with the buy screen.
+[2025-06-27 09:43:21] - ansh bought 64 x Oak Planks(Blocks.page5.items.231) for $64.00 with the buy stacks screen.
+[2025-06-27 09:43:32] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 09:43:32] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 09:43:33] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 09:43:33] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 09:44:00] - ansh bought 64 x Quartz Block(Ores.page1.items.22) for $1,792.00 with the buy stacks screen.
+[2025-06-27 09:44:00] - ansh bought 64 x Quartz Block(Ores.page1.items.22) for $1,792.00 with the buy stacks screen.
+[2025-06-27 09:44:14] - ansh bought 64 x Sea Lantern(Decoration.page2.items.66) for $4,233.60 with the buy stacks screen.
+[2025-06-27 09:44:53] - ansh bought 64 x Gray Dye(Dyes.page1.items.5) for $640.00 with the buy stacks screen.
+[2025-06-27 09:51:16] - ansh bought 1 x Enchanted Book(Enchanting.page1.items.38) for $5,000.00 with the buy screen.
+[2025-06-27 09:54:36] - ansh bought 64 x White Concrete(Blocks.page2.items.71) for $93.44 with the buy stacks screen.
+[2025-06-27 09:54:37] - ansh bought 64 x White Concrete(Blocks.page2.items.71) for $93.44 with the buy stacks screen.
+[2025-06-27 09:54:37] - ansh bought 64 x White Concrete(Blocks.page2.items.71) for $93.44 with the buy stacks screen.
+[2025-06-27 09:54:37] - ansh bought 64 x White Concrete(Blocks.page2.items.71) for $93.44 with the buy stacks screen.
+[2025-06-27 09:54:38] - ansh bought 64 x White Concrete(Blocks.page2.items.71) for $93.44 with the buy stacks screen.
+[2025-06-27 10:07:13] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:07:14] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:07:14] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:07:15] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:07:15] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:10:19] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:10:20] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:10:20] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:10:20] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:10:20] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:10:21] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:10:21] - ansh bought 64 x Glass(Blocks.page3.items.119) for $403.20 with the buy stacks screen.
+[2025-06-27 10:10:30] - ansh bought 1088 x Light Gray Concrete(Blocks.page2.items.64) for $840.96 with the buy stacks screen.
+[2025-06-27 10:11:58] - ansh bought 64 x Gray Dye(Dyes.page1.items.5) for $640.00 with the buy stacks screen.
+[2025-06-27 10:18:55] - ansh bought 64 x White Concrete(Blocks.page2.items.71) for $93.44 with the buy stacks screen.
+[2025-06-27 10:18:55] - ansh bought 64 x White Concrete(Blocks.page2.items.71) for $93.44 with the buy stacks screen.
+[2025-06-27 10:18:56] - ansh bought 64 x White Concrete(Blocks.page2.items.71) for $93.44 with the buy stacks screen.
