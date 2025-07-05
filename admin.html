@@ -113,11 +113,9 @@
                     const data = await response.json();
                     if (data.success) {
                         setAccounts(data.accounts);
-                        // In a real app, you'd fetch tax data separately
-                        // For now, we'll just use a placeholder
-                        // const taxResponse = await fetch(API_ENDPOINTS.TAX_DATA);
-                        // const taxJson = await taxResponse.json();
-                        // setTaxData(taxJson);
+                        const taxResponse = await fetch('https://bank-data.1987sakshamsingh.workers.dev/tax-data');
+                        const taxJson = await taxResponse.json();
+                        setTaxData(taxJson);
                     }
                 } catch (err) {
                     console.error("Error fetching data:", err);
@@ -156,7 +154,8 @@
                     case 'home': return <HomeView accounts={accounts} taxData={taxData} handleApproveLoan={handleApproveLoan} />;
                     case 'bank_info': return <BankInfoView accounts={accounts} adminUser={adminUser} setAccounts={setAccounts} />;
                     case 'player_view': return <PlayerView accounts={accounts} />;
-                    // Add other views here
+                    case 'messages': return <MessagesView />;
+                    case 'theme_settings': return <ThemeSettingsView />;
                     default: return <HomeView accounts={accounts} taxData={taxData} handleApproveLoan={handleApproveLoan} />;
                 }
             };
@@ -180,12 +179,17 @@
         const Sidebar = ({ isOpen, setView, handleLogout, adminUser }) => {
             const commonViews = [
                 { name: 'Home', view: 'home' },
+                { name: 'Approved Loans', view: 'approved_loans' },
+                { name: 'Paid Tax', view: 'paid_tax' },
+                { name: 'Pending Tax', view: 'pending_tax' },
+                { name: 'Tax Payers History', view: 'tax_history' },
                 { name: 'Bank Info', view: 'bank_info' },
                 { name: 'Player View', view: 'player_view' },
+                { name: 'Messages', view: 'messages' },
+                { name: 'Theme Settings', view: 'theme_settings' },
             ];
             const admin22Views = [
                 ...commonViews,
-                { name: 'Loan Approval', view: 'loan_approval' },
             ];
             const menuItems = adminUser === 'admin22' ? admin22Views : commonViews;
 
@@ -211,7 +215,7 @@
         // --- Views ---
         const HomeView = ({ accounts, taxData, handleApproveLoan }) => {
             const pendingLoans = accounts.flatMap(acc => (acc.loans || []).filter(l => l.loanStatus === 'pending').map(l => ({ ...l, accountId: acc.accountId })));
-            // Add logic for pending taxes here
+            const pendingTaxes = accounts.filter(acc => taxData.players[acc.accountId] && taxData.players[acc.accountId].sessions[taxData.currentSession] && taxData.players[acc.accountId].sessions[taxData.currentSession].taxDue > 0);
             
             return (
                 <div>
@@ -232,7 +236,14 @@
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold text-red-400 mb-4">Players with Pending Taxes</h2>
-                            {/* Placeholder for pending taxes */}
+                            <div className="space-y-4">
+                                {pendingTaxes.length > 0 ? pendingTaxes.map(acc => (
+                                    <div key={acc.accountId} className="p-4 border border-gray-700 rounded-md bg-gray-700">
+                                        <p><strong>Player:</strong> {acc.accountId}</p>
+                                        <p><strong>Tax Due:</strong> ${taxData.players[acc.accountId].sessions[taxData.currentSession].taxDue.toFixed(2)}</p>
+                                    </div>
+                                )) : <p>No pending taxes.</p>}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -278,7 +289,6 @@
                     {selectedPlayer && (
                         <div className="border-t-4 border-red-500 pt-4 mt-4">
                             <h3 className="text-xl font-bold text-white mb-4">Viewing: {selectedPlayer.accountId}</h3>
-                            {/* This is a simplified, read-only version of the user dashboard */}
                             <div className="space-y-6">
                                 <div className="bg-gray-700 p-4 rounded-lg"><p><strong>Balance:</strong> ${selectedPlayer.balance.toFixed(2)}</p></div>
                                 <div className="bg-gray-700 p-4 rounded-lg">
@@ -294,6 +304,16 @@
                     )}
                 </div>
             );
+        }
+
+        const MessagesView = () => {
+            // Add Messages view logic here
+            return <div>Messages</div>
+        }
+
+        const ThemeSettingsView = () => {
+            // Add Theme settings view logic here
+            return <div>Theme Settings</div>
         }
 
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
