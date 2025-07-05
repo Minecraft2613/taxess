@@ -337,6 +337,7 @@
             const Admin22Dashboard = () => (
                  <div className="flex flex-wrap gap-4 mb-6">
                     <button onClick={() => setView('user_edit')} className={`p-4 rounded-xl flex-1 text-left ${view === 'user_edit' ? 'bg-red-600' : 'bg-gray-700'}`}>User Edit</button>
+                    <button onClick={() => setView('loan_applications')} className={`p-4 rounded-xl flex-1 text-left ${view === 'loan_applications' ? 'bg-red-600' : 'bg-gray-700'}`}>Loan Applications</button>
                     <CommonDashboardButtons />
                 </div>
             );

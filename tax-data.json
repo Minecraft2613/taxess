@@ -1,64 +1,14 @@
 {
-  "paidPlayers": {
-    "ansh": 2
-  },
-  "paymentHistory": {
-    "ansh": [
-      {
-        "amount": 1,
-        "date": "6/25/2025, 10:50:29 AM"
-      },
-      {
-        "amount": 1,
-        "date": "6/25/2025, 10:22:36 AM"
-      },
-      {
-        "amount": "22.00",
-        "method": "e5y",
-        "date": "2025-06-25"
-      },
-      {
-        "amount": "9900.00",
-        "method": "cut off from joining last payment stage ",
-        "date": "2025-06-25"
-      },
-      {
-        "amount": "177731.75",
-        "method": "cut off from the account",
-        "date": "2025-06-27"
+  "currentSession": "S2025",
+  "players": {
+    "tester": {
+      "sessions": {
+        "S2025": {
+          "taxDue": 390,
+          "taxPaid": 0,
+          "advancePaid": 0
+        }
       }
-    ],
-    ".Atharva4617": [
-      {
-        "amount": "9900.00",
-        "method": "cut off from joining last payment stage ",
-        "date": "2025-06-25"
-      },
-      {
-        "amount": "10914.21",
-        "method": "cut off from the account",
-        "date": "2025-06-27"
-      }
-    ],
-    ".Atharva3044": [
-      {
-        "amount": "6650.16",
-        "method": "cut off from joining last payment stage ",
-        "date": "2025-06-25"
-      },
-      {
-        "amount": "552.00",
-        "method": "cut off from the account",
-        "date": "2025-06-27"
-      }
-    ],
-    ".Ansh_26137970": [
-      {
-        "amount": "234.17",
-        "method": "324069",
-        "date": "2025-06-25"
-      }
-    ]
-  },
-  "taxDeadline": {}
+    }
+  }
 }

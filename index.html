@@ -1129,37 +1129,22 @@
                 let amountToPay = customAmount !== null ? customAmount : (loan.loanAmountDue - loan.loanPaid);
                 if (amountToPay <= 0) { showModal('Info', 'No amount to pay for this loan.', 'info'); return; }
 
-                const timeSinceApplication = Date.now() - new Date(loan.applicationDate).getTime();
-                let effectiveAmountToPay = amountToPay;
+                if (currentUserAccount.balance < amountToPay) { showModal('Error', 'Insufficient balance to pay the loan.', 'error'); return; }
 
-                // Apply interest reduction rules only if paying the full remaining amount
-                if (customAmount === null || customAmount >= (loan.loanAmountDue - loan.loanPaid)) {
-                    if (timeSinceApplication < 6 * 3600 * 1000) { // 6 hours
-                        effectiveAmountToPay = loan.loanAmount; // Only principal
-                        showModal('Interest Waived!', 'Paid within 6 hours! 0% interest applied.', 'success');
-                    } else if (timeSinceApplication < 2 * 24 * 3600 * 1000) { // 2 days
-                        const interest = loan.loanAmountDue - loan.loanAmount;
-                        effectiveAmountToPay = loan.loanAmount + (interest * 0.6); // 40% interest reduction
-                        showModal('Interest Reduced!', 'Paid within 2 days! Interest reduced by 40%.', 'success');
-                    }
-                }
-
-                if (currentUserAccount.balance < effectiveAmountToPay) { showModal('Error', 'Insufficient balance to pay the loan.', 'error'); return; }
-
-                const newLoanPaid = loan.loanPaid + effectiveAmountToPay;
+                const newLoanPaid = loan.loanPaid + amountToPay;
                 let updatedLoans;
-                let transactionDescription = `Loan payment for ${loan.id}`; 
+                let transactionDescription = `Loan payment for ${loan.id}`;
 
                 if (newLoanPaid >= loan.loanAmountDue) {
                     updatedLoans = currentUserAccount.loans.filter(l => l.id !== loanId);
-                    transactionDescription = `Paid off loan ${loan.id}`; 
+                    transactionDescription = `Paid off loan ${loan.id}`;
                     showModal('Loan Paid!', 'Loan has been fully paid off!', 'success');
                 } else {
                     updatedLoans = currentUserAccount.loans.map(l => l.id === loanId ? { ...l, loanPaid: newLoanPaid } : l);
-                    showModal('Payment Successful!', `Paid $${effectiveAmountToPay.toFixed(2)} towards loan ${loan.id}.`, 'success');
+                    showModal('Payment Successful!', `Paid ${amountToPay.toFixed(2)} towards loan ${loan.id}.`, 'success');
                 }
                 
-                const updatedAccount = { ...currentUserAccount, loans: updatedLoans, balance: currentUserAccount.balance - effectiveAmountToPay, transactions: [...currentUserAccount.transactions, { type: 'debit', amount: -effectiveAmountToPay, date: new Date().toISOString(), description: transactionDescription }] };
+                const updatedAccount = { ...currentUserAccount, loans: updatedLoans, balance: currentUserAccount.balance - amountToPay, transactions: [...currentUserAccount.transactions, { type: 'debit', amount: -amountToPay, date: new Date().toISOString(), description: transactionDescription }] };
                 await updateCurrentUser(updatedAccount);
             };
 
