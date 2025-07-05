@@ -1,571 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Panel - Player Tax & Bank Management</title>
-  <style>
-    /* Reset */
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0; 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0b0c1c, #1f2040);
-      color: #eee;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-
-    h1, h2, h3 {
-      margin: 0 0 15px;
-      text-align: center;
-      text-shadow: 0 0 8px #00aaff;
-    }
-
-    button {
-      background: #007bff;
-      border: none;
-      color: white;
-      padding: 8px 14px;
-      margin: 5px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 0 10px #0099ff44;
-      user-select: none;
-    }
-    button:hover {
-      background-color: #005fcc;
-      box-shadow: 0 0 20px #00aaff;
-    }
-
-    input, textarea {
-      width: 100%;
-      background: #1a1b2f;
-      border: 1px solid #004080;
-      border-radius: 10px;
-      color: #ddd;
-      font-size: 1rem;
-      padding: 8px 10px;
-      margin: 8px 0;
-      font-family: monospace;
-      resize: vertical;
-      box-shadow: 0 0 10px #0055ff33;
-      transition: border-color 0.3s ease;
-    }
-    input:focus, textarea:focus {
-      border-color: #00aaff;
-      outline: none;
-      box-shadow: 0 0 15px #00aaff;
-    }
-
-    .container {
-      width: 90vw;
-      max-width: 900px;
-      background: #12132b;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 0 40px #0055ff66;
-      margin-bottom: 30px;
-      animation: fadeIn 0.6s ease;
-    }
-
-    .tabs {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 25px;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .tab-button {
-      padding: 12px 18px;
-      border-radius: 15px;
-      background: #22234a;
-      color: #ccc;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 0 8px #0044bb33;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      user-select: none;
-    }
-    .tab-button.active, .tab-button:hover {
-      background: #0040ff;
-      color: white;
-      box-shadow: 0 0 20px #00aaff;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .player-item {
-      background: #0a0b1a;
-      padding: 10px 15px;
-      margin: 8px 0;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #0044bb33;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 600;
-      user-select: none;
-    }
-    .player-name {
-      color: #a5d8ff;
-    }
-    .tax-status {
-      font-weight: 700;
-      color: #f55;
-    }
-    .paid-status {
-      color: #5f5;
-      font-weight: 700;
-    }
-    .view-btn {
-      background: #0055ff;
-      padding: 6px 12px;
-      font-weight: 700;
-      border-radius: 8px;
-      box-shadow: 0 0 8px #0088ff88;
-      transition: background-color 0.3s ease;
-    }
-    .view-btn:hover {
-      background: #007fff;
-      box-shadow: 0 0 20px #00bfff;
-    }
-
-    .editor-area {
-      background: #1a1b2f;
-      font-family: monospace;
-      font-size: 0.9rem;
-      color: #ddd;
-      border-radius: 12px;
-      padding: 10px;
-      height: 220px;
-      resize: vertical;
-      box-shadow: 0 0 10px #00aaff44;
-      margin-bottom: 20px;
-    }
-
-    label {
-      font-weight: 600;
-      display: block;
-      margin-top: 15px;
-    }
-
-    .pay-govt-section {
-      margin-top: 20px;
-      padding: 15px;
-      background: #002244;
-      border-radius: 12px;
-      box-shadow: 0 0 15px #0044bb77;
-    }
-
-    .flex-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .flex-row > * {
-      flex: 1;
-      min-width: 150px;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(15px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-
-    .status-created {
-      color: #5f5;
-      font-weight: 700;
-    }
-    .status-notcreated {
-      color: #f55;
-      font-weight: 700;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Minecraft Server Bank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { background-color: #1a202c; color: #e2e8f0; }
+        .shadow-minecraft { box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.4); border: 3px solid #2c3e50; }
+    </style>
 </head>
 <body>
-  <h1>Admin Panel</h1>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-  <div class="tabs">
-    <div class="tab-button active" id="tabPlayerTaxBtn" onclick="showSection('playerTax')">Player Tax</div>
-    <div class="tab-button" id="tabBankBtn" onclick="showSection('bankInfo')">Player Bank Info</div>
-    <div class="tab-button" id="tabSyncTaxBtn" onclick="showSection('syncTax')">Sync Tax JSON</div>
-    <div class="tab-button" id="tabSyncBankBtn" onclick="showSection('syncBank')">Sync Bank JSON</div>
-    <div class="tab-button" onclick="logoutAdmin()">Exit</div>
-  </div>
+        const API_ENDPOINTS = {
+            ADMIN: 'https://bank-data.1987sakshamsingh.workers.dev/admin'
+        };
 
-  <!-- Player Tax Section -->
-  <section id="playerTax" class="container">
-    <h2>Player Taxes</h2>
-    <div id="playerTaxList"></div>
-    <div id="adminPlayerPanel" style="margin-top: 20px;"></div>
-  </section>
+        // --- Component: UserEditView ---
+        const UserEditView = ({ accounts, setAccounts }) => {
+            const [selectedUser, setSelectedUser] = useState(null);
+            const [formData, setFormData] = useState({});
 
-  <!-- Bank Info Section -->
-  <section id="bankInfo" class="container hidden">
-    <h2>Player Bank Accounts</h2>
-    <div id="bankList"></div>
-  </section>
+            const handleUserSelect = (accountId) => {
+                const user = accounts.find(acc => acc.accountId === accountId);
+                setSelectedUser(user);
+                setFormData(user || {});
+            };
 
-  <!-- Sync Tax Section -->
-  <section id="syncTax" class="container hidden">
-    <h2>Edit and Sync Tax JSON</h2>
-    <textarea id="taxEditor" class="editor-area"></textarea>
-    <button onclick="saveTax()">Save Tax JSON</button>
-  </section>
+            const handleFormChange = (e) => {
+                const { name, value, type, checked } = e.target;
+                setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+            };
 
-  <!-- Sync Bank Section -->
-  <section id="syncBank" class="container hidden">
-    <h2>Edit and Sync Bank JSON</h2>
-    <textarea id="bankEditor" class="editor-area"></textarea>
-    <button onclick="saveBank()">Save Bank JSON</button>
-  </section>
+            const handleFormSubmit = async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await fetch(API_ENDPOINTS.ADMIN, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            action: 'edit_user', 
+                            accountId: selectedUser.accountId, 
+                            updatedData: formData 
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        setAccounts(data.accounts);
+                        alert('User data updated successfully!');
+                    } else {
+                        alert('Failed to update user: ' + data.message);
+                    }
+                } catch (err) {
+                    alert('Error updating user.');
+                }
+            };
 
-  <script>
-    // Data
-    let taxData = {}, bankData = {}, transactionsLog = "";
-    let currentPlayer = "";
+            return (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-minecraft">
+                    <h2 className="text-2xl font-bold text-red-400 mb-4">Edit User Data</h2>
+                    <select onChange={(e) => handleUserSelect(e.target.value)} className="w-full p-3 bg-gray-700 text-gray-200 border border-gray-600 rounded-md mb-4">
+                        <option value="">Select a user to edit</option>
+                        {accounts.map(acc => <option key={acc.accountId} value={acc.accountId}>{acc.accountId}</option>)}
+                    </select>
 
-    // Load all required data (tax, bank, transactions log)
-    async function loadAllData() {
-      try {
-        const [taxRes, bankRes, logRes] = await Promise.all([
-          fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json"),
-          fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json"),
-          fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt")
-        ]);
-        taxData = await taxRes.json();
-        bankData = await bankRes.json();
-        transactionsLog = await logRes.text();
+                    {selectedUser && (
+                        <form onSubmit={handleFormSubmit} className="space-y-4">
+                            <input type="text" name="bankName" value={formData.bankName || ''} onChange={handleFormChange} placeholder="Bank Name" className="w-full p-3 bg-gray-700" />
+                            <input type="text" name="email" value={formData.email || ''} onChange={handleFormChange} placeholder="Email" className="w-full p-3 bg-gray-700" />
+                            <input type="text" name="password" value={formData.password || ''} onChange={handleFormChange} placeholder="Password" className="w-full p-3 bg-gray-700" />
+                            <input type="number" name="balance" value={formData.balance || 0} onChange={handleFormChange} placeholder="Balance" className="w-full p-3 bg-gray-700" />
+                            <input type="text" name="jobType" value={formData.jobType || ''} onChange={handleFormChange} placeholder="Job Type" className="w-full p-3 bg-gray-700" />
+                            <input type="number" name="jobPerDayIncome" value={formData.jobPerDayIncome || 0} onChange={handleFormChange} placeholder="Job Income" className="w-full p-3 bg-gray-700" />
+                            <input type="text" name="businessType" value={formData.businessType || ''} onChange={handleFormChange} placeholder="Business Type" className="w-full p-3 bg-gray-700" />
+                            <input type="number" name="businessPerDayIncome" value={formData.businessPerDayIncome || 0} onChange={handleFormChange} placeholder="Business Income" className="w-full p-3 bg-gray-700" />
+                            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md">Save Changes</button>
+                        </form>
+                    )}
+                </div>
+            );
+        };
 
-        // Update editors content
-        document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
-        document.getElementById("bankEditor").value = JSON.stringify(bankData, null, 2);
+        // --- Component: UserBankInfoView ---
+        const UserBankInfoView = ({ accounts }) => (
+            <div className="bg-gray-800 p-6 rounded-lg shadow-minecraft">
+                <h2 className="text-2xl font-bold text-red-400 mb-4">All User Bank Info</h2>
+                <div className="max-h-96 overflow-y-auto">
+                    <table className="min-w-full text-sm text-left">
+                        <thead className="bg-gray-700 sticky top-0">
+                            <tr>
+                                <th className="p-2">Account ID</th>
+                                <th className="p-2">Bank Name</th>
+                                <th className="p-2">Email</th>
+                                <th className="p-2 text-right">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {accounts.map(acc => (
+                                <tr key={acc.accountId} className="border-b border-gray-700">
+                                    <td className="p-2">{acc.accountId}</td>
+                                    <td className="p-2">{acc.bankName}</td>
+                                    <td className="p-2">{acc.email}</td>
+                                    <td className="p-2 text-right">${(acc.balance || 0).toFixed(2)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        );
 
-        renderPlayerTaxList();
-        renderBankList();
-        clearAdminPanel();
-      } catch (e) {
-        alert("Failed to load data: " + e.message);
-      }
-    }
+        // --- Component: AllLoanInfoView ---
+        const AllLoanInfoView = ({ accounts }) => {
+            const approvedLoans = accounts.flatMap(acc => (acc.loans || []).filter(l => l.loanStatus === 'active').map(l => ({ ...l, accountId: acc.accountId })));
+            return (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-minecraft">
+                    <h2 className="text-2xl font-bold text-red-400 mb-4">All Approved Loans</h2>
+                    <div className="max-h-96 overflow-y-auto">
+                        <table className="min-w-full text-sm text-left">
+                            <thead className="bg-gray-700 sticky top-0">
+                                <tr>
+                                    <th className="p-2">Account ID</th>
+                                    <th className="p-2">Loan ID</th>
+                                    <th className="p-2">Amount</th>
+                                    <th className="p-2">Type</th>
+                                    <th className="p-2">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {approvedLoans.map(loan => (
+                                    <tr key={loan.id} className="border-b border-gray-700">
+                                        <td className="p-2">{loan.accountId}</td>
+                                        <td className="p-2">{loan.id}</td>
+                                        <td className="p-2">${loan.loanAmount.toFixed(2)}</td>
+                                        <td className="p-2">{loan.loanType}</td>
+                                        <td className="p-2 text-green-400">{loan.loanStatus}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
 
-    // Show/hide sections
-    function showSection(id) {
-      const sections = ["playerTax", "bankInfo", "syncTax", "syncBank"];
-      sections.forEach(sec => {
-        document.getElementById(sec).classList.toggle("hidden", sec !== id);
-      });
-      // Highlight tab button
-      ["tabPlayerTaxBtn", "tabBankBtn", "tabSyncTaxBtn", "tabSyncBankBtn"].forEach(btnId => {
-        document.getElementById(btnId).classList.toggle("active", btnId.toLowerCase().includes(id.toLowerCase()));
-      });
-      clearAdminPanel();
-    }
+        // --- Component: AllTaxInfoView ---
+        const AllTaxInfoView = ({ accounts }) => { /* ... existing AllTaxInfoView component ... */ };
 
-    // Clear admin player panel (details below list)
-    function clearAdminPanel() {
-      currentPlayer = "";
-      document.getElementById("adminPlayerPanel").innerHTML = "";
-    }
+        const ViewAsPlayerView = ({ accounts }) => {
+            const [selectedPlayer, setSelectedPlayer] = useState(null);
 
-    // Render player tax list with calculated due amounts
-    function renderPlayerTaxList() {
-      const players = getAllPlayersFromTransactions();
-      const listHtml = players.map(name => {
-        const { due, totalPaid } = calculateTaxForPlayer(name);
-        const isDue = due > 0;
-        const statusClass = isDue ? "tax-status" : "paid-status";
-        const statusText = isDue ? `❌ Due: $${due.toFixed(2)}` : "✅ Paid";
-        return `
-          <div class="player-item">
-            <span class="player-name">${name}</span>
-            <span class="${statusClass}">${statusText}</span>
-            <button class="view-btn" onclick="showPlayerDetails('${name}')">View</button>
-          </div>`;
-      }).join("");
-      document.getElementById("playerTaxList").innerHTML = listHtml || "<p>No players found.</p>";
-    }
+            return (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-minecraft">
+                    <h2 className="text-2xl font-bold text-red-400 mb-4">View as Player</h2>
+                    <select onChange={(e) => setSelectedPlayer(accounts.find(acc => acc.accountId === e.target.value))} className="w-full p-3 bg-gray-700 text-gray-200 border border-gray-600 rounded-md mb-4">
+                        <option value="">Select a player</option>
+                        {accounts.map(acc => <option key={acc.accountId} value={acc.accountId}>{acc.accountId}</option>)}
+                    </select>
 
-    // Get all unique player names from transaction log (including with leading . for Bedrock)
-    function getAllPlayersFromTransactions() {
-      const regex = /- (\.?[\w]+) (bought|sold)/gi;
-      const players = new Set();
-      let match;
-      while ((match = regex.exec(transactionsLog)) !== null) {
-        players.add(match[1]);
-      }
-      return Array.from(players).sort((a,b) => a.localeCompare(b));
-    }
+                    {selectedPlayer && (
+                        <div className="border-t-4 border-red-500 pt-4 mt-4">
+                            <h3 className="text-xl font-bold text-white mb-4">Viewing: {selectedPlayer.accountId}</h3>
+                            {/* This is a simplified, read-only version of the user dashboard */}
+                            <div className="space-y-6">
+                                <div className="bg-gray-700 p-4 rounded-lg"><p><strong>Balance:</strong> ${selectedPlayer.balance.toFixed(2)}</p></div>
+                                <div className="bg-gray-700 p-4 rounded-lg">
+                                    <h4 className="font-bold mb-2">Loans</h4>
+                                    {(selectedPlayer.loans || []).map(loan => <div key={loan.id}>{loan.loanType}: ${loan.loanAmount.toFixed(2)} ({loan.loanStatus})</div>)}
+                                </div>
+                                <div className="bg-gray-700 p-4 rounded-lg">
+                                    <h4 className="font-bold mb-2">Transactions</h4>
+                                    {(selectedPlayer.transactions || []).slice(-5).map((tx, i) => <div key={i}>{tx.description}: ${tx.amount.toFixed(2)}</div>)}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+            <div className="bg-gray-800 p-6 rounded-lg shadow-minecraft">
+                <h2 className="text-2xl font-bold text-red-400 mb-4">All Player Tax Info</h2>
+                <div className="max-h-96 overflow-y-auto">
+                    <table className="min-w-full text-sm text-left">
+                        <thead className="bg-gray-700 sticky top-0">
+                            <tr>
+                                <th className="p-2">Username</th>
+                                <th className="p-2">Edition</th>
+                                <th className="p-2">Total Tax Paid</th>
+                                <th className="p-2">Session Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {accounts.map(acc => (
+                                <tr key={acc.accountId} className="border-b border-gray-700">
+                                    <td className="p-2">{acc.accountId}</td>
+                                    <td className="p-2">{acc.edition}</td>
+                                    <td className="p-2">${(acc.taxData?.totalTaxPaid || 0).toFixed(2)}</td>
+                                    <td className="p-2">
+                                        {acc.taxData?.sessions && Object.entries(acc.taxData.sessions).map(([session, data]) => (
+                                            <div key={session} className="mb-2">
+                                                <strong>Session: {session}</strong><br />
+                                                Tax Due: ${data.taxDue.toFixed(2)}<br />
+                                                Tax Paid: ${data.taxPaid.toFixed(2)}
+                                            </div>
+                                        ))}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        );
 
-    // Calculate total tax due and paid for player based on transaction log and taxData
-    function calculateTaxForPlayer(name) {
-      let buyTax = 0, sellTax = 0;
-      const dailyData = {};
+        // --- Component: LoanApplicationsView ---
+        const LoanApplicationsView = ({ accounts, handleApproveLoan }) => {
+            const pendingLoans = accounts.flatMap(acc => (acc.loans || []).filter(l => l.loanStatus === 'pending').map(l => ({ ...l, accountId: acc.accountId, bankId: acc.bankId })));
+            return (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-minecraft">
+                    <h2 className="text-2xl font-bold text-red-400 mb-4">Pending Loan Applications</h2>
+                    <div className="space-y-4">
+                        {pendingLoans.length > 0 ? pendingLoans.map(loan => (
+                            <div key={loan.id} className="p-4 border border-gray-700 rounded-md bg-gray-700">
+                                <p><strong>Player:</strong> {loan.accountId} ({loan.bankId})</p>
+                                <p><strong>Amount:</strong> ${loan.loanAmount.toFixed(2)}</p>
+                                <p><strong>Type:</strong> {loan.loanType}</p>
+                                <p><strong>Purpose:</strong> {loan.purpose}</p>
+                                <button onClick={() => handleApproveLoan(loan.accountId, loan.id)} className="mt-2 bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Approve</button>
+                            </div>
+                        )) : <p>No pending loan applications.</p>}
+                    </div>
+                </div>
+            );
+        };
 
-      const lines = transactionsLog.split(/\r?\n/);
-      lines.forEach(line => {
-        if (!line.toLowerCase().includes(name.toLowerCase())) return;
+        // --- Component: PendingTaxesView ---
+        const PendingTaxesView = ({ accounts }) => {
+            const pendingTaxes = accounts.filter(acc => acc.taxData && acc.taxData.taxDue > 0);
+            return (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-minecraft">
+                    <h2 className="text-2xl font-bold text-red-400 mb-4">Players with Pending Taxes</h2>
+                    <div className="max-h-96 overflow-y-auto">
+                        <table className="min-w-full text-sm text-left">
+                            <thead className="bg-gray-700 sticky top-0">
+                                <tr>
+                                    <th className="p-2">Username</th>
+                                    <th className="p-2">Tax Due</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pendingTaxes.map(acc => (
+                                    <tr key={acc.accountId} className="border-b border-gray-700">
+                                        <td className="p-2">{acc.accountId}</td>
+                                        <td className="p-2 text-red-400">${acc.taxData.taxDue.toFixed(2)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        };
 
-        const dateMatch = line.match(/\[(\d{4}-\d{2}-\d{2})/);
-        const day = dateMatch ? dateMatch[1].slice(5).replace("-", "/") : "";
+        // --- Component: AdminDashboard ---
+        const AdminDashboard = ({ adminUser, setAdminUser }) => {
+            const [accounts, setAccounts] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [view, setView] = useState(adminUser === 'admin22' ? 'user_edit' : 'loan_applications');
 
-        const buyMatch = line.match(/bought.*?\$([\d,\.]+)/);
-        const sellMatch = line.match(/sold.*?\$([\d,\.]+)/);
+            useEffect(() => {
+                const fetchAccounts = async () => {
+                    try {
+                        const response = await fetch(API_ENDPOINTS.ADMIN, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'get_all_data' })
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            setAccounts(data.accounts);
+                        } else {
+                            console.error("Failed to fetch accounts:", data.message);
+                        }
+                    } catch (err) {
+                        console.error("Error fetching accounts:", err);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+                fetchAccounts();
+            }, []);
 
-        if (buyMatch) {
-          const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
-          const tax = +(amt * 0.04).toFixed(2);
-          buyTax += tax;
-          dailyData[day] = (dailyData[day] || 0) + tax;
-        }
-        if (sellMatch) {
-          const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
-          const tax = +(amt * 0.10).toFixed(2);
-          sellTax += tax;
-          dailyData[day] = (dailyData[day] || 0) + tax;
-        }
-      });
+            const Admin22Dashboard = () => (
+                <div className="flex flex-wrap gap-4 mb-6">
+                    <button onClick={() => setView('user_edit')} className={`p-4 rounded-xl flex-1 text-left ${view === 'user_edit' ? 'bg-red-600' : 'bg-gray-700'}`}>User Edit</button>
+                    <button onClick={() => setView('user_bank_info')} className={`p-4 rounded-xl flex-1 text-left ${view === 'user_bank_info' ? 'bg-red-600' : 'bg-gray-700'}`}>User Bank Info</button>
+                    <button onClick={() => setView('all_loan_info')} className={`p-4 rounded-xl flex-1 text-left ${view === 'all_loan_info' ? 'bg-red-600' : 'bg-gray-700'}`}>All Loan Info</button>
+                    <button onClick={() => setView('all_tax_info')} className={`p-4 rounded-xl flex-1 text-left ${view === 'all_tax_info' ? 'bg-red-600' : 'bg-gray-700'}`}>All Tax Info</button>
+                    <button onClick={() => setView('view_as_player')} className={`p-4 rounded-xl flex-1 text-left ${view === 'view_as_player' ? 'bg-red-600' : 'bg-gray-700'}`}>View as Player</button>
+                </div>
+            );
 
-      const totalTax = buyTax + sellTax;
-      const paidRaw = taxData.paidPlayers?.[name];
-      // If marked PAID_BY_GOVT or description, count total paid as totalTax
-const totalPaid = getPaidAmount(name);
+            if (loading) {
+                return <div className="flex justify-center items-center h-screen"><div className="text-2xl">Loading Admin Panel...</div></div>;
+            }
 
-      const due = Math.max(0, totalTax - totalPaid);
+            return (
+                <div className="p-8">
+                    {/* ... rest of the dashboard ... */}
+                    {view === 'view_as_player' && adminUser === 'admin22' && <ViewAsPlayerView accounts={accounts} />}
+                </div>
+            );
+        };
+        
+        // --- Component: AdminLogin ---
+        const AdminLogin = ({ setAdminUser }) => {
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
 
-      return { buyTax, sellTax, totalTax, due, totalPaid, dailyData };
-    }
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await fetch(API_ENDPOINTS.ADMIN, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'login', username, password })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        setAdminUser(username);
+                    } else {
+                        setError(data.message);
+                    }
+                } catch (err) {
+                    setError('Failed to connect to the server.');
+                }
+            };
 
-    // Show player details panel (pay as govt, history, reset tax etc)
-    function showPlayerDetails(name) {
-      currentPlayer = name;
-      const { totalTax, due, totalPaid } = calculateTaxForPlayer(name);
-      const history = taxData.paymentHistory?.[name] || [];
-      const description = taxData.paidPlayers?.[name] || "";
+            return (
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="bg-gray-800 p-8 rounded-xl w-full max-w-md shadow-minecraft">
+                        <h2 className="text-3xl font-bold text-red-400 mb-6 text-center">Admin Login</h2>
+                        <form onSubmit={handleLogin} className="space-y-4">
+                            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" required className="w-full p-3 bg-gray-700 text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" />
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required className="w-full p-3 bg-gray-700 text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" />
+                            {error && <p className="text-red-500 text-center">{error}</p>}
+                            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-md">Login</button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
 
-      let historyText = history.length ? history.map(h => `${h.date}: $${h.amount} (${h.desc || "No desc"})`).join("\n") : "No payments yet.";
+        // --- Main App Component ---
+        const App = () => {
+            const [adminUser, setAdminUser] = useState(null);
 
-      document.getElementById("adminPlayerPanel").innerHTML = `
-        <h3>Player: ${name}</h3>
-        <p><b>Total Tax:</b> $${totalTax.toFixed(2)}</p>
-        <p><b>Paid:</b> $${totalPaid.toFixed(2)}</p>
-        <p><b>Due:</b> $${due.toFixed(2)}</p>
-        <hr />
-        <div class="pay-govt-section">
-          <h4>Pay as Govt</h4>
-          <label>Amount to Pay</label>
-          <input type="number" id="govtPayAmount" min="0" max="${due.toFixed(2)}" step="0.01" value="${due.toFixed(2)}" />
-          <label>Description (optional)</label>
-          <input type="text" id="govtPayDesc" placeholder="Enter description" value="${description === "PAID_BY_GOVT" ? "" : description}" />
-          <button onclick="payAsGovt()">Mark Payment</button>
-        </div>
-        <hr />
-        <div>
-          <label>Payment History</label>
-          <textarea readonly rows="6" style="width:100%;background:#222;color:#ddd;border-radius:10px;padding:10px;font-family: monospace;">${historyText}</textarea>
-        </div>
-        <hr />
-        <div>
-          <label>Reset Actions (requires password '2613')</label>
-          <input type="password" id="resetPass" placeholder="Enter Admin Password" />
-          <div style="margin-top:10px;">
-            <button onclick="resetTax()">Reset Tax</button>
-            <button onclick="resetHistory()">Reset History</button>
-            <button onclick="resetDeadline()">Reset Deadline</button>
-          </div>
-        </div>
-      `;
-    }
+            return adminUser ? <AdminDashboard adminUser={adminUser} setAdminUser={setAdminUser} /> : <AdminLogin setAdminUser={setAdminUser} />;
+        };
 
-    // Mark payment as govt, save payment amount + description
-function payAsGovt() {
-  const desc = document.getElementById("govtPayDesc").value || "Paid by Govt";
-  const amount = parseFloat(document.getElementById("govtPayAmount").value);
-
-  if (isNaN(amount) || amount <= 0) {
-    alert("❌ Enter valid amount.");
-    return;
-  }
-
-  taxData.paymentHistory = taxData.paymentHistory || {};
-  taxData.paymentHistory[currentPlayer] = taxData.paymentHistory[currentPlayer] || [];
-
-  taxData.paymentHistory[currentPlayer].push({
-    amount: amount.toFixed(2),
-    method: desc,
-    date: new Date().toISOString().split("T")[0]
-  });
-
-  alert(`✅ Paid $${amount} as Govt for ${currentPlayer}`);
-  document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
-  autoSyncTax();
-  showPlayerDetails(currentPlayer);
-  renderPlayerTaxList();
-}
-
-
- function autoSyncTax() {
-  fetch("https://syncs.1987sakshamsingh.workers.dev/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(taxData)
-  }).then(r => alert(r.ok ? "✅ Tax Auto Synced" : "❌ Sync Failed"));
-}
-
-    // Reset tax for current player
-    function resetTax() {
-      if (!checkAdminPass()) return;
-      delete taxData.paidPlayers[currentPlayer];
-      alert("🔁 Tax reset for " + currentPlayer);
-      updateEditorsAndUI();
-    }
-    // Reset payment history
-    function resetHistory() {
-      if (!checkAdminPass()) return;
-      delete taxData.paymentHistory[currentPlayer];
-      alert("🔁 Payment history reset for " + currentPlayer);
-      updateEditorsAndUI();
-    }
-    // Reset tax deadline - placeholder since you may implement it differently
-    function resetDeadline() {
-      if (!checkAdminPass()) return;
-      if(taxData.taxDeadline) delete taxData.taxDeadline[currentPlayer];
-      alert("🔁 Tax deadline reset for " + currentPlayer);
-      updateEditorsAndUI();
-    }
-    function checkAdminPass() {
-      const pass = document.getElementById("resetPass").value;
-      if (pass === "2613") return true;
-      alert("❌ Incorrect Admin Password");
-      return false;
-    }
-
-    // Update textareas & UI
-    function updateEditorsAndUI() {
-      document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
-      document.getElementById("bankEditor").value = JSON.stringify(bankData, null, 2);
-      renderPlayerTaxList();
-      renderBankList();
-      clearAdminPanel();
-    }
-
-    // Render bank info for all players found in transactions
-    function renderBankList() {
-      const players = getAllPlayersFromTransactions();
-      if (players.length === 0) {
-        document.getElementById("bankList").innerHTML = "<p>No player transactions found.</p>";
-        return;
-      }
-
-      let bankHtml = "";
-      players.forEach(name => {
-        const bank = bankData.accounts?.[name];
-        if (!bank) {
-          bankHtml += `
-            <div class="player-item">
-              <span class="player-name">${name}</span>
-              <span class="status-notcreated">❌ Bank Not Created</span>
-            </div>`;
-        } else {
-          bankHtml += `
-            <div class="player-item">
-              <span class="player-name">${bank.username}</span>
-              <div>
-                <p>ID: ${bank.id}</p>
-                <p>Password: ${bank.password}</p>
-                <p>Contact: ${bank.contact}</p>
-                <button onclick="editBank('${name}')">Edit Bank Info</button>
-              </div>
-            </div>`;
-        }
-      });
-
-      document.getElementById("bankList").innerHTML = bankHtml;
-    }
-
-    // Edit bank info in textarea + save back
-    function editBank(name) {
-      const bank = bankData.accounts?.[name];
-      if (!bank) {
-        alert("No bank info found for " + name);
-        return;
-      }
-      const newId = prompt("Edit Bank ID", bank.id) || bank.id;
-      const newPass = prompt("Edit Bank Password", bank.password) || bank.password;
-      const newContact = prompt("Edit Bank Contact", bank.contact) || bank.contact;
-
-      bankData.accounts[name] = {
-        username: name,
-        id: newId,
-        password: newPass,
-        contact: newContact,
-      };
-      alert("✅ Bank info updated for " + name);
-      updateEditorsAndUI();
-    }
-
-    // Save tax JSON to server (via sync endpoint)
-    function saveTax() {
-      try {
-        const data = JSON.parse(document.getElementById("taxEditor").value);
-        fetch("https://syncs.1987sakshamsingh.workers.dev/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        }).then(res => {
-          if (res.ok) alert("✅ Tax JSON synced successfully!");
-          else alert("❌ Failed to sync Tax JSON.");
-        });
-      } catch {
-        alert("❌ Invalid JSON in tax editor.");
-      }
-    }
-
-    // Save bank JSON to server (via sync endpoint)
-    function saveBank() {
-      try {
-        const data = JSON.parse(document.getElementById("bankEditor").value);
-        fetch("https://syncs.1987sakshamsingh.workers.dev/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        }).then(res => {
-          if (res.ok) alert("✅ Bank JSON synced successfully!");
-          else alert("❌ Failed to sync Bank JSON.");
-        });
-      } catch {
-        alert("❌ Invalid JSON in bank editor.");
-      }
-    }
-
-    // Logout admin and redirect to home page
-    function logoutAdmin() {
-      if (confirm("Are you sure you want to exit the admin panel?")) {
-        window.location.href = "https://minecraft2613.github.io/taxess/index.html";
-      }
-    }
-
-    // On page load
-    window.onload = () => {
-      loadAllData();
-    };
-    function getPaidAmount(player) {
-  const history = taxData.paymentHistory?.[player] || [];
-  return history.reduce((sum, entry) => sum + Number(entry.amount), 0);
-}
-
-  </script>
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
 </body>
 </html>
