@@ -153,7 +153,7 @@
         // --- Component: AllTaxInfoView ---
         const AllTaxInfoView = ({ accounts }) => { /* ... existing AllTaxInfoView component ... */ };
 
-        const ViewAsPlayerView = ({ accounts }) => {
+        const ViewAsPlayerView = ({ accounts, adminUser, setAccounts }) => {
             const [selectedPlayer, setSelectedPlayer] = useState(null);
 
             return (
@@ -179,6 +179,7 @@
                                     {(selectedPlayer.transactions || []).slice(-5).map((tx, i) => <div key={i}>{tx.description}: ${tx.amount.toFixed(2)}</div>)}
                                 </div>
                             </div>
+                            {adminUser === 'admin22' && <UserEditView accounts={accounts} setAccounts={setAccounts} />}
                         </div>
                     )}
                 </div>
@@ -363,7 +364,7 @@
                         {view === 'user_bank_info' && <UserBankInfoView accounts={accounts} />}
                         {view === 'all_loan_info' && <AllLoanInfoView accounts={accounts} />}
                         {view === 'all_tax_info' && <AllTaxInfoView accounts={accounts} />}
-                        {view === 'view_as_player' && <ViewAsPlayerView accounts={accounts} />}
+                        {view === 'view_as_player' && <ViewAsPlayerView accounts={accounts} adminUser={adminUser} setAccounts={setAccounts} />}
                         {view === 'user_edit' && adminUser === 'admin22' && <UserEditView accounts={accounts} setAccounts={setAccounts} />}
                     </div>
                 </div>
