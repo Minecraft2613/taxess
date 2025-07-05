@@ -19,7 +19,7 @@
         const { useState, useEffect } = React;
 
         const API_ENDPOINTS = {
-            ADMIN: 'https://bank-data.1987sakshamsingh.workers.dev'
+            ADMIN: 'https://bank-data.1987sakshamsingh.workers.dev/admin'
         };
 
         // --- Component: UserEditView ---
@@ -297,14 +297,52 @@
                 fetchAccounts();
             }, []);
 
-            const Admin22Dashboard = () => (
-                <div className="flex flex-wrap gap-4 mb-6">
-                    <button onClick={() => setView('user_edit')} className={`p-4 rounded-xl flex-1 text-left ${view === 'user_edit' ? 'bg-red-600' : 'bg-gray-700'}`}>User Edit</button>
+            const handleApproveLoan = async (accountId, loanId) => {
+                try {
+                    const response = await fetch(API_ENDPOINTS.ADMIN, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'approve_loan', userAccountId: accountId, loanId })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        setAccounts(data.accounts);
+                        alert('Loan approved successfully!');
+                    } else {
+                        alert('Failed to approve loan: ' + data.message);
+                    }
+                } catch (err) {
+                    alert('Error approving loan.');
+                }
+            };
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    fetchAccounts();
+                }, 5000); // Poll every 5 seconds
+                return () => clearInterval(interval);
+            }, []);
+
+            const CommonDashboardButtons = () => (
+                 <div className="flex flex-wrap gap-4 mb-6">
+                    <button onClick={() => setView('loan_applications')} className={`p-4 rounded-xl flex-1 text-left ${view === 'loan_applications' ? 'bg-red-600' : 'bg-gray-700'}`}>Loan Applications</button>
+                    <button onClick={() => setView('pending_taxes')} className={`p-4 rounded-xl flex-1 text-left ${view === 'pending_taxes' ? 'bg-red-600' : 'bg-gray-700'}`}>Pending Taxes</button>
                     <button onClick={() => setView('user_bank_info')} className={`p-4 rounded-xl flex-1 text-left ${view === 'user_bank_info' ? 'bg-red-600' : 'bg-gray-700'}`}>User Bank Info</button>
                     <button onClick={() => setView('all_loan_info')} className={`p-4 rounded-xl flex-1 text-left ${view === 'all_loan_info' ? 'bg-red-600' : 'bg-gray-700'}`}>All Loan Info</button>
                     <button onClick={() => setView('all_tax_info')} className={`p-4 rounded-xl flex-1 text-left ${view === 'all_tax_info' ? 'bg-red-600' : 'bg-gray-700'}`}>All Tax Info</button>
                     <button onClick={() => setView('view_as_player')} className={`p-4 rounded-xl flex-1 text-left ${view === 'view_as_player' ? 'bg-red-600' : 'bg-gray-700'}`}>View as Player</button>
                 </div>
+            );
+
+            const Admin22Dashboard = () => (
+                 <div className="flex flex-wrap gap-4 mb-6">
+                    <button onClick={() => setView('user_edit')} className={`p-4 rounded-xl flex-1 text-left ${view === 'user_edit' ? 'bg-red-600' : 'bg-gray-700'}`}>User Edit</button>
+                    <CommonDashboardButtons />
+                </div>
+            );
+
+            const AdminsDashboard = () => (
+                <CommonDashboardButtons />
             );
 
             if (loading) {
@@ -313,8 +351,20 @@
 
             return (
                 <div className="p-8">
-                    {/* ... rest of the dashboard ... */}
-                    {view === 'view_as_player' && adminUser === 'admin22' && <ViewAsPlayerView accounts={accounts} />}
+                    <h1 className="text-4xl font-bold text-red-500 mb-2">Admin Panel</h1>
+                    <p className="text-lg text-gray-400 mb-8">Welcome, {adminUser}</p>
+
+                    {adminUser === 'admin22' ? <Admin22Dashboard /> : <AdminsDashboard />}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {view === 'loan_applications' && <LoanApplicationsView accounts={accounts} handleApproveLoan={handleApproveLoan} />}
+                        {view === 'pending_taxes' && <PendingTaxesView accounts={accounts} />}
+                        {view === 'user_bank_info' && <UserBankInfoView accounts={accounts} />}
+                        {view === 'all_loan_info' && <AllLoanInfoView accounts={accounts} />}
+                        {view === 'all_tax_info' && <AllTaxInfoView accounts={accounts} />}
+                        {view === 'view_as_player' && <ViewAsPlayerView accounts={accounts} />}
+                        {view === 'user_edit' && adminUser === 'admin22' && <UserEditView accounts={accounts} setAccounts={setAccounts} />}
+                    </div>
                 </div>
             );
         };
