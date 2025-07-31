@@ -113,7 +113,7 @@
                     const data = await response.json();
                     if (data.success) {
                         setAccounts(data.accounts);
-                        const taxResponse = await fetch('https://bank-data.1987sakshamsingh.workers.dev/tax-data');
+                        const taxResponse = await fetch('https://syncs.1987sakshamsingh.workers.dev/tax-data');
                         const taxJson = await taxResponse.json();
                         setTaxData(taxJson);
                     }
