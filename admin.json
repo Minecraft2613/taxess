@@ -1,10 +1,5 @@
 {
-  "accounts": {
-    "Ansh_2613": {
-      "username": "Ansh_2613",
-      "id": "BANK631095",
-      "password": "36372613",
-      "contact": "Discord#0000"
-    }
-  }
+  "action": "login",
+  "username": "BANK631095",
+  "password": "36372613"
 }
