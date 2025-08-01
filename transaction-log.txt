@@ -1357,7 +1357,169 @@
 [2025-07-29 05:47:49] - ansh bought 64 x Waxed Oxidized Copper(Blocks.page2.items.85) for $512.00 with the buy stacks screen.
 [2025-07-29 05:47:49] - ansh bought 64 x Waxed Oxidized Copper(Blocks.page2.items.85) for $512.00 with the buy stacks screen.
 [2025-07-29 05:57:36] - billu_backchod bought 64 x Melon Slice(Farming.page1.items.18) for $448.00 with the buy stacks screen.
-
+[2025-07-29 06:16:54] - .yash_pro2658 bought 1 x Ominous Bottle(Miscellaneous.page2.items.66) for $1,750.00 with the buy screen.
+[2025-07-29 06:17:13] - .yash_pro2658 sold 1 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,875.00 with the sell screen.
+[2025-07-29 06:18:28] - .yash_pro2658 bought 2 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,500.00 with the buy screen.
+[2025-07-29 06:18:36] - .yash_pro2658 sold 2 x Ominous Bottle(Miscellaneous.page2.items.66) for $7,750.00 with the sell screen.
+[2025-07-29 06:18:56] - .yash_pro2658 bought 3 x Ominous Bottle(Miscellaneous.page2.items.66) for $5,250.00 with the buy screen.
+[2025-07-29 06:19:11] - .yash_pro2658 bought 2 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,500.00 with the buy screen.
+[2025-07-29 06:19:19] - .yash_pro2658 sold 5 x Ominous Bottle(Miscellaneous.page2.items.66) for $19,375.00 with the sell screen.
+[2025-07-29 06:20:02] - .yash_pro2658 bought 11 x Ominous Bottle(Miscellaneous.page2.items.66) for $19,250.00 with the buy screen.
+[2025-07-29 06:20:11] - .yash_pro2658 sold 11 x Ominous Bottle(Miscellaneous.page2.items.66) for $42,625.00 with the sell screen.
+[2025-07-29 06:20:58] - .yash_pro2658 bought 23 x Ominous Bottle(Miscellaneous.page2.items.66) for $40,250.00 with the buy screen.
+[2025-07-29 06:21:22] - .yash_pro2658 bought 1 x Ominous Bottle(Miscellaneous.page2.items.66) for $1,750.00 with the buy screen.
+[2025-07-29 06:21:29] - .yash_pro2658 sold 24 x Ominous Bottle(Miscellaneous.page2.items.66) for $93,000.00 with the sell screen.
+[2025-07-29 06:23:15] - .yash_pro2658 bought 53 x Ominous Bottle(Miscellaneous.page2.items.66) for $92,750.00 with the buy screen.
+[2025-07-29 06:23:24] - .yash_pro2658 sold 53 x Ominous Bottle(Miscellaneous.page2.items.66) for $205,375.00 with the sell screen.
+[2025-07-29 06:24:03] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:24:39] - .yash_pro2658 bought 53 x Ominous Bottle(Miscellaneous.page2.items.66) for $92,750.00 with the buy screen.
+[2025-07-29 06:25:02] - .yash_pro2658 sold 117 x Ominous Bottle(Miscellaneous.page2.items.66) for $453,375.00 with the sell screen.
+[2025-07-29 06:25:40] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:25:42] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:25:48] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:25:50] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:25:58] - .yash_pro2658 sold 256 x Ominous Bottle(Miscellaneous.page2.items.66) for $992,000.00 with the sell screen.
+[2025-07-29 06:26:38] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:26:39] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:26:41] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:26:42] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:26:43] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:26:44] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:26:46] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:26:47] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:26:59] - .yash_pro2658 sold 512 x Ominous Bottle(Miscellaneous.page2.items.66) for $1,984,000.00 with the sell screen.
+[2025-07-29 06:30:39] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:39] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:40] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:41] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:42] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:44] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:44] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:45] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:47] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:48] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:49] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:50] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:30:53] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:31:03] - .yash_pro2658 sold 832 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,224,000.00 with the sell screen.
+[2025-07-29 06:32:24] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:25] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:26] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:27] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:27] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:29] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:30] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:30] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:31] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:32] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:33] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:34] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:35] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:36] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:37] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:38] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:39] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:42] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:43] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:43] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:44] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:45] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:46] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:47] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:48] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:49] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:50] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:52] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:53] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:56] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:57] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:57] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:58] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:32:59] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:33:14] - .yash_pro2658 sold 2176 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,432,000.00 with the sell screen.
+[2025-07-29 06:33:58] - .yash_pro2658 bought 1 x Ominous Bottle(Miscellaneous.page2.items.66) for $1,750.00 with the buy screen.
+[2025-07-29 06:33:58] - .yash_pro2658 bought 1 x Ominous Bottle(Miscellaneous.page2.items.66) for $1,750.00 with the buy screen.
+[2025-07-29 06:33:59] - .yash_pro2658 bought 1 x Ominous Bottle(Miscellaneous.page2.items.66) for $1,750.00 with the buy screen.
+[2025-07-29 06:34:00] - .yash_pro2658 bought 1 x Ominous Bottle(Miscellaneous.page2.items.66) for $1,750.00 with the buy screen.
+[2025-07-29 06:34:02] - .yash_pro2658 bought 1 x Ominous Bottle(Miscellaneous.page2.items.66) for $1,750.00 with the buy screen.
+[2025-07-29 06:34:03] - .yash_pro2658 bought 1 x Ominous Bottle(Miscellaneous.page2.items.66) for $1,750.00 with the buy screen.
+[2025-07-29 06:34:11] - .yash_pro2658 bought 54 x Ominous Bottle(Miscellaneous.page2.items.66) for $94,500.00 with the buy screen.
+[2025-07-29 06:34:23] - .yash_pro2658 bought 4 x Ominous Bottle(Miscellaneous.page2.items.66) for $7,000.00 with the buy screen.
+[2025-07-29 06:34:38] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:39] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:40] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:40] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:41] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:42] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:43] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:44] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:44] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:46] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:46] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:47] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:48] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:49] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:50] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:51] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:52] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:52] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:54] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:54] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:55] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:56] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:57] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:58] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:34:59] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:00] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:01] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:03] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:05] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:06] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:08] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:09] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:09] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:12] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:14] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 06:35:29] - .yash_pro2658 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 06:36:14] - .yash_pro2658 bought 1 x Elytra(Miscellaneous.page1.items.8) for $9,999.00 with the buy screen.
+[2025-07-29 06:37:03] - .yash_pro2658 bought 17 x Ender Pearl(Mobs.page1.items.6) for $119.00 with the buy screen.
+[2025-07-29 06:44:21] - .yash_pro2658 bought 2 x Example power stick(Workstations.page1.items.example-item) for $1,234.00 with the buy screen.
+[2025-07-29 06:44:54] - .yash_pro2658 bought 53 x Diamond(Ores.page1.items.9) for $79,500.00 with the buy screen.
+[2025-07-29 06:53:02] - .yash_pro2658 bought 64 x Firework Rocket(Miscellaneous.page1.items.999) for $3,200.00 with the buy screen.
+[2025-07-29 06:53:02] - .yash_pro2658 bought 64 x Firework Rocket(Miscellaneous.page1.items.999) for $3,200.00 with the buy screen.
+[2025-07-29 06:53:04] - .yash_pro2658 bought 64 x Firework Rocket(Miscellaneous.page1.items.999) for $3,200.00 with the buy screen.
+[2025-07-29 06:53:05] - .yash_pro2658 bought 64 x Firework Rocket(Miscellaneous.page1.items.999) for $3,200.00 with the buy screen.
+[2025-07-29 06:53:49] - .yash_pro2658 bought 49 x Totem Of Undying(Miscellaneous.page1.items.36) for $108,000.00 with the buy screen.
+[2025-07-29 06:56:31] - .yash_pro2658 bought 49 x Oak Log(Blocks.page5.items.230) for $196.00 with the buy screen.
+[2025-07-29 07:00:41] - .yash_pro2658 sold 249 x Firework Rocket(Miscellaneous.page1.items.999) for $8,179.65 with the sell screen.
+[2025-07-29 07:01:30] - .yash_pro2658 bought 52 x Golden Carrot(Food.page1.items.8) for $17,836.00 with the buy screen.
+[2025-07-29 07:17:41] - .yash_pro2658 bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy screen.
+[2025-07-29 07:17:44] - .yash_pro2658 bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy screen.
+[2025-07-29 07:17:45] - .yash_pro2658 bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy screen.
+[2025-07-29 07:17:46] - .yash_pro2658 bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy screen.
+[2025-07-29 07:21:13] - .yash_pro2658 bought 64 x Sugar Cane(Farming.page1.items.25) for $960.00 with the buy screen.
+[2025-07-29 07:25:42] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:43] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:43] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:44] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:45] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:46] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:47] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:47] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:48] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:49] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:50] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:51] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:52] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:53] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:54] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:55] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:55] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:56] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:57] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:25:58] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:26:00] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 07:26:08] - .yash_pro2658 sold 1344 x Ominous Bottle(Miscellaneous.page2.items.66) for $5,208,000.00 with the sell screen.
 [2025-07-29 07:29:25] - ansh bought 1 x Elytra(Miscellaneous.page1.items.8) for $9,999.00 with the buy screen.
 [2025-07-29 07:30:02] - ansh bought 1 x Lava Bucket(Miscellaneous.page1.items.15) for $50.00 with the buy screen.
 [2025-07-29 07:31:45] - .yash_pro2658 bought 64 x Sugar Cane(Farming.page1.items.25) for $960.00 with the buy screen.
@@ -1403,7 +1565,133 @@
 [2025-07-29 08:18:45] - .yash_pro2658 bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy screen.
 [2025-07-29 08:18:46] - .yash_pro2658 bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy screen.
 [2025-07-29 08:18:47] - .yash_pro2658 bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy screen.
-
+[2025-07-29 08:22:42] - .ItzWhite7778 bought 128 x Ominous Bottle(Miscellaneous.page2.items.66) for $224,000.00 with the buy stacks screen.
+[2025-07-29 08:22:44] - .ItzWhite7778 bought 128 x Ominous Bottle(Miscellaneous.page2.items.66) for $224,000.00 with the buy stacks screen.
+[2025-07-29 08:22:45] - .ItzWhite7778 bought 128 x Ominous Bottle(Miscellaneous.page2.items.66) for $224,000.00 with the buy stacks screen.
+[2025-07-29 08:22:46] - .ItzWhite7778 bought 128 x Ominous Bottle(Miscellaneous.page2.items.66) for $224,000.00 with the buy stacks screen.
+[2025-07-29 08:22:53] - .ItzWhite7778 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy stacks screen.
+[2025-07-29 08:23:27] - .ItzWhite7778 sold 576 x Ominous Bottle(Miscellaneous.page2.items.66) for $2,232,000.00 with the sell screen.
+[2025-07-29 08:24:39] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $2,128,000.00 with the buy stacks screen.
+[2025-07-29 08:25:18] - .ItzWhite7778 sold 1216 x Ominous Bottle(Miscellaneous.page2.items.66) for $4,712,000.00 with the sell screen.
+[2025-07-29 08:26:16] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:26:50] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:26:58] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:27:13] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:13] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:14] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:15] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:15] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:17] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:18] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:19] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:19] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:21] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:21] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:27:22] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:23] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:24] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:25] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:26] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:27] - .ItzWhite7778 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy stacks screen.
+[2025-07-29 08:27:27] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:28] - .ItzWhite7778 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy stacks screen.
+[2025-07-29 08:27:29] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:29] - .ItzWhite7778 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy stacks screen.
+[2025-07-29 08:27:29] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:30] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:31] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:32] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:34] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:34] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:35] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:27:36] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:37] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:38] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:40] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:41] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:43] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:44] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:45] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:46] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:47] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:48] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:49] - .yash_pro2658 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy screen.
+[2025-07-29 08:27:51] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:27:55] - .yash_pro2658 sold 2240 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,680,000.00 with the sell screen.
+[2025-07-29 08:27:56] - .ItzWhite7778 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy stacks screen.
+[2025-07-29 08:27:57] - .ItzWhite7778 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy stacks screen.
+[2025-07-29 08:27:59] - .ItzWhite7778 bought 64 x Ominous Bottle(Miscellaneous.page2.items.66) for $112,000.00 with the buy stacks screen.
+[2025-07-29 08:28:07] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:28:26] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:28:31] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:28:39] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:29:44] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:29:49] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:29:54] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:29:55] - .yash_pro2658 bought 3456 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,920,000.00 with the buy stacks screen.
+[2025-07-29 08:30:03] - .yash_pro2658 sold 2240 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,680,000.00 with the sell screen.
+[2025-07-29 08:30:08] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:30:14] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:30:15] - .yash_pro2658 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:30:18] - .yash_pro2658 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $224,000.00 with the buy stacks screen.
+[2025-07-29 08:30:20] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:30:26] - .yash_pro2658 sold 2240 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,680,000.00 with the sell screen.
+[2025-07-29 08:30:42] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:30:47] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:30:49] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,920,000.00 with the buy stacks screen.
+[2025-07-29 08:30:52] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:30:59] - .yash_pro2658 sold 2240 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,680,000.00 with the sell screen.
+[2025-07-29 08:31:14] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:31:17] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,920,000.00 with the buy stacks screen.
+[2025-07-29 08:31:21] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:31:25] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:31:29] - .yash_pro2658 sold 2240 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,680,000.00 with the sell screen.
+[2025-07-29 08:31:43] - .yash_pro2658 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:31:49] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $224,000.00 with the buy stacks screen.
+[2025-07-29 08:31:50] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:31:56] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:32:01] - .yash_pro2658 sold 2240 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,680,000.00 with the sell screen.
+[2025-07-29 08:32:02] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:32:29] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:32:38] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:32:44] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:32:50] - .yash_pro2658 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:32:53] - .yash_pro2658 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $224,000.00 with the buy stacks screen.
+[2025-07-29 08:32:59] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:33:04] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:33:10] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:33:21] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:33:23] - .yash_pro2658 sold 2240 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,680,000.00 with the sell screen.
+[2025-07-29 08:33:27] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:33:31] - .yash_pro2658 bought 1 x Ominous Bottle(Miscellaneous.page2.items.66) for $1,750.00 with the buy screen.
+[2025-07-29 08:33:32] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:33:38] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,918,250.00 with the buy stacks screen.
+[2025-07-29 08:33:47] - .yash_pro2658 sold 2240 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,680,000.00 with the sell screen.
+[2025-07-29 08:33:54] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:33:58] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:34:05] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:35:04] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,920,000.00 with the buy stacks screen.
+[2025-07-29 08:35:11] - .yash_pro2658 sold 2240 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,680,000.00 with the sell screen.
+[2025-07-29 08:35:14] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:35:20] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:35:25] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,920,000.00 with the buy stacks screen.
+[2025-07-29 08:35:25] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:35:39] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:35:46] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:35:50] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:35:51] - .yash_pro2658 sold 2240 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,680,000.00 with the sell screen.
+[2025-07-29 08:36:04] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:36:11] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:36:20] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:36:39] - .yash_pro2658 bought 64 x Netherite Ingot(Ores.page1.items.20) for $544,000.00 with the buy stacks screen.
+[2025-07-29 08:37:19] - .yash_pro2658 bought 17 x Netherite Upgrade Smithing Template(Decoration.page4.items.141) for $54,281.85 with the buy screen.
+[2025-07-29 08:37:45] - .yash_pro2658 bought 33 x Silence Armor Trim Smithing Template(Decoration.page4.items.146) for $105,378.90 with the buy screen.
+[2025-07-29 08:37:53] - .ItzWhite7778 bought 2112 x Ominous Bottle(Miscellaneous.page2.items.66) for $3,696,000.00 with the buy stacks screen.
+[2025-07-29 08:38:02] - .ItzWhite7778 bought 192 x Ominous Bottle(Miscellaneous.page2.items.66) for $336,000.00 with the buy stacks screen.
+[2025-07-29 08:38:07] - .ItzWhite7778 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 08:41:26] - .yash_pro2658 bought 49 x Diamond(Ores.page1.items.9) for $73,500.00 with the buy screen.
+[2025-07-29 08:41:28] - .yash_pro2658 bought 49 x Diamond(Ores.page1.items.9) for $73,500.00 with the buy screen.
+[2025-07-29 08:43:08] - .ItzWhite7778 bought 33 x Redstone Block(Ores.page1.items.24) for $4,455.00 with the buy screen.
 [2025-07-29 08:54:05] - ansh bought 64 x Birch Slab(Blocks.page5.items.201) for $32.00 with the buy stacks screen.
 [2025-07-29 08:55:33] - ansh bought 1 x Spruce Slab(Blocks.page5.items.237) for $0.75 with the buy screen.
 [2025-07-29 08:55:34] - ansh bought 1 x Spruce Slab(Blocks.page5.items.237) for $0.75 with the buy screen.
@@ -1411,7 +1699,24 @@
 [2025-07-29 08:56:11] - ansh bought 1 x Spruce Stairs(Blocks.page5.items.238) for $2.25 with the buy screen.
 [2025-07-29 08:56:11] - ansh bought 1 x Spruce Stairs(Blocks.page5.items.238) for $2.25 with the buy screen.
 [2025-07-29 08:56:11] - ansh bought 1 x Spruce Stairs(Blocks.page5.items.238) for $2.25 with the buy screen.
-
+[2025-07-29 09:34:55] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $4,032,000.00 with the buy stacks screen.
+[2025-07-29 09:35:06] - .yash_pro2658 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 09:35:25] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $4,032,000.00 with the buy stacks screen.
+[2025-07-29 09:35:30] - .yash_pro2658 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 09:35:42] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $4,032,000.00 with the buy stacks screen.
+[2025-07-29 09:35:52] - .yash_pro2658 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 09:36:08] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $4,032,000.00 with the buy stacks screen.
+[2025-07-29 09:36:15] - .yash_pro2658 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 09:36:32] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $4,032,000.00 with the buy stacks screen.
+[2025-07-29 09:36:38] - .yash_pro2658 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 09:37:01] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $4,032,000.00 with the buy stacks screen.
+[2025-07-29 09:37:06] - .yash_pro2658 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 09:37:46] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $4,032,000.00 with the buy stacks screen.
+[2025-07-29 09:37:51] - .yash_pro2658 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 09:38:08] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $4,032,000.00 with the buy stacks screen.
+[2025-07-29 09:38:15] - .yash_pro2658 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
+[2025-07-29 09:38:36] - .yash_pro2658 bought 3136 x Ominous Bottle(Miscellaneous.page2.items.66) for $4,032,000.00 with the buy stacks screen.
+[2025-07-29 09:38:41] - .yash_pro2658 sold 2304 x Ominous Bottle(Miscellaneous.page2.items.66) for $8,928,000.00 with the sell screen.
 [2025-07-29 11:49:51] - ansh bought 64 x Spruce Slab(Blocks.page5.items.237) for $48.00 with the buy stacks screen.
 [2025-07-29 11:49:51] - ansh bought 64 x Spruce Slab(Blocks.page5.items.237) for $48.00 with the buy stacks screen.
 [2025-07-29 11:55:51] - ansh bought 64 x Sugar Cane(Farming.page1.items.25) for $960.00 with the buy stacks screen.
