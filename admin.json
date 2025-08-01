@@ -1,5 +1,16 @@
 {
-  "action": "login",
-  "username": "BANK631095",
-  "password": "36372613"
+  "paidPlayers": {
+    "billu_backchod": 3824
+  },
+  "paymentHistory": {
+    "billu_backchod": [
+      {
+        "amount": 3824,
+        "date": "1/8/2025, 1:56:21 pm"
+      }
+    ]
+  },
+  "taxDeadline": {
+    "ansh": 1753900200000
+  }
 }
