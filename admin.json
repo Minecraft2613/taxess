@@ -1,12 +1,12 @@
 {
   "paidPlayers": {
-    "billu_backchod": 3824
+    "ansh": 1
   },
   "paymentHistory": {
-    "billu_backchod": [
+    "ansh": [
       {
-        "amount": 3824,
-        "date": "1/8/2025, 1:56:21 pm"
+        "amount": 1,
+        "date": "8/1/2025, 4:14:24 PM"
       }
     ]
   },
