@@ -1,9 +1,13 @@
 {
   "paidPlayers": {
-    "billu_backchod": 2500
+    "billu_backchod": 7500
   },
   "paymentHistory": {
     "billu_backchod": [
+      {
+        "amount": 5000,
+        "date": "1/8/2025, 9:20:30 pm"
+      },
       {
         "amount": 500,
         "date": "1/8/2025, 9:20:23 pm"
