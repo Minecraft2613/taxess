@@ -1516,3 +1516,72 @@
 [2025-07-31 12:19:40] - billu_backchod bought 128 x Oak Planks(Blocks.page5.items.231) for $128.00 with the buy stacks screen.
 [2025-07-31 12:47:16] - billu_backchod bought 1 x Elytra(Miscellaneous.page1.items.8) for $9,999.00 with the buy screen.
 [2025-07-31 12:47:21] - billu_backchod bought 64 x Firework Rocket(Miscellaneous.page1.items.999) for $3,200.00 with the buy stacks screen.
+[2025-07-31 16:02:01] - billu_backchod bought 128 x Stone(Blocks.page4.items.173) for $92.16 with the buy stacks screen.
+[2025-07-31 16:02:34] - billu_backchod bought 128 x Stone Slab(Blocks.page4.items.174) for $48.64 with the buy stacks screen.
+[2025-07-31 16:02:50] - billu_backchod bought 1 x Name Tag(Miscellaneous.page1.items.21) for $50.00 with the buy screen.
+[2025-07-31 16:03:11] - billu_backchod bought 1 x Zombie Spawn Egg(SpawnEggs.page2.items.75) for $600.00 with the buy screen.
+[2025-07-31 16:03:22] - billu_backchod bought 8 x Villager Spawn Egg(SpawnEggs.page2.items.66) for $2,400.00 with the buy screen.
+[2025-07-31 16:04:05] - billu_backchod bought 12 x Hopper(Redstone.page1.items.6) for $300.00 with the buy screen.
+[2025-07-31 16:06:07] - billu_backchod bought 4 x Glass(Blocks.page3.items.119) for $25.20 with the buy screen.
+[2025-07-31 16:10:08] - billu_backchod bought 64 x Oak Planks(Blocks.page5.items.231) for $64.00 with the buy stacks screen.
+[2025-07-31 16:10:10] - billu_backchod bought 64 x Oak Planks(Blocks.page5.items.231) for $64.00 with the buy stacks screen.
+[2025-07-31 16:15:54] - billu_backchod bought 3 x Hopper(Redstone.page1.items.6) for $75.00 with the buy screen.
+[2025-07-31 16:16:55] - billu_backchod bought 3 x Stone(Blocks.page4.items.173) for $2.16 with the buy screen.
+[2025-07-31 16:17:59] - billu_backchod bought 192 x Stone(Blocks.page4.items.173) for $90.00 with the buy stacks screen.
+[2025-07-31 16:18:24] - billu_backchod bought 64 x Stone(Blocks.page4.items.173) for $46.08 with the buy stacks screen.
+[2025-07-31 16:21:11] - billu_backchod bought 30 x White Wool(Blocks.page6.items.261) for $882.00 with the buy screen.
+[2025-07-31 16:24:43] - billu_backchod bought 64 x Oak Planks(Blocks.page5.items.231) for $64.00 with the buy stacks screen.
+[2025-07-31 16:38:23] - billu_backchod sold 64 x Iron Ingot(Ores.page1.items.16) for $5,137.92 with the sell screen.
+[2025-07-31 16:38:36] - billu_backchod sold 6 x Iron Ingot(Ores.page1.items.16) for $481.68 with the sell screen.
+[2025-07-31 16:48:57] - billu_backchod bought 17 x Tnt(Blocks.page1.items.11) for $1,811.86 with the buy screen.
+[2025-07-31 16:57:39] - billu_backchod bought 17 x Tnt(Blocks.page1.items.11) for $1,811.86 with the buy screen.
+[2025-08-01 08:56:01] - billu_backchod bought 1 x Firework Rocket(Miscellaneous.page1.items.999) for $50.00 with the buy screen.
+[2025-08-01 09:28:47] - billu_backchod sold 5 x Iron Ingot(Ores.page1.items.16) for $401.40 with the sell screen.
+[2025-08-01 10:12:00] - ansh sold 2880x Iron Block(Ores.page1.items.15) for $1,865,145.59 with the sell gui.
+[2025-08-01 10:12:20] - ansh sold 2880x Iron Block(Ores.page1.items.15) for $1,865,145.59 with the sell gui.
+[2025-08-01 10:45:06] - billu_backchod bought 320 x Oak Planks(Blocks.page5.items.231) for $320.00 with the buy stacks screen.
+[2025-08-01 10:47:48] - billu_backchod bought 64 x Oak Planks(Blocks.page5.items.231) for $64.00 with the buy stacks screen.
+[2025-08-01 10:53:52] - billu_backchod bought 2 x Example power stick(Workstations.page1.items.example-item) for $1,234.00 with the buy screen.
+[2025-08-01 10:55:25] - billu_backchod bought 9 x Diamond(Ores.page1.items.9) for $13,500.00 with the buy screen.
+[2025-08-01 10:56:39] - billu_backchod sold 2 x Example power stick(Workstations.page1.items.example-item) for $123.00 with the sell screen.
+[2025-08-02 07:05:34] - billu_backchod sold 64 x Iron Ingot(Ores.page1.items.16) for $5,137.92 with the sell screen.
+[2025-08-02 07:46:07] - billu_backchod sold 87 x Iron Ingot(Ores.page1.items.16) for $6,984.36 with the sell screen.
+[2025-08-02 08:01:17] - billu_backchod bought 64 x Dirt(Blocks.page3.items.109) for $192.00 with the buy stacks screen.
+[2025-08-02 08:08:16] - billu_backchod bought 64 x Dirt(Blocks.page3.items.109) for $192.00 with the buy stacks screen.
+[2025-08-02 08:12:34] - billu_backchod bought 1 x Oak Trapdoor(Redstone.page1.items.33) for $1.50 with the buy screen.
+[2025-08-02 08:13:58] - billu_backchod bought 1 x Tuff Bricks(Blocks.page4.items.191) for $2.10 with the buy screen.
+[2025-08-02 08:14:23] - billu_backchod bought 1 x Stone Bricks(Blocks.page4.items.178) for $0.75 with the buy screen.
+[2025-08-02 08:15:03] - billu_backchod sold 57 x Iron Ingot(Ores.page1.items.16) for $4,575.96 with the sell screen.
+[2025-08-02 08:41:05] - billu_backchod bought 17 x Melon Slice(Farming.page1.items.18) for $119.00 with the buy screen.
+[2025-08-02 10:02:42] - billu_backchod bought 128 x Oak Planks(Blocks.page5.items.231) for $64.00 with the buy stacks screen.
+[2025-08-02 10:08:57] - billu_backchod sold 2 x Dirt(Blocks.page3.items.109) for $1.50 with the sell screen.
+[2025-08-02 10:08:58] - billu_backchod sold 2 x Dirt(Blocks.page3.items.109) for $1.50 with the sell screen.
+[2025-08-02 10:09:00] - billu_backchod sold 491 x Dirt(Blocks.page3.items.109) for $368.25 with the sell screen.
+[2025-08-02 10:16:11] - billu_backchod bought 64 x Tnt(Blocks.page1.items.11) for $6,821.12 with the buy stacks screen.
+[2025-08-02 10:42:59] - billu_backchod bought 1 x Elytra(Miscellaneous.page1.items.8) for $9,999.00 with the buy screen.
+[2025-08-02 10:43:12] - billu_backchod bought 17 x Gunpowder(Mobs.page1.items.10) for $263.50 with the buy screen.
+[2025-08-04 04:36:05] - billu_backchod bought 1 x Elytra(Miscellaneous.page1.items.8) for $9,999.00 with the buy screen.
+[2025-08-04 06:03:12] - billu_backchod sold 16 x Iron Block(Ores.page1.items.15) for $10,361.92 with the sell screen.
+[2025-08-04 06:03:18] - billu_backchod sold 72 x Iron Ingot(Ores.page1.items.16) for $5,780.16 with the sell screen.
+[2025-08-04 06:03:50] - billu_backchod sold 68 x Iron Ingot(Ores.page1.items.16) for $5,459.04 with the sell screen.
+[2025-08-04 06:13:04] - billu_backchod bought 64 x Melon Slice(Farming.page1.items.18) for $448.00 with the buy stacks screen.
+[2025-08-04 06:13:44] - billu_backchod sold 9 x Iron Block(Ores.page1.items.15) for $5,828.58 with the sell screen.
+[2025-08-04 08:30:19] - billu_backchod bought 5 x Gunpowder(Mobs.page1.items.10) for $77.50 with the buy screen.
+[2025-08-04 08:33:10] - billu_backchod bought 1 x Elytra(Miscellaneous.page1.items.8) for $9,999.00 with the buy screen.
+[2025-08-04 08:42:56] - billu_backchod bought 64 x Oak Planks(Blocks.page5.items.231) for $64.00 with the buy stacks screen.
+[2025-08-05 16:11:52] - ansh bought 33 x Gunpowder(Mobs.page1.items.10) for $511.50 with the buy screen.
+[2025-08-05 16:12:01] - ansh bought 33 x Sugar Cane(Farming.page1.items.25) for $495.00 with the buy screen.
+[2025-08-05 16:12:08] - ansh bought 1 x Oak Planks(Blocks.page5.items.231) for $1.00 with the buy screen.
+[2025-08-05 16:12:09] - ansh bought 1 x Oak Planks(Blocks.page5.items.231) for $1.00 with the buy screen.
+[2025-08-05 16:12:09] - ansh bought 1 x Oak Planks(Blocks.page5.items.231) for $1.00 with the buy screen.
+[2025-08-05 16:12:10] - ansh bought 1 x Oak Planks(Blocks.page5.items.231) for $1.00 with the buy screen.
+[2025-08-05 16:12:51] - ansh bought 1 x Elytra(Miscellaneous.page1.items.8) for $9,999.00 with the buy screen.
+[2025-08-06 11:12:07] - billu_backchod bought 1 x Elytra(Miscellaneous.page1.items.8) for $9,999.00 with the buy screen.
+[2025-08-06 11:12:21] - billu_backchod bought 64 x Gunpowder(Mobs.page1.items.10) for $992.00 with the buy stacks screen.
+[2025-08-06 11:12:31] - billu_backchod bought 64 x Sugar Cane(Farming.page1.items.25) for $960.00 with the buy stacks screen.
+[2025-08-06 11:20:33] - billu_backchod bought 9 x Tnt(Blocks.page1.items.11) for $959.22 with the buy screen.
+[2025-08-06 11:21:12] - billu_backchod bought 2 x Iron Ingot(Ores.page1.items.16) for $200.00 with the buy screen.
+[2025-08-06 11:21:45] - billu_backchod bought 33 x Melon Slice(Farming.page1.items.18) for $231.00 with the buy screen.
+[2025-08-06 11:41:01] - billu_backchod bought 64 x Cobblestone(Blocks.page1.items.51) for $43.52 with the buy stacks screen.
+[2025-08-06 11:44:47] - billu_backchod bought 64 x Cobblestone(Blocks.page1.items.51) for $43.52 with the buy stacks screen.
+
