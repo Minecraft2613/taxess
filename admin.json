@@ -1,6 +1,15 @@
 {
-  "paidPlayers": {},
-  "paymentHistory": {},
+  "paidPlayers": {
+    "billu_backchod": 11899.3
+  },
+  "paymentHistory": {
+    "billu_backchod": [
+      {
+        "amount": 11899.3,
+        "date": "7/8/2025, 1:35:37 pm"
+      }
+    ]
+  },
   "taxDeadline": {
     "ansh": 1753900200000,
     "billu_backchod": 1754505000000
