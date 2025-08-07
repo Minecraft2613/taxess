@@ -1,571 +1,1020 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Panel - Player Tax & Bank Management</title>
-  <style>
-    /* Reset */
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0; 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0b0c1c, #1f2040);
-      color: #eee;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-
-    h1, h2, h3 {
-      margin: 0 0 15px;
-      text-align: center;
-      text-shadow: 0 0 8px #00aaff;
-    }
-
-    button {
-      background: #007bff;
-      border: none;
-      color: white;
-      padding: 8px 14px;
-      margin: 5px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
-      box-shadow: 0 0 10px #0099ff44;
-      user-select: none;
-    }
-    button:hover {
-      background-color: #005fcc;
-      box-shadow: 0 0 20px #00aaff;
-    }
-
-    input, textarea {
-      width: 100%;
-      background: #1a1b2f;
-      border: 1px solid #004080;
-      border-radius: 10px;
-      color: #ddd;
-      font-size: 1rem;
-      padding: 8px 10px;
-      margin: 8px 0;
-      font-family: monospace;
-      resize: vertical;
-      box-shadow: 0 0 10px #0055ff33;
-      transition: border-color 0.3s ease;
-    }
-    input:focus, textarea:focus {
-      border-color: #00aaff;
-      outline: none;
-      box-shadow: 0 0 15px #00aaff;
-    }
-
-    .container {
-      width: 90vw;
-      max-width: 900px;
-      background: #12132b;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 0 40px #0055ff66;
-      margin-bottom: 30px;
-      animation: fadeIn 0.6s ease;
-    }
-
-    .tabs {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 25px;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .tab-button {
-      padding: 12px 18px;
-      border-radius: 15px;
-      background: #22234a;
-      color: #ccc;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 0 8px #0044bb33;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      user-select: none;
-    }
-    .tab-button.active, .tab-button:hover {
-      background: #0040ff;
-      color: white;
-      box-shadow: 0 0 20px #00aaff;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .player-item {
-      background: #0a0b1a;
-      padding: 10px 15px;
-      margin: 8px 0;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #0044bb33;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 600;
-      user-select: none;
-    }
-    .player-name {
-      color: #a5d8ff;
-    }
-    .tax-status {
-      font-weight: 700;
-      color: #f55;
-    }
-    .paid-status {
-      color: #5f5;
-      font-weight: 700;
-    }
-    .view-btn {
-      background: #0055ff;
-      padding: 6px 12px;
-      font-weight: 700;
-      border-radius: 8px;
-      box-shadow: 0 0 8px #0088ff88;
-      transition: background-color 0.3s ease;
-    }
-    .view-btn:hover {
-      background: #007fff;
-      box-shadow: 0 0 20px #00bfff;
-    }
-
-    .editor-area {
-      background: #1a1b2f;
-      font-family: monospace;
-      font-size: 0.9rem;
-      color: #ddd;
-      border-radius: 12px;
-      padding: 10px;
-      height: 220px;
-      resize: vertical;
-      box-shadow: 0 0 10px #00aaff44;
-      margin-bottom: 20px;
-    }
-
-    label {
-      font-weight: 600;
-      display: block;
-      margin-top: 15px;
-    }
-
-    .pay-govt-section {
-      margin-top: 20px;
-      padding: 15px;
-      background: #002244;
-      border-radius: 12px;
-      box-shadow: 0 0 15px #0044bb77;
-    }
-
-    .flex-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .flex-row > * {
-      flex: 1;
-      min-width: 150px;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(15px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-
-    .status-created {
-      color: #5f5;
-      font-weight: 700;
-    }
-    .status-notcreated {
-      color: #f55;
-      font-weight: 700;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="icon" href="data:,">
+    <style>
+        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .vip-loader {
+            width: 100px; height: 100px; 
+            border: 5px solid transparent;
+            border-top-color: #f59e0b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: relative;
+        }
+        .vip-loader:before {
+            content: 'VIP';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: #f59e0b;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .bg-gradient-to-br-custom { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
+        .from-gray-800-custom { --tw-gradient-from: #1f2937; --tw-gradient-to: #1f2937; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+        .to-gray-900-custom { --tw-gradient-to: #111827; }
+        .shadow-lg-custom { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .rounded-xl-custom { border-radius: 0.75rem; }
+        .hover\:scale-105-custom:hover { transform: scale(1.05); }
+        .transition-transform-custom { transition-property: transform; transition-duration: 0.3s; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
 </head>
 <body>
-  <h1>Admin Panel</h1>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-  <div class="tabs">
-    <div class="tab-button active" id="tabPlayerTaxBtn" onclick="showSection('playerTax')">Player Tax</div>
-    <div class="tab-button" id="tabBankBtn" onclick="showSection('bankInfo')">Player Bank Info</div>
-    <div class="tab-button" id="tabSyncTaxBtn" onclick="showSection('syncTax')">Sync Tax JSON</div>
-    <div class="tab-button" id="tabSyncBankBtn" onclick="showSection('syncBank')">Sync Bank JSON</div>
-    <div class="tab-button" onclick="logoutAdmin()">Exit</div>
-  </div>
+        const API_URL = 'https://bank-data.1987sakshamsingh.workers.dev/admin';
+        const TAX_API_URL = 'https://bank-data.1987sakshamsingh.workers.dev';
 
-  <!-- Player Tax Section -->
-  <section id="playerTax" class="container">
-    <h2>Player Taxes</h2>
-    <div id="playerTaxList"></div>
-    <div id="adminPlayerPanel" style="margin-top: 20px;"></div>
-  </section>
+        const App = () => {
+            const [adminUser, setAdminUser] = useState(null);
+            const [loading, setLoading] = useState(false);
 
-  <!-- Bank Info Section -->
-  <section id="bankInfo" class="container hidden">
-    <h2>Player Bank Accounts</h2>
-    <div id="bankList"></div>
-  </section>
+            const handleLogin = async (username, password) => {
+                setLoading(true);
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'login', username, password })
+                    });
+                    const data = await response.json();
+                    if (response.ok && data.success) {
+                        setAdminUser(username);
+                    } else {
+                        alert(data.message || 'Login failed');
+                    }
+                } catch (e) {
+                    alert('Connection error');
+                } finally {
+                    setLoading(false);
+                }
+            };
 
-  <!-- Sync Tax Section -->
-  <section id="syncTax" class="container hidden">
-    <h2>Edit and Sync Tax JSON</h2>
-    <textarea id="taxEditor" class="editor-area"></textarea>
-    <button onclick="saveTax()">Save Tax JSON</button>
-  </section>
+            if (loading) return <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"><div className="vip-loader"></div></div>;
 
-  <!-- Sync Bank Section -->
-  <section id="syncBank" class="container hidden">
-    <h2>Edit and Sync Bank JSON</h2>
-    <textarea id="bankEditor" class="editor-area"></textarea>
-    <button onclick="saveBank()">Save Bank JSON</button>
-  </section>
+            return adminUser ? <AdminDashboard adminUser={adminUser} setAdminUser={setAdminUser} /> : <AdminLogin onLogin={handleLogin} />;
+        };
 
-  <script>
-    // Data
-    let taxData = {}, bankData = {}, transactionsLog = "";
-    let currentPlayer = "";
+        const AdminLogin = ({ onLogin }) => {
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
 
-    // Load all required data (tax, bank, transactions log)
-    async function loadAllData() {
-      try {
-        const [taxRes, bankRes, logRes] = await Promise.all([
-          fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/tax-data.json"),
-          fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/bank-data.json"),
-          fetch("https://raw.githubusercontent.com/Minecraft2613/taxess/main/transaction-log.txt")
-        ]);
-        taxData = await taxRes.json();
-        bankData = await bankRes.json();
-        transactionsLog = await logRes.text();
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-gray-900">
+                    <div className="bg-gray-800 p-8 rounded-xl-custom shadow-2xl w-full max-w-md bg-gradient-to-br-custom from-gray-800-custom to-gray-900-custom">
+                        <h2 className="text-3xl font-bold text-center text-amber-400 mb-6">VIP Admin Access</h2>
+                        <form onSubmit={e => { e.preventDefault(); onLogin(username, password); }} className="space-y-6">
+                            <input type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} className="w-full p-3 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                            <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="w-full p-3 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                            <button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-md transition-transform transform hover:scale-105">Enter Secure Area</button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
 
-        // Update editors content
-        document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
-        document.getElementById("bankEditor").value = JSON.stringify(bankData, null, 2);
+        const AdminDashboard = ({ adminUser, setAdminUser }) => {
+            const [view, setView] = useState('home');
+            const [data, setData] = useState({ accounts: [], taxData: { players: {} }, loans: [], balances: [], shopTransactions: [], jobTransactions: [] });
+            const [loading, setLoading] = useState(true);
 
-        renderPlayerTaxList();
-        renderBankList();
-        clearAdminPanel();
-      } catch (e) {
-        alert("Failed to load data: " + e.message);
-      }
-    }
+            const fetchData = async () => {
+                try {
+                    const [accountsRes, taxRes, loansRes, balRes, shopTranRes, jobTranRes, msgRes, taxPayRes] = await Promise.all([
+                        fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get_all_data' }) }),
+                        fetch(`${TAX_API_URL}/tax-data`),
+                        fetch(`${TAX_API_URL}/loans`),
+                        fetch(`${TAX_API_URL}/bal.json`),
+                        fetch(`${TAX_API_URL}/shop-tran.json`),
+                        fetch(`${TAX_API_URL}/job-tran.json`),
+                        fetch(`${TAX_API_URL}/messages`),
+                        fetch(`${TAX_API_URL}/tax-pay-data`)
+                    ]);
 
-    // Show/hide sections
-    function showSection(id) {
-      const sections = ["playerTax", "bankInfo", "syncTax", "syncBank"];
-      sections.forEach(sec => {
-        document.getElementById(sec).classList.toggle("hidden", sec !== id);
-      });
-      // Highlight tab button
-      ["tabPlayerTaxBtn", "tabBankBtn", "tabSyncTaxBtn", "tabSyncBankBtn"].forEach(btnId => {
-        document.getElementById(btnId).classList.toggle("active", btnId.toLowerCase().includes(id.toLowerCase()));
-      });
-      clearAdminPanel();
-    }
+                    const [accountsData, taxData, loansData, balData, shopTranData, jobTranData, msgData, taxPayData] = await Promise.all([
+                        accountsRes.ok ? accountsRes.json() : { accounts: [] },
+                        taxRes.ok ? taxRes.json() : { players: {} },
+                        loansRes.ok ? loansRes.json() : [],
+                        balRes.ok ? balRes.json() : [],
+                        shopTranRes.ok ? shopTranRes.json() : [],
+                        jobTranRes.ok ? jobTranRes.json() : [],
+                        msgRes.ok ? msgRes.json() : [],
+                        taxPayRes.ok ? taxPayRes.json() : []
+                    ]);
 
-    // Clear admin player panel (details below list)
-    function clearAdminPanel() {
-      currentPlayer = "";
-      document.getElementById("adminPlayerPanel").innerHTML = "";
-    }
+                    setData({
+                        accounts: accountsData.accounts || [],
+                        taxData: taxData,
+                        loans: loansData.loans || loansData || [],
+                        balances: balData,
+                        shopTransactions: shopTranData,
+                        jobTransactions: jobTranData,
+                        messages: msgData,
+                        taxPayments: taxPayData
+                    });
+                } catch (e) { console.error("Failed to fetch data", e); } 
+                finally { setLoading(false); }
+            };
 
-    // Render player tax list with calculated due amounts
-    function renderPlayerTaxList() {
-      const players = getAllPlayersFromTransactions();
-      const listHtml = players.map(name => {
-        const { due, totalPaid } = calculateTaxForPlayer(name);
-        const isDue = due > 0;
-        const statusClass = isDue ? "tax-status" : "paid-status";
-        const statusText = isDue ? `❌ Due: $${due.toFixed(2)}` : "✅ Paid";
-        return `
-          <div class="player-item">
-            <span class="player-name">${name}</span>
-            <span class="${statusClass}">${statusText}</span>
-            <button class="view-btn" onclick="showPlayerDetails('${name}')">View</button>
-          </div>`;
-      }).join("");
-      document.getElementById("playerTaxList").innerHTML = listHtml || "<p>No players found.</p>";
-    }
+            useEffect(() => {
+                fetchData();
+                const interval = setInterval(fetchData, 5000);
+                return () => clearInterval(interval);
+            }, []);
 
-    // Get all unique player names from transaction log (including with leading . for Bedrock)
-    function getAllPlayersFromTransactions() {
-      const regex = /- (\.?[\w]+) (bought|sold)/gi;
-      const players = new Set();
-      let match;
-      while ((match = regex.exec(transactionsLog)) !== null) {
-        players.add(match[1]);
-      }
-      return Array.from(players).sort((a,b) => a.localeCompare(b));
-    }
+            const handleApproveLoan = async (accountId, loanId, adminReply) => {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'approve_loan', userAccountId: accountId, loanId, adminReply })
+                });
+                fetchData(); // Refresh data after action
+            };
 
-    // Calculate total tax due and paid for player based on transaction log and taxData
-    function calculateTaxForPlayer(name) {
-      let buyTax = 0, sellTax = 0;
-      const dailyData = {};
+            const handleCancelLoan = async (accountId, loanId, adminReply) => {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'cancel_loan', userAccountId: accountId, loanId, adminReply })
+                });
+                fetchData(); // Refresh data after action
+            };
 
-      const lines = transactionsLog.split(/\r?\n/);
-      lines.forEach(line => {
-        if (!line.toLowerCase().includes(name.toLowerCase())) return;
+            const handleForceApproveLoan = async (accountId, loanId, employeeVisitTime, employeeMessage, adminReply, adminUser) => {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'force_approve_loan', userAccountId: accountId, loanId, employeeVisitTime, employeeMessage, adminReply, adminUser })
+                });
+                fetchData(); // Refresh data after action
+            };
 
-        const dateMatch = line.match(/\[(\d{4}-\d{2}-\d{2})/);
-        const day = dateMatch ? dateMatch[1].slice(5).replace("-", "/") : "";
+            const handleUpdateLoanDetails = async (loanId, updatedFields) => {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'update_loan_details', loanId, updatedFields })
+                });
+                fetchData(); // Refresh data after action
+            };
 
-        const buyMatch = line.match(/bought.*?\$([\d,\.]+)/);
-        const sellMatch = line.match(/sold.*?\$([\d,\.]+)/);
+            const renderView = () => {
+                if (loading) return <div className="text-center p-10"><div className="vip-loader mx-auto"></div></div>;
+                
+                const handleUpdateLoanDetails = async (loanId, updatedFields) => {
+                    await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'update_loan_details', loanId, updatedFields })
+                    });
+                    fetchData(); // Refresh data after action
+                };
 
-        if (buyMatch) {
-          const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
-          const tax = +(amt * 0.04).toFixed(2);
-          buyTax += tax;
-          dailyData[day] = (dailyData[day] || 0) + tax;
+                const props = { data, adminUser, handleApproveLoan, handleCancelLoan, handleForceApproveLoan, handleUpdateLoanDetails, setView };
+
+                switch(view) {
+                    case 'home': return <HomeView {...props} />;
+                    case 'loan_approval_requests': return <LoanApprovalRequestsView {...props} />;
+                    case 'loan_active': return <LoanActiveView {...props} />;
+                    case 'loan_cancelled': return <LoanCancelledView {...props} />;
+                    case 'loan_closed': return <LoanClosedView {...props} />;
+                    case 'loan_history': return <LoanHistoryView {...props} />;
+                    case 'paid_tax': return <PaidTaxView {...props} />;
+                    case 'pending_tax': return <PendingTaxView {...props} />;
+                    case 'tax_history': return <TaxHistoryView {...props} />;
+                    case 'bank_info': return <BankInfoView {...props} />;
+                    case 'player_view': return <PlayerView {...props} />;
+                    case 'messages': return <MessagesView {...props} />;
+                    case 'theme_settings': return <ThemeSettingsView {...props} />;
+                    default: return <HomeView {...props} />;
+                }
+            };
+
+            return (
+                <div className="flex">
+                    <Sidebar setView={setView} adminUser={adminUser} handleLogout={() => setAdminUser(null)} />
+                    <main className="flex-1 p-10">
+                        {renderView()}
+                    </main>
+                </div>
+            );
+        };
+
+        const Sidebar = ({ setView, adminUser, handleLogout }) => {
+            const views = [
+                { name: 'Home', view: 'home', roles: ['admin', 'admin22'] },
+                { name: 'Loan Approval Requests', view: 'loan_approval_requests', roles: ['admin', 'admin22'] },
+                { name: 'Active Loans', view: 'loan_active', roles: ['admin', 'admin22'] },
+                { name: 'Cancelled Loans', view: 'loan_cancelled', roles: ['admin', 'admin22'] },
+                { name: 'Closed Loans', view: 'loan_closed', roles: ['admin', 'admin22'] },
+                { name: 'Loan History', view: 'loan_history', roles: ['admin', 'admin22'] },
+                { name: 'Paid Tax', view: 'paid_tax', roles: ['admin', 'admin22'] },
+                { name: 'Pending Tax', view: 'pending_tax', roles: ['admin', 'admin22'] },
+                { name: 'Tax Payers History', view: 'tax_history', roles: ['admin', 'admin22'] },
+                { name: 'Bank Info', view: 'bank_info', roles: ['admin', 'admin22'] },
+                { name: 'Player View', view: 'player_view', roles: ['admin', 'admin22'] },
+                { name: 'Messages', view: 'messages', roles: ['admin', 'admin22'] },
+                { name: 'Theme Settings', view: 'theme_settings', roles: ['admin', 'admin22'] },
+            ];
+
+            const filteredViews = views.filter(v => v.roles.includes(adminUser));
+
+            return (
+                <div className="w-64 h-screen bg-gray-800 p-5 flex flex-col shadow-2xl">
+                    <h1 className="text-2xl font-bold text-amber-400 mb-10">VIP Panel</h1>
+                    <nav className="flex-grow">
+                        {filteredViews.map(v => 
+                            <button key={v.view} onClick={() => setView(v.view)} className="block w-full text-left p-3 mb-2 rounded-md hover:bg-gray-700 transition-colors">{v.name}</button>
+                        )}
+                    </nav>
+                    <button onClick={handleLogout} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-md">Logout</button>
+                </div>
+            );
+        };
+
+        const HomeView = ({ data, handleApproveLoan, handleCancelLoan, adminUser, handleForceApproveLoan, handleUpdateLoanDetails }) => {
+            const [showLoanDetailModal, setShowLoanDetailModal] = useState(false);
+            const [selectedLoan, setSelectedLoan] = useState(null);
+            const [accountSearchTerm, setAccountSearchTerm] = useState('');
+            const [loanSearchTerm, setLoanSearchTerm] = useState('');
+            const [currentPage, setCurrentPage] = useState(1);
+            const accountsPerPage = 5; // Display 5 accounts per page
+
+            const openLoanDetails = (loan) => {
+                setSelectedLoan(loan);
+                setShowLoanDetailModal(true);
+            };
+
+            // Filter and paginate accounts
+            const filteredAccounts = data.accounts.filter(acc =>
+                acc.accountId.toLowerCase().includes(accountSearchTerm.toLowerCase())
+            );
+            const indexOfLastAccount = currentPage * accountsPerPage;
+            const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
+            const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
+            const totalAccountPages = Math.ceil(filteredAccounts.length / accountsPerPage);
+
+            // Sort loans by applicationDate (newest first) and get latest 5, then filter
+            const sortedLoans = [...data.loans].sort((a, b) => new Date(b.applicationDate) - new Date(a.applicationDate));
+            const latestFiveLoans = sortedLoans.slice(0, 5);
+            const filteredLoans = latestFiveLoans.filter(loan =>
+                loan.accountId.toLowerCase().includes(loanSearchTerm.toLowerCase())
+            );
+
+
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Dashboard</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                            <h3 className="text-xl font-bold text-amber-400 mb-4">User Accounts</h3>
+                            <input
+                                type="text"
+                                placeholder="Search accounts..."
+                                className="w-full p-2 mb-4 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                value={accountSearchTerm}
+                                onChange={(e) => setAccountSearchTerm(e.target.value)}
+                            />
+                            <div className="space-y-4">
+                                {currentAccounts.map(acc => {
+                                    const playerBalance = data.balances.find(bal => bal.player === acc.accountId);
+                                    return (
+                                        <div key={acc.accountId} className="bg-gray-700 p-4 rounded-md">
+                                            <p><strong>Player:</strong> {acc.accountId}</p>
+                                            <p><strong>Bank ID:</strong> {acc.bankId}</p>
+                                            <p><strong>Balance:</strong> ${playerBalance?.balance?.toFixed(2) || '0.00'}</p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <div className="flex justify-between mt-4">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="px-4 py-2 bg-amber-500 text-white rounded-md disabled:opacity-50"
+                                >
+                                    Previous
+                                </button>
+                                <span>Page {currentPage} of {totalAccountPages}</span>
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(totalAccountPages, prev + 1))}
+                                    disabled={currentPage === totalAccountPages}
+                                    className="px-4 py-2 bg-amber-500 text-white rounded-md disabled:opacity-50"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                            <h3 className="text-xl font-bold text-amber-400 mb-4">Latest 5 Loans</h3>
+                            <input
+                                type="text"
+                                placeholder="Search loans..."
+                                className="w-full p-2 mb-4 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                value={loanSearchTerm}
+                                onChange={(e) => setLoanSearchTerm(e.target.value)}
+                            />
+                            <div className="space-y-4">
+                                {filteredLoans.map(loan => (
+                                    <div key={loan.id} className="flex justify-between items-center bg-gray-700 p-4 rounded-md">
+                                        <div>
+                                            <p><strong>Player:</strong> {loan.accountId}</p>
+                                            <p><strong>Amount:</strong> ${parseFloat(loan.loanAmount)?.toFixed(2) || '0.00'}</p>
+                                            <p><strong>Status:</strong> {loan.loanStatus}</p>
+                                        </div>
+                                        <button onClick={() => openLoanDetails(loan)} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">View Details</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                            <h3 className="text-xl font-bold text-amber-400 mb-4">Tax Data</h3>
+                            <div className="space-y-4">
+                                {Object.keys(data.taxData.players).map(player => (
+                                    <div key={player} className="bg-gray-700 p-4 rounded-md">
+                                        <p><strong>Player:</strong> {player}</p>
+                                        <p><strong>Tax Due:</strong> ${parseFloat(data.taxData.players[player].sessions[data.taxData.currentSession]?.taxDue)?.toFixed(2) || '0.00'}</p>
+                                        <p><strong>Tax Paid:</strong> ${parseFloat(data.taxData.players[player].sessions[data.taxData.currentSession]?.taxPaid)?.toFixed(2) || '0.00'}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    {showLoanDetailModal && <LoanDetailModal loan={selectedLoan} onClose={() => setShowLoanDetailModal(false)} handleApproveLoan={handleApproveLoan} handleRejectLoan={handleCancelLoan} handleForceApproveLoan={handleForceApproveLoan} handleUpdateLoanDetails={handleUpdateLoanDetails} adminUser={adminUser} />}
+                </div>
+            );
+        };
+
+        const LoanApprovalRequestsView = ({ data, handleApproveLoan, handleCancelLoan, handleForceApproveLoan, handleUpdateLoanDetails, adminUser }) => {
+            const pendingLoans = data.loans.filter(loan => loan.loanStatus === 'pending' || loan.loanStatus === 'waitingForEmployeeApproval');
+            const [showLoanDetailModal, setShowLoanDetailModal] = useState(false);
+            const [selectedLoan, setSelectedLoan] = useState(null);
+
+            const openLoanDetails = (loan) => {
+                setSelectedLoan(loan);
+                setShowLoanDetailModal(true);
+            };
+
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Loan Approval Requests</h2>
+                    <div className="space-y-4">
+                        {pendingLoans.length > 0 ? pendingLoans.map(loan => (
+                            <div key={loan.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg">
+                                <div>
+                                    <p><strong>Player:</strong> {loan.accountId}</p>
+                                    <p><strong>Amount:</strong> ${parseFloat(loan.loanAmount)?.toFixed(2) || '0.00'}</p>
+                                </div>
+                                <button onClick={() => openLoanDetails(loan)} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">View Details</button>
+                            </div>
+                        )) : <p>No pending loan requests.</p>}
+                    </div>
+                    {showLoanDetailModal && <LoanDetailModal loan={selectedLoan} onClose={() => setShowLoanDetailModal(false)} handleApproveLoan={handleApproveLoan} handleRejectLoan={handleCancelLoan} handleForceApproveLoan={handleForceApproveLoan} handleUpdateLoanDetails={handleUpdateLoanDetails} adminUser={adminUser} />}
+                </div>
+            );
+        };
+
+        const LoanActiveView = ({ data, handleUpdateLoanDetails, adminUser }) => {
+            const activeLoans = data.loans.filter(loan => loan.loanStatus === 'approved');
+            const [showLoanDetailModal, setShowLoanDetailModal] = useState(false);
+            const [selectedLoan, setSelectedLoan] = useState(null);
+
+            const openLoanDetails = (loan) => {
+                setSelectedLoan(loan);
+                setShowLoanDetailModal(true);
+            };
+
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Active Loans</h2>
+                    <div className="space-y-4">
+                        {activeLoans.length > 0 ? activeLoans.map(loan => (
+                            <div key={loan.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg">
+                                <div>
+                                    <p><strong>Player:</strong> {loan.accountId}</p>
+                                    <p><strong>Amount:</strong> ${parseFloat(loan.loanAmount)?.toFixed(2) || '0.00'}</p>
+                                </div>
+                                <button onClick={() => openLoanDetails(loan)} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">View Details</button>
+                            </div>
+                        )) : <p>No active loans.</p>}
+                    </div>
+                    {showLoanDetailModal && <LoanDetailModal loan={selectedLoan} onClose={() => setShowLoanDetailModal(false)} handleUpdateLoanDetails={handleUpdateLoanDetails} adminUser={adminUser} />}
+                </div>
+            );
+        };
+
+        const LoanCancelledView = ({ data, handleUpdateLoanDetails, adminUser }) => {
+            const cancelledLoans = data.loans.filter(loan => loan.loanStatus === 'rejected');
+            const [showLoanDetailModal, setShowLoanDetailModal] = useState(false);
+            const [selectedLoan, setSelectedLoan] = useState(null);
+
+            const openLoanDetails = (loan) => {
+                setSelectedLoan(loan);
+                setShowLoanDetailModal(true);
+            };
+
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Cancelled Loans</h2>
+                    <div className="space-y-4">
+                        {cancelledLoans.length > 0 ? cancelledLoans.map(loan => (
+                            <div key={loan.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg">
+                                <div>
+                                    <p><strong>Player:</strong> {loan.accountId}</p>
+                                    <p><strong>Amount:</strong> ${parseFloat(loan.loanAmount)?.toFixed(2) || '0.00'}</p>
+                                </div>
+                                <button onClick={() => openLoanDetails(loan)} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">View Details</button>
+                            </div>
+                        )) : <p>No cancelled loans.</p>}
+                    </div>
+                    {showLoanDetailModal && <LoanDetailModal loan={selectedLoan} onClose={() => setShowLoanDetailModal(false)} handleUpdateLoanDetails={handleUpdateLoanDetails} adminUser={adminUser} />}
+                </div>
+            );
+        };
+
+        const LoanClosedView = ({ data, handleUpdateLoanDetails, adminUser }) => {
+            const closedLoans = data.loans.filter(loan => loan.loanStatus === 'closed');
+            const [showLoanDetailModal, setShowLoanDetailModal] = useState(false);
+            const [selectedLoan, setSelectedLoan] = useState(null);
+
+            const openLoanDetails = (loan) => {
+                setSelectedLoan(loan);
+                setShowLoanDetailModal(true);
+            };
+
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Closed Loans</h2>
+                    <div className="space-y-4">
+                        {closedLoans.length > 0 ? closedLoans.map(loan => (
+                            <div key={loan.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg">
+                                <div>
+                                    <p><strong>Player:</strong> {loan.accountId}</p>
+                                    <p><strong>Amount:</strong> ${parseFloat(loan.loanAmount)?.toFixed(2) || '0.00'}</p>
+                                </div>
+                                <button onClick={() => openLoanDetails(loan)} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">View Details</button>
+                            </div>
+                        )) : <p>No closed loans.</p>}
+                    </div>
+                    {showLoanDetailModal && <LoanDetailModal loan={selectedLoan} onClose={() => setShowLoanDetailModal(false)} handleUpdateLoanDetails={handleUpdateLoanDetails} adminUser={adminUser} />}
+                </div>
+            );
+        };
+
+        const LoanHistoryView = ({ data, handleUpdateLoanDetails, adminUser }) => {
+            const [showLoanDetailModal, setShowLoanDetailModal] = useState(false);
+            const [selectedLoan, setSelectedLoan] = useState(null);
+            const [searchTerm, setSearchTerm] = useState('');
+
+            const openLoanDetails = (loan) => {
+                setSelectedLoan(loan);
+                setShowLoanDetailModal(true);
+            };
+
+            // Sort loans by applicationDate (newest first) and get latest 5, then filter
+            const sortedLoans = [...data.loans].sort((a, b) => new Date(b.applicationDate) - new Date(a.applicationDate));
+            const latestFiveLoans = sortedLoans.slice(0, 5);
+            const filteredLoans = latestFiveLoans.filter(loan =>
+                loan.accountId.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Loan History</h2>
+                    <input
+                        type="text"
+                        placeholder="Search loans by player name..."
+                        className="w-full p-2 mb-4 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <div className="space-y-4">
+                        {filteredLoans.map(loan => (
+                            <div key={loan.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg">
+                                <div>
+                                    <p><strong>Player:</strong> {loan.accountId}</p>
+                                    <p><strong>Amount:</strong> ${parseFloat(loan.loanAmount)?.toFixed(2) || '0.00'}</p>
+                                    <p><strong>Status:</strong> {loan.loanStatus}</p>
+                                </div>
+                                <button onClick={() => openLoanDetails(loan)} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md">View Details</button>
+                            </div>
+                        ))}
+                    </div>
+                    {showLoanDetailModal && <LoanDetailModal loan={selectedLoan} onClose={() => setShowLoanDetailModal(false)} handleUpdateLoanDetails={handleUpdateLoanDetails} adminUser={adminUser} />}
+                </div>
+            );
+        };
+
+        
+
+        
+
+        
+
+        const PaidTaxView = ({ data }) => {
+            const [paidTaxData, setPaidTaxData] = useState({});
+
+            useEffect(() => {
+                const fetchPaidTax = async () => {
+                    try {
+                        const response = await fetch(`${TAX_API_URL}/tax-pay-data`);
+                        if (response.ok) {
+                            const json = await response.json();
+                            setPaidTaxData(json);
+                        }
+                    } catch (e) {
+                        console.error("Failed to fetch paid tax data", e);
+                    }
+                };
+                fetchPaidTax();
+            }, []);
+
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Paid Tax</h2>
+                    {Object.keys(paidTaxData).length > 0 ? Object.keys(paidTaxData).map(player => (
+                        <div key={player} className="bg-gray-800 p-4 rounded-lg shadow-lg mb-4">
+                            <h3 className="text-xl font-bold text-amber-400 mb-2">{player}</h3>
+                            {paidTaxData[player].map((tx, i) => (
+                                <p key={i}>Amount: ${tx.amount?.toFixed(2) || '0.00'} on {new Date(tx.date).toLocaleDateString()} (Session: {tx.session})</p>
+                            ))}
+                        </div>
+                    )) : <p>No paid tax records.</p>}
+                </div>
+            );
+        };
+
+        const PendingTaxView = ({ data }) => {
+            const pendingTaxes = data.accounts.filter(acc => data.taxData?.players?.[acc.accountId]?.sessions?.[data.taxData.currentSession]?.taxDue > 0);
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Pending Tax</h2>
+                    <div className="space-y-4">
+                        {pendingTaxes.length > 0 ? pendingTaxes.map(acc => (
+                            <div key={acc.accountId} className="bg-gray-800 p-4 rounded-lg shadow-lg">
+                                <p><strong>Player:</strong> {acc.accountId}</p>
+                                <p><strong>Tax Due:</strong> ${data.taxData?.players?.[acc.accountId]?.sessions?.[data.taxData.currentSession]?.taxDue?.toFixed(2) || '0.00'}</p>
+                            </div>
+                        )) : <p>No pending taxes.</p>}
+                    </div>
+                </div>
+            );
+        };
+
+        const TaxHistoryView = ({ data }) => {
+            const [taxDailyData, setTaxDailyData] = useState([]);
+            const [taxPayData, setTaxPayData] = useState([]);
+
+            useEffect(() => {
+                const fetchTaxData = async () => {
+                    try {
+                        const dailyResponse = await fetch(`${TAX_API_URL}/tax-daily-data`);
+                        if (dailyResponse.ok) {
+                            const json = await dailyResponse.json();
+                            setTaxDailyData(json);
+                        }
+                        const payResponse = await fetch(`${TAX_API_URL}/tax-pay-data`);
+                        if (payResponse.ok) {
+                            const json = await payResponse.json();
+                            setTaxPayData(json);
+                        }
+                    } catch (e) {
+                        console.error("Failed to fetch tax history data", e);
+                    }
+                };
+                fetchTaxData();
+            }, []);
+
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Tax Payers History</h2>
+                    <h3 className="text-2xl font-bold text-amber-400 mb-4">Daily Tax Charges</h3>
+                    {taxDailyData.length > 0 ? taxDailyData.map((entry, index) => (
+                        <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-lg mb-4">
+                            <p><strong>Player:</strong> {entry.player}</p>
+                            <p><strong>Date:</strong> {new Date(entry.timestamp).toLocaleDateString()}</p>
+                            <p><strong>Amount:</strong> ${entry.amount?.toFixed(2) || '0.00'}</p>
+                            <p><strong>Description:</strong> {entry.description}</p>
+                        </div>
+                    )) : <p>No daily tax records.</p>}
+
+                    <h3 className="text-2xl font-bold text-amber-400 mb-4 mt-8">Tax Payments</h3>
+                    {taxPayData.length > 0 ? taxPayData.map((entry, index) => (
+                        <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-lg mb-4">
+                            <p><strong>Player:</strong> {entry.player}</p>
+                            <p><strong>Date:</strong> {new Date(entry.date).toLocaleDateString()}</p>
+                            <p><strong>Amount:</strong> ${entry.amount?.toFixed(2) || '0.00'}</p>
+                            <p><strong>Session:</strong> {entry.session}</p>
+                        </div>
+                    )) : <p>No tax payment records.</p>}
+                </div>
+            );
+        };
+
+        const BankInfoView = ({ data, adminUser }) => {
+            const [searchTerm, setSearchTerm] = useState('');
+            const [currentPage, setCurrentPage] = useState(1);
+            const accountsPerPage = 5; // Display 5 accounts per page
+
+            const filteredAccounts = data.accounts.filter(acc =>
+                acc.accountId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                acc.bankId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                acc.email.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            const indexOfLastAccount = currentPage * accountsPerPage;
+            const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
+            const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
+            const totalPages = Math.ceil(filteredAccounts.length / accountsPerPage);
+
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Player Bank Information</h2>
+                    <input
+                        type="text"
+                        placeholder="Search accounts by Player ID, Bank ID, or Email..."
+                        className="w-full p-2 mb-4 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {currentAccounts.map(acc => (
+                            <div key={acc.accountId} className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                                <h4 className="font-bold text-amber-400 text-lg mb-2">{acc.accountId}</h4>
+                                <p><strong>Bank ID:</strong> {acc.bankId}</p>
+                                <p><strong>Email:</strong> {acc.email}</p>
+                                <p><strong>Password:</strong> {acc.password}</p>
+                                {adminUser === 'admin22' && <button className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md">Edit</button>}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex justify-between mt-4">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 bg-amber-500 text-white rounded-md disabled:opacity-50"
+                        >
+                            Previous
+                        </button>
+                        <span>Page {currentPage} of {totalPages}</span>
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 bg-amber-500 text-white rounded-md disabled:opacity-50"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+        
+        const PlayerView = ({ data }) => {
+             const [selectedPlayer, setSelectedPlayer] = useState(null);
+             const [searchTerm, setSearchTerm] = useState('');
+
+            const filteredAccounts = data.accounts.filter(acc =>
+                acc.accountId.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            return (
+                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h2 className="text-2xl font-bold text-amber-400 mb-4">View as Player</h2>
+                    <input
+                        type="text"
+                        placeholder="Search player by name..."
+                        className="w-full p-2 mb-4 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <select onChange={(e) => setSelectedPlayer(data.accounts.find(acc => acc.accountId === e.target.value))} className="w-full p-3 bg-gray-700 rounded-md border border-gray-600 mb-4">
+                        <option value="">Select a player</option>
+                        {filteredAccounts.map(acc => <option key={acc.accountId} value={acc.accountId}>{acc.accountId}</option>)}
+                    </select>
+
+                    {selectedPlayer && (
+                        <div className="border-t-4 border-gray-700 pt-4 mt-4">
+                            <h3 className="text-xl font-bold text-white mb-4">Viewing: {selectedPlayer.accountId}</h3>
+                            <div className="space-y-6">
+                                <div className="bg-gray-700 p-4 rounded-lg"><p><strong>Bank Balance:</strong> ${data.balances.find(bal => bal.player === selectedPlayer.accountId)?.balance?.toFixed(2) || '0.00'}</p></div>
+                                <div className="bg-gray-700 p-4 rounded-lg">
+                                    <h4 className="font-bold mb-2">Loans</h4>
+                                    {(selectedPlayer.loans || []).map(loan => <div key={loan.id}>{loan.loanType}: ${loan.loanAmount?.toFixed(2) || '0.00'} ({loan.loanStatus})</div>)}
+                                </div>
+                                <div className="bg-gray-700 p-4 rounded-lg">
+                                    <h4 className="font-bold mb-2">Shop Transactions</h4>
+                                    {(data.shopTransactions.filter(tx => tx.player === selectedPlayer.accountId) || []).slice(-5).map((tx, i) => <div key={i}>{tx.type} {tx.item}: ${tx.amount?.toFixed(2) || '0.00'} (Tax: ${tx.tax?.toFixed(2) || '0.00'})</div>)}
+                                </div>
+                                <div className="bg-gray-700 p-4 rounded-lg">
+                                    <h4 className="font-bold mb-2">Job Transactions</h4>
+                                    {(data.jobTransactions.filter(tx => tx.player === selectedPlayer.accountId) || []).slice(-5).map((tx, i) => <div key={i}>{tx.jobName}: ${tx.amountEarned?.toFixed(2) || '0.00'} (Tax: ${tx.tax?.toFixed(2) || '0.00'})</div>)}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
         }
-        if (sellMatch) {
-          const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
-          const tax = +(amt * 0.10).toFixed(2);
-          sellTax += tax;
-          dailyData[day] = (dailyData[day] || 0) + tax;
-        }
-      });
 
-      const totalTax = buyTax + sellTax;
-      const paidRaw = taxData.paidPlayers?.[name];
-      // If marked PAID_BY_GOVT or description, count total paid as totalTax
-const totalPaid = getPaidAmount(name);
+        
 
-      const due = Math.max(0, totalTax - totalPaid);
+        const MessagesView = ({ data }) => {
+            const [messages, setMessages] = useState([]);
 
-      return { buyTax, sellTax, totalTax, due, totalPaid, dailyData };
-    }
+            useEffect(() => {
+                const fetchMessages = async () => {
+                    try {
+                        const response = await fetch(`${TAX_API_URL}/messages`); // Corrected endpoint
+                        if (response.ok) {
+                            const json = await response.json();
+                            setMessages(json);
+                        }
+                    } catch (e) {
+                        console.error("Failed to fetch messages", e);
+                    }
+                };
+                fetchMessages();
+            }, []);
 
-    // Show player details panel (pay as govt, history, reset tax etc)
-    function showPlayerDetails(name) {
-      currentPlayer = name;
-      const { totalTax, due, totalPaid } = calculateTaxForPlayer(name);
-      const history = taxData.paymentHistory?.[name] || [];
-      const description = taxData.paidPlayers?.[name] || "";
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Messages</h2>
+                    {messages.length > 0 ? messages.map((msg, index) => (
+                        <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-lg mb-4">
+                            <p><strong>From:</strong> {msg.username} ({msg.platform})</p>
+                            <p><strong>Language:</strong> {msg.language}</p>
+                            <p><strong>Problem:</strong> {msg.problem}</p>
+                            <button className="mt-2 bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-md">Reply</button>
+                        </div>
+                    )) : <p>No new messages.</p>}
+                </div>
+            );
+        };
 
-      let historyText = history.length ? history.map(h => `${h.date}: $${h.amount} (${h.desc || "No desc"})`).join("\n") : "No payments yet.";
+        const ThemeSettingsView = () => {
+            return (
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-6">Theme Settings</h2>
+                    <p>Theme settings options will go here.</p>
+                </div>
+            );
+        };
 
-      document.getElementById("adminPlayerPanel").innerHTML = `
-        <h3>Player: ${name}</h3>
-        <p><b>Total Tax:</b> $${totalTax.toFixed(2)}</p>
-        <p><b>Paid:</b> $${totalPaid.toFixed(2)}</p>
-        <p><b>Due:</b> $${due.toFixed(2)}</p>
-        <hr />
-        <div class="pay-govt-section">
-          <h4>Pay as Govt</h4>
-          <label>Amount to Pay</label>
-          <input type="number" id="govtPayAmount" min="0" max="${due.toFixed(2)}" step="0.01" value="${due.toFixed(2)}" />
-          <label>Description (optional)</label>
-          <input type="text" id="govtPayDesc" placeholder="Enter description" value="${description === "PAID_BY_GOVT" ? "" : description}" />
-          <button onclick="payAsGovt()">Mark Payment</button>
-        </div>
-        <hr />
-        <div>
-          <label>Payment History</label>
-          <textarea readonly rows="6" style="width:100%;background:#222;color:#ddd;border-radius:10px;padding:10px;font-family: monospace;">${historyText}</textarea>
-        </div>
-        <hr />
-        <div>
-          <label>Reset Actions (requires password '2613')</label>
-          <input type="password" id="resetPass" placeholder="Enter Admin Password" />
-          <div style="margin-top:10px;">
-            <button onclick="resetTax()">Reset Tax</button>
-            <button onclick="resetHistory()">Reset History</button>
-            <button onclick="resetDeadline()">Reset Deadline</button>
-          </div>
-        </div>
-      `;
-    }
+        const LoanDetailModal = ({ loan, onClose, handleApproveLoan, handleRejectLoan, handleForceApproveLoan, handleUpdateLoanDetails, adminUser }) => {
+            const [showPlayerDetails, setShowPlayerDetails] = useState(false);
+            const [adminReply, setAdminReply] = useState(loan.adminReply || '');
+            const [employeeVisitTime, setEmployeeVisitTime] = useState(loan.employeeVisitTime || '');
+            const [employeeMessage, setEmployeeMessage] = useState(loan.employeeMessage || '');
+            const [loanerPhoto, setLoanerPhoto] = useState(loan.loanerPhoto || '');
+            const [landPhoto, setLandPhoto] = useState(loan.landPhoto || '');
+            const [buildingPhoto, setBuildingPhoto] = useState(loan.buildingPhoto || '');
+            const [employeePhoto, setEmployeePhoto] = useState(loan.employeePhoto || '');
+            const [signatureOfBankEmployee, setSignatureOfBankEmployee] = useState(loan.signatureOfBankEmployee || '');
+            const [loanerBankId, setLoanerBankId] = useState(loan.loanerBankId || '');
+            const [loanerPerDayIncome, setLoanerPerDayIncome] = useState(loan.loanerPerDayIncome || '');
+            const [hasBusiness, setHasBusiness] = useState(loan.hasBusiness || false);
+            const [areaVolume, setAreaVolume] = useState(loan.areaVolume || '');
+            const [cornerCoords, setCornerCoords] = useState(loan.cornerCoords || '');
+            const [valueOfLand, setValueOfLand] = useState(loan.valueOfLand || '');
+            const [valueOfBuilding, setValueOfBuilding] = useState(loan.valueOfBuilding || '');
+            const [loanerNetWorth, setLoanerNetWorth] = useState(loan.loanerNetWorth || '');
 
-    // Mark payment as govt, save payment amount + description
-function payAsGovt() {
-  const desc = document.getElementById("govtPayDesc").value || "Paid by Govt";
-  const amount = parseFloat(document.getElementById("govtPayAmount").value);
+            if (!loan) return null;
 
-  if (isNaN(amount) || amount <= 0) {
-    alert("❌ Enter valid amount.");
-    return;
-  }
+            const onApprove = () => {
+                handleApproveLoan(loan.accountId, loan.id, adminReply);
+                onClose();
+            };
 
-  taxData.paymentHistory = taxData.paymentHistory || {};
-  taxData.paymentHistory[currentPlayer] = taxData.paymentHistory[currentPlayer] || [];
+            const onReject = () => {
+                handleRejectLoan(loan.accountId, loan.id, adminReply);
+                onClose();
+            };
 
-  taxData.paymentHistory[currentPlayer].push({
-    amount: amount.toFixed(2),
-    method: desc,
-    date: new Date().toISOString().split("T")[0]
-  });
+            const handleSubmitEmployeeFields = async () => {
+                const updatedFields = {
+                    employeeVisitTime,
+                    employeeMessage,
+                    loanerPhoto,
+                    landPhoto,
+                    buildingPhoto,
+                    employeePhoto,
+                    signatureOfBankEmployee,
+                    loanerBankId,
+                    loanerPerDayIncome,
+                    hasBusiness,
+                    areaVolume,
+                    cornerCoords,
+                    valueOfLand,
+                    valueOfBuilding,
+                    loanerNetWorth
+                };
+                await handleUpdateLoanDetails(loan.id, updatedFields);
+                fetchData(); // Refresh data after action
+                onClose();
+            };
 
-  alert(`✅ Paid $${amount} as Govt for ${currentPlayer}`);
-  document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
-  autoSyncTax();
-  showPlayerDetails(currentPlayer);
-  renderPlayerTaxList();
-}
+            const onForceApprove = async () => {
+                const adminUsername = prompt("Enter admin username:");
+                const adminPassword = prompt("Enter admin password:");
+                if (adminUsername === null || adminPassword === null) {
+                    // User cancelled the prompt
+                    return;
+                }
+                // You would typically send these credentials to your backend for verification
+                // For this example, we'll just proceed if they are not empty
+                if (adminUsername.trim() === '' || adminPassword.trim() === '') {
+                    alert("Admin username and password cannot be empty.");
+                    return;
+                }
+                handleForceApproveLoan(loan.accountId, loan.id, employeeVisitTime, employeeMessage, adminReply, adminUser); // Pass adminUser
+                onClose();
+            };
 
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
+                    <div className="bg-gray-800 rounded-lg shadow-2xl p-6 max-w-md w-full border-t-4 border-amber-500 relative">
+                        <button onClick={onClose} className="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl">&times;</button>
+                        <h3 className="text-2xl font-bold text-amber-400 mb-4">Loan Details for {loan.accountId}</h3>
+                        
+                        <div className="flex justify-between items-center mb-4">
+                            <button onClick={() => setShowPlayerDetails(!showPlayerDetails)} className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600">
+                                {showPlayerDetails ? 'Hide Player Form Details' : 'Show Player Form Details'}
+                            </button>
+                        </div>
 
- function autoSyncTax() {
-  fetch("https://syncs.1987sakshamsingh.workers.dev/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(taxData)
-  }).then(r => alert(r.ok ? "✅ Tax Auto Synced" : "❌ Sync Failed"));
-}
+                        <div className={`space-y-2 text-gray-300 ${showPlayerDetails ? 'max-h-96 overflow-y-auto' : 'max-h-48 overflow-hidden'}`}>
+                            <p><strong>Loan ID:</strong> {loan.id}</p>
+                            <p><strong>Amount:</strong> ${parseFloat(loan.loanAmount)?.toFixed(2) || '0.00'}</p>
+                            <p><strong>Loan Type:</strong> {loan.loanType}</p>
+                            <p><strong>Duration:</strong> {loan.durationWeeks} weeks</p>
+                            <p><strong>Repayment:</strong> {loan.repayment}</p>
+                            <p><strong>Purpose:</strong> {loan.purpose}</p>
+                            {loan.coord1 && <p><strong>Coordinates 1:</strong> {loan.coord1}</p>}
+                            {loan.coord2 && <p><strong>Coordinates 2:</strong> {loan.coord2}</p>}
+                            {loan.job && <p><strong>Job:</strong> {loan.job}</p>}
+                            {loan.perDayIncome && <p><strong>Per Day Income:</strong> ${parseFloat(loan.perDayIncome)?.toFixed(2) || '0.00'}</p>}
+                            
+                            {loan.loanerPhoto && <p><strong>Loaner Photo:</strong> <a href={loan.loanerPhoto} target="_blank" className="text-blue-400 hover:underline">View</a></p>}
+                            {loan.landPhoto && <p><strong>Land Photo:</strong> <a href={loan.landPhoto} target="_blank" className="text-blue-400 hover:underline">View</a></p>}
+                            {loan.buildingPhoto && <p><strong>Building Photo:</strong> <a href={loan.buildingPhoto} target="_blank" className="text-blue-400 hover:underline">View</a></p>}
+                            {loan.employeePhoto && <p><strong>Employee Photo:</strong> <a href={loan.employeePhoto} target="_blank" className="text-blue-400 hover:underline">View</a></p>}
+                            {loan.signatureOfBankEmployee && <p><strong>Signature:</strong> <a href={loan.signatureOfBankEmployee} target="_blank" className="text-blue-400 hover:underline">View</a></p>}
+                            {loan.loanerBankId && <p><strong>Loaner Bank ID:</strong> {loan.loanerBankId}</p>}
+                            {loan.loanerPerDayIncome && <p><strong>Loaner Per Day Income:</strong> ${parseFloat(loan.loanerPerDayIncome)?.toFixed(2) || '0.00'}</p>}
+                            {loan.hasBusiness && <p><strong>Has Business:</strong> {loan.hasBusiness ? 'Yes' : 'No'}</p>}
+                            {loan.areaVolume && <p><strong>Area/Volume:</strong> {loan.areaVolume}</p>}
+                            {loan.cornerCoords && <p><strong>Corner Coords:</strong> {loan.cornerCoords}</p>}
+                            {loan.valueOfLand && <p><strong>Value of Land:</strong> ${parseFloat(loan.valueOfLand)?.toFixed(2) || '0.00'}</p>}
+                            {loan.valueOfBuilding && <p><strong>Value of Building:</strong> ${parseFloat(loan.valueOfBuilding)?.toFixed(2) || '0.00'}</p>}
+                            {loan.loanerNetWorth && <p><strong>Loaner Net Worth:</strong> ${parseFloat(loan.loanerNetWorth)?.toFixed(2) || '0.00'}</p>}
 
-    // Reset tax for current player
-    function resetTax() {
-      if (!checkAdminPass()) return;
-      delete taxData.paidPlayers[currentPlayer];
-      alert("🔁 Tax reset for " + currentPlayer);
-      updateEditorsAndUI();
-    }
-    // Reset payment history
-    function resetHistory() {
-      if (!checkAdminPass()) return;
-      delete taxData.paymentHistory[currentPlayer];
-      alert("🔁 Payment history reset for " + currentPlayer);
-      updateEditorsAndUI();
-    }
-    // Reset tax deadline - placeholder since you may implement it differently
-    function resetDeadline() {
-      if (!checkAdminPass()) return;
-      if(taxData.taxDeadline) delete taxData.taxDeadline[currentPlayer];
-      alert("🔁 Tax deadline reset for " + currentPlayer);
-      updateEditorsAndUI();
-    }
-    function checkAdminPass() {
-      const pass = document.getElementById("resetPass").value;
-      if (pass === "2613") return true;
-      alert("❌ Incorrect Admin Password");
-      return false;
-    }
+                            <div className="mt-4">
+                                <label htmlFor="employeeVisitTime" className="block text-gray-300 text-sm font-bold mb-2">Employee Visit Time:</label>
+                                {loan.employeeVisitTime && !adminUser ? <p>{new Date(loan.employeeVisitTime).toLocaleString()}</p> : <input type="datetime-local" id="employeeVisitTime" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={employeeVisitTime} onChange={(e) => setEmployeeVisitTime(e.target.value)} />}
+                            </div>
+                            <div className="mt-4">
+                                <label htmlFor="employeeMessage" className="block text-gray-300 text-sm font-bold mb-2">Employee Message:</label>
+                                {loan.employeeMessage && !adminUser ? <p>{loan.employeeMessage}</p> : <textarea id="employeeMessage" rows="3" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={employeeMessage} onChange={(e) => setEmployeeMessage(e.target.value)}></textarea>}
+                            </div>
 
-    // Update textareas & UI
-    function updateEditorsAndUI() {
-      document.getElementById("taxEditor").value = JSON.stringify(taxData, null, 2);
-      document.getElementById("bankEditor").value = JSON.stringify(bankData, null, 2);
-      renderPlayerTaxList();
-      renderBankList();
-      clearAdminPanel();
-    }
+                            <p><strong>Status:</strong> <span className="capitalize">{loan.loanStatus}</span></p>
+                            <p><strong>Application Date:</strong> {new Date(loan.applicationDate).toLocaleDateString()}</p>
+                            <p><strong>Amount Due:</strong> ${parseFloat(loan.loanAmountDue)?.toFixed(2) || '0.00'}</p>
+                            <p><strong>Amount Paid:</strong> ${parseFloat(loan.loanPaid)?.toFixed(2) || '0.00'}</p>
+                            
+                            <div className="mt-4">
+                                <label htmlFor="adminReply" className="block text-gray-300 text-sm font-bold mb-2">Admin Reply:</label>
+                                <textarea id="adminReply" rows="3" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={adminReply} onChange={(e) => setAdminReply(e.target.value)}></textarea>
+                            </div>
+                            {/* Admin can fill employee fields if not already filled */}
+                            {adminUser && (
+                                <>
+                                    {!loan.loanerPhoto && (
+                                        <div>
+                                            <label htmlFor="loanerPhoto" className="block text-gray-300 text-sm font-bold mb-2">Loaner Photo URL:</label>
+                                            <input type="text" id="loanerPhoto" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={loanerPhoto} onChange={(e) => setLoanerPhoto(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.landPhoto && (
+                                        <div>
+                                            <label htmlFor="landPhoto" className="block text-gray-300 text-sm font-bold mb-2">Land Photo URL:</label>
+                                            <input type="text" id="landPhoto" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={landPhoto} onChange={(e) => setLandPhoto(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.buildingPhoto && (
+                                        <div>
+                                            <label htmlFor="buildingPhoto" className="block text-gray-300 text-sm font-bold mb-2">Building Photo URL:</label>
+                                            <input type="text" id="buildingPhoto" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={buildingPhoto} onChange={(e) => setBuildingPhoto(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.employeePhoto && (
+                                        <div>
+                                            <label htmlFor="employeePhoto" className="block text-gray-300 text-sm font-bold mb-2">Employee Photo URL:</label>
+                                            <input type="text" id="employeePhoto" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={employeePhoto} onChange={(e) => setEmployeePhoto(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.signatureOfBankEmployee && (
+                                        <div>
+                                            <label htmlFor="signatureOfBankEmployee" className="block text-gray-300 text-sm font-bold mb-2">Signature of Bank Employee URL:</label>
+                                            <input type="text" id="signatureOfBankEmployee" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={signatureOfBankEmployee} onChange={(e) => setSignatureOfBankEmployee(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.loanerBankId && (
+                                        <div>
+                                            <label htmlFor="loanerBankId" className="block text-gray-300 text-sm font-bold mb-2">Loaner Bank ID:</label>
+                                            <input type="text" id="loanerBankId" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={loanerBankId} onChange={(e) => setLoanerBankId(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.loanerPerDayIncome && (
+                                        <div>
+                                            <label htmlFor="loanerPerDayIncome" className="block text-gray-300 text-sm font-bold mb-2">Loaner Per Day Income:</label>
+                                            <input type="number" id="loanerPerDayIncome" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={loanerPerDayIncome} onChange={(e) => setLoanerPerDayIncome(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.hasBusiness && (
+                                        <div className="flex items-center">
+                                            <input type="checkbox" id="hasBusiness" className="mr-2" checked={hasBusiness} onChange={(e) => setHasBusiness(e.target.checked)} />
+                                            <label htmlFor="hasBusiness" className="text-sm font-medium text-gray-300">Has Business</label>
+                                        </div>
+                                    )}
+                                    {!loan.areaVolume && (
+                                        <div>
+                                            <label htmlFor="areaVolume" className="block text-gray-300 text-sm font-bold mb-2">Area/Volume:</label>
+                                            <input type="text" id="areaVolume" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={areaVolume} onChange={(e) => setAreaVolume(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.cornerCoords && (
+                                        <div>
+                                            <label htmlFor="cornerCoords" className="block text-gray-300 text-sm font-bold mb-2">Corner Coords:</label>
+                                            <input type="text" id="cornerCoords" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={cornerCoords} onChange={(e) => setCornerCoords(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.valueOfLand && (
+                                        <div>
+                                            <label htmlFor="valueOfLand" className="block text-gray-300 text-sm font-bold mb-2">Value of Land:</label>
+                                            <input type="number" id="valueOfLand" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={valueOfLand} onChange={(e) => setValueOfLand(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.valueOfBuilding && (
+                                        <div>
+                                            <label htmlFor="valueOfBuilding" className="block text-gray-300 text-sm font-bold mb-2">Value of Building:</label>
+                                            <input type="number" id="valueOfBuilding" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={valueOfBuilding} onChange={(e) => setValueOfBuilding(e.target.value)} />
+                                        </div>
+                                    )}
+                                    {!loan.loanerNetWorth && (
+                                        <div>
+                                            <label htmlFor="loanerNetWorth" className="block text-gray-300 text-sm font-bold mb-2">Loaner Net Worth:</label>
+                                            <input type="number" id="loanerNetWorth" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={loanerNetWorth} onChange={(e) => setLoanerNetWorth(e.target.value)} />
+                                        </div>
+                                    )}
+                                </>
+                            )
+                            }
+                        </div>
+                        <div className="flex justify-end mt-6 space-x-2">
+                            <button onClick={onReject} className="px-5 py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 transition duration-200">Reject</button>
+                            {loan.loanStatus === 'waitingForAdminApproval' && (
+                                <>
+                                    <button onClick={onApprove} className="px-5 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-200">Approve</button>
+                                </>
+                            )}
+                            {(loan.loanStatus !== 'approved' && loan.loanStatus !== 'rejected') && (
+                                <button onClick={onForceApprove} className="px-5 py-2 bg-yellow-600 text-white font-semibold rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-75 transition duration-200">Forceful Approve</button>
+                            )}
+                            <button onClick={onClose} className="px-5 py-2 bg-amber-600 text-white font-semibold rounded-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-75 transition duration-200">Back</button>
+                            <button onClick={handleSubmitEmployeeFields} className="px-5 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-200">Submit Form</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
 
-    // Render bank info for all players found in transactions
-    function renderBankList() {
-      const players = getAllPlayersFromTransactions();
-      if (players.length === 0) {
-        document.getElementById("bankList").innerHTML = "<p>No player transactions found.</p>";
-        return;
-      }
-
-      let bankHtml = "";
-      players.forEach(name => {
-        const bank = bankData.accounts?.[name];
-        if (!bank) {
-          bankHtml += `
-            <div class="player-item">
-              <span class="player-name">${name}</span>
-              <span class="status-notcreated">❌ Bank Not Created</span>
-            </div>`;
-        } else {
-          bankHtml += `
-            <div class="player-item">
-              <span class="player-name">${bank.username}</span>
-              <div>
-                <p>ID: ${bank.id}</p>
-                <p>Password: ${bank.password}</p>
-                <p>Contact: ${bank.contact}</p>
-                <button onclick="editBank('${name}')">Edit Bank Info</button>
-              </div>
-            </div>`;
-        }
-      });
-
-      document.getElementById("bankList").innerHTML = bankHtml;
-    }
-
-    // Edit bank info in textarea + save back
-    function editBank(name) {
-      const bank = bankData.accounts?.[name];
-      if (!bank) {
-        alert("No bank info found for " + name);
-        return;
-      }
-      const newId = prompt("Edit Bank ID", bank.id) || bank.id;
-      const newPass = prompt("Edit Bank Password", bank.password) || bank.password;
-      const newContact = prompt("Edit Bank Contact", bank.contact) || bank.contact;
-
-      bankData.accounts[name] = {
-        username: name,
-        id: newId,
-        password: newPass,
-        contact: newContact,
-      };
-      alert("✅ Bank info updated for " + name);
-      updateEditorsAndUI();
-    }
-
-    // Save tax JSON to server (via sync endpoint)
-    function saveTax() {
-      try {
-        const data = JSON.parse(document.getElementById("taxEditor").value);
-        fetch("https://syncs.1987sakshamsingh.workers.dev/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        }).then(res => {
-          if (res.ok) alert("✅ Tax JSON synced successfully!");
-          else alert("❌ Failed to sync Tax JSON.");
-        });
-      } catch {
-        alert("❌ Invalid JSON in tax editor.");
-      }
-    }
-
-    // Save bank JSON to server (via sync endpoint)
-    function saveBank() {
-      try {
-        const data = JSON.parse(document.getElementById("bankEditor").value);
-        fetch("https://syncs.1987sakshamsingh.workers.dev/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        }).then(res => {
-          if (res.ok) alert("✅ Bank JSON synced successfully!");
-          else alert("❌ Failed to sync Bank JSON.");
-        });
-      } catch {
-        alert("❌ Invalid JSON in bank editor.");
-      }
-    }
-
-    // Logout admin and redirect to home page
-    function logoutAdmin() {
-      if (confirm("Are you sure you want to exit the admin panel?")) {
-        window.location.href = "https://minecraft2613.github.io/taxess/index.html";
-      }
-    }
-
-    // On page load
-    window.onload = () => {
-      loadAllData();
-    };
-    function getPaidAmount(player) {
-  const history = taxData.paymentHistory?.[player] || [];
-  return history.reduce((sum, entry) => sum + Number(entry.amount), 0);
-}
-
-  </script>
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
 </body>
 </html>
