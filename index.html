@@ -546,7 +546,7 @@ function calculateTotalTaxFromLog(logText) {
   const lines = logText.split(/\r?\n/);
 
   lines.forEach(line => {
-    const match = line.match(/] - ([a-zA-Z0-9_.]+) (bought|sold).*?\$[\d,]+\.\d+/);
+    const match = line.match(/] - ([a-zA-Z0-9_.]+) (bought|sold).*?$[\d,]+\.\d+/);
     if (!match) return;
 
     const [_, player, action, amountStr] = match;
@@ -609,22 +609,22 @@ function parseTransactions(log) {
 
     const date = line.match(/[\[](\d{4}-\d{2}-\d{2})/);
     const day = date ? date[1].slice(5).replace('-', '/') : "";
-    const buyMatch = line.match(/bought.*?\$([\d,]+\.\d+)/);
-    const sellMatch = line.match(/sold.*?\$([\d,]+\.\d+)/);
+    const buyMatch = line.match(/bought.*?$[\d,]+\.\d+/);
+    const sellMatch = line.match(/sold.*?$[\d,]+\.\d+/);
 
 
     if (buyMatch) {
       const amt = parseFloat(buyMatch[1].replace(/,/g, ""));
       const tax = +(amt * 0.04).toFixed(2);
       buy += tax;
-      dailyData[day] = (dailyData[day] || 0) + tax;
+      if (day) dailyData[day] = (dailyData[day] || 0) + tax;
     }
 
     if (sellMatch) {
       const amt = parseFloat(sellMatch[1].replace(/,/g, ""));
       const tax = +(amt * 0.10).toFixed(2);
       sell += tax;
-      dailyData[day] = (dailyData[day] || 0) + tax;
+      if (day) dailyData[day] = (dailyData[day] || 0) + tax;
     }
   });
 
@@ -818,9 +818,6 @@ function renderChart() {
   let chartLabel = '';
 
   if (currentPeriodType === 'future') {
-    // This case is handled by analyzeFutureTax() directly rendering the chart.
-    // If renderChart is called with currentPeriodType === 'future', it means
-    // analyzeFutureTax() has already set up the chart, so we just return.
     return;
   } else if (currentPeriodKey === 'all') {
     dataToRender = dailyData;
@@ -828,7 +825,9 @@ function renderChart() {
   } else {
     const periodData = groupDataByPeriod(currentPeriodType);
     dataToRender = periodData[currentPeriodKey];
-    if (!dataToRender) return;
+    if (!dataToRender) {
+        dataToRender = {}; // Ensure dataToRender is an object
+    };
     chartLabel = `Tax Data for ${currentPeriodType === 'week' ? 'Week' : 'Month'} Starting ${currentPeriodKey}`;
   }
 
@@ -837,6 +836,7 @@ function renderChart() {
 
   const labels = Object.keys(dataToRender);
   const values = Object.values(dataToRender);
+  const tension = chartType === "line" ? parseFloat(localStorage.getItem("lineTension") || "0") : 0;
 
   chart = new Chart(ctx, {
     type: chartType,
@@ -848,7 +848,7 @@ function renderChart() {
         fill: false,
         borderColor: "#ffee00",
         backgroundColor: "#ffaa00",
-        tension: chartType === "line" ? (parseFloat(localStorage.getItem("lineTension")) || 0.4) : 0
+        tension: tension
       }]
     },
     options: {
@@ -1207,7 +1207,18 @@ function togglePlatform() {
 function handleChartOption(value) {
   if (value === 'export') {
     downloadChart();
-  } else {
+    return;
+  }
+  
+  if (value === 'smooth') {
+    localStorage.setItem("lineTension", "0.4");
+    changeChart('line');
+  } else if (value === 'line') {
+    localStorage.setItem("lineTension", "0");
+    changeChart('line');
+  }
+  else {
+    localStorage.setItem("lineTension", "0"); // Default to no tension for other types
     changeChart(value);
   }
 }
