@@ -546,7 +546,7 @@ function calculateTotalTaxFromLog(logText) {
   const lines = logText.split(/\r?\n/);
 
   lines.forEach(line => {
-    const match = line.match(/] - ([a-zA-Z0-9_.]+) (bought|sold).*?$[\]([\d,\.]+)/);
+    const match = line.match(/] - ([a-zA-Z0-9_.]+) (bought|sold).*?\$[\d,]+\.\d+/);
     if (!match) return;
 
     const [_, player, action, amountStr] = match;
@@ -609,8 +609,8 @@ function parseTransactions(log) {
 
     const date = line.match(/[\[](\d{4}-\d{2}-\d{2})/);
     const day = date ? date[1].slice(5).replace('-', '/') : "";
-    const buyMatch = line.match(/bought.*?$[\]([\d,\.]+)/);
-    const sellMatch = line.match(/sold.*?$[\]([\d,\.]+)/);
+    const buyMatch = line.match(/bought.*?\$([\d,]+\.\d+)/);
+    const sellMatch = line.match(/sold.*?\$([\d,]+\.\d+)/);
 
 
     if (buyMatch) {
